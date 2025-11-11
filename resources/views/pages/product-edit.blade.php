@@ -72,7 +72,7 @@
                         </div>
 
                         <!-- Product Company -->
-                        <div class="col-span-12 sm:col-span-6">
+                        {{-- <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Product Company</x-base.form-label>
                             <x-base.form-input
                                 type="text"
@@ -80,7 +80,7 @@
                                 value="{{ old('product_company', $product->product_company) }}"
                                 placeholder="Enter company name"
                             />
-                        </div>
+                        </div> --}}
 
                         <!-- HSN Code -->
                         <div class="col-span-12 sm:col-span-6">
