@@ -100,6 +100,22 @@ class SideMenu
                         ],
                         'title' => 'Payment'
                     ],
+                    'top-menu-4' => [
+                        'icon' => 'activity',
+                        'route_name' => 'client.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Client'
+                    ],
+                    'top-menu-5' => [
+                        'icon' => 'activity',
+                        'route_name' => 'vendor.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Vendor'
+                    ],
                 ]
             ],
         ];

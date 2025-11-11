@@ -85,23 +85,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const rateCutInput = document.querySelector('input[name="rate"]');
-            const pureWeightInput = document.querySelector('input[name="weight"]');
-            const amountInput = document.querySelector('input[name="amount"]');
-        
-            function calculateAmount() {
-                const rateCut = parseFloat(rateCutInput.value) || 0;
-                const pureWeight = parseFloat(pureWeightInput.value) || 0;
-                const amount = (rateCut / 10) * pureWeight;
-                amountInput.value = amount.toFixed(2);
-            }
-        
-            rateCutInput.addEventListener('input', calculateAmount);
-            pureWeightInput.addEventListener('input', calculateAmount);
-        });
-    </script>
-@endpush

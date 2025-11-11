@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BullionPurchaseController;
 use App\Http\Controllers\BullionRateController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientRateCutPendingController;
 use App\Http\Controllers\ClietRateFixController;
 use App\Http\Controllers\PageController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\VendorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -165,4 +167,7 @@ Route::middleware('auth')->group(function () {
         Route::put('payment/{id}', 'update')->name('payment.update');
         Route::delete('payment/{id}', 'destroy')->name('payment.delete');
     });
+
+    Route::resource('client',ClientController::class);
+    Route::resource('vendor',VendorController::class);
 });

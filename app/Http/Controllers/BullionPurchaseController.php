@@ -14,7 +14,6 @@ class BullionPurchaseController extends Controller
      */
     public function index(): View
     {
-        $bullionPurchases = BullionPurchase::query()->latest()->paginate(10);
         return view('pages.bullion-purchase', [
             'layout' => 'side-menu',
             'bullionPurchases' => $bullionPurchases,
