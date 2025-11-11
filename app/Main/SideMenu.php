@@ -56,6 +56,36 @@ class SideMenu
                 ],
                 'title' => 'User'
             ],
+            'products' => [
+                'icon' => 'shopping-cart',
+                'route_name' => 'products.index',
+                'params' => [
+                    'layout' => 'side-menu'
+                ],
+                'title' => 'Products'
+            ],
+            'purchase' => [
+                'icon' => 'package',
+                'title' => 'Purchase Management',
+                'sub_menu' => [
+                    'purchase-parties' => [
+                        'icon' => 'user',
+                        'route_name' => 'purchase-parties.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Purchase Parties'
+                    ],
+                    'purchases' => [
+                        'icon' => 'clipboard-list',
+                        'route_name' => 'purchases.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Purchase List'
+                    ]
+                ]
+            ],
             'Bullions' => [
                 'icon' => 'box',
                 'title' => 'Bullions',

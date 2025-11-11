@@ -12,6 +12,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchasePartyController;
 use App\Http\Controllers\VendorController;
 
 /*
@@ -170,4 +173,35 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('client',ClientController::class);
     Route::resource('vendor',VendorController::class);
+
+    // Products CRUD
+    Route::controller(ProductController::class)->group(function () {
+        Route::get('products', 'index')->name('products.index');
+        Route::get('products/create', 'create')->name('products.create');
+        Route::post('products', 'store')->name('products.store');
+        Route::get('products/{id}', 'show')->name('products.show');
+        Route::get('products/{id}/edit', 'edit')->name('products.edit');
+        Route::put('products/{id}', 'update')->name('products.update');
+        Route::delete('products/{id}', 'destroy')->name('products.delete');
+    });
+
+    // Purchase Parties CRUD
+    Route::controller(PurchasePartyController::class)->group(function () {
+        Route::get('purchase-parties', 'index')->name('purchase-parties.index');
+        Route::get('purchase-parties/create', 'create')->name('purchase-parties.create');
+        Route::post('purchase-parties', 'store')->name('purchase-parties.store');
+        Route::get('purchase-parties/{id}/edit', 'edit')->name('purchase-parties.edit');
+        Route::put('purchase-parties/{id}', 'update')->name('purchase-parties.update');
+        Route::delete('purchase-parties/{id}', 'destroy')->name('purchase-parties.delete');
+    });
+
+    // Purchases CRUD
+    Route::controller(PurchaseController::class)->group(function () {
+        Route::get('purchases', 'index')->name('purchases.index');
+        Route::get('purchases/create', 'create')->name('purchases.create');
+        Route::post('purchases', 'store')->name('purchases.store');
+        Route::get('purchases/{id}/edit', 'edit')->name('purchases.edit');
+        Route::put('purchases/{id}', 'update')->name('purchases.update');
+        Route::delete('purchases/{id}', 'destroy')->name('purchases.delete');
+    });
 });
