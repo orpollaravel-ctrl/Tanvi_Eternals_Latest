@@ -1,0 +1,100 @@
+@extends('../layouts/' . $layout)
+
+@section('subhead')
+    <title>Edit User - Midone - Tailwind HTML Admin Template</title>
+@endsection
+
+@section('subcontent')
+    <h2 class="intro-y mt-10 text-lg font-medium">Edit User</h2>
+    <div class="mt-5 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12 lg:col-span-6">
+            <div class="box p-5">
+                @if ($errors->any())
+                    <div class="mb-5 rounded-md border border-danger/20 bg-danger/10 p-4 text-danger dark:border-danger/30">
+                        <div class="font-medium">There were some problems with your input.</div>
+                        <ul class="mt-2 list-disc pl-5">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('users.update', $user->id) }}">
+                    @csrf
+                    @method('PUT')
+                    <div class="mt-3">
+                        <x-base.form-label>Name</x-base.form-label>
+                        <x-base.form-input
+                            type="text"
+                            name="name"
+                            value="{{ old('name', $user->name) }}"
+                            placeholder="John Doe"
+                            required
+                        />
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Email</x-base.form-label>
+                        <x-base.form-input
+                            type="email"
+                            name="email"
+                            value="{{ old('email', $user->email) }}"
+                            placeholder="john@example.com"
+                            required
+                        />
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Gender</x-base.form-label>
+                        <x-base.form-select name="gender">
+                            <option value="">Select Gender</option>
+                            <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Other</option>
+                        </x-base.form-select>
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Contact Number</x-base.form-label>
+                        <x-base.form-input
+                            type="text"
+                            name="contact_number"
+                            value="{{ old('contact_number', $user->contact_number) }}"
+                            placeholder="09123456789"
+                            required
+                        />
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Password</x-base.form-label>
+                        <x-base.form-input
+                            type="password"
+                            name="password"
+                            placeholder="Leave blank to keep current password"
+                        />
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Confirm Password</x-base.form-label>
+                        <x-base.form-input
+                            type="password"
+                            name="password_confirmation"
+                            placeholder="Re-enter to change password"
+                        />
+                    </div>                    
+                    <div class="mt-3">
+                        <x-base.form-label>Active Status</x-base.form-label>
+                        <input
+                            type="checkbox"
+                            id="active"
+                            name="active"
+                            value="1"
+                            class="mt-2" {{ old('active', $user->active) ? 'checked' : '' }}>
+                    </div>                    
+                    <div class="mt-5 flex items-center">
+                        <a href="{{ route('users') }}" class="mr-3">
+                            <x-base.button type="button" variant="outline-secondary">Cancel</x-base.button>
+                        </a>
+                        <x-base.button type="submit" variant="primary">Save Changes</x-base.button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
