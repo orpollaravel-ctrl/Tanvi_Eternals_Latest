@@ -736,6 +736,7 @@ function printProductTable() {
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <script>
+    // Export functions
     window.printProducts = function() {
         const search = document.getElementById('productSearch').value;
         const url = `{{ route('products.print') }}?search=${encodeURIComponent(search)}`;
