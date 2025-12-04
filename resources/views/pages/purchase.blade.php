@@ -48,12 +48,15 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
+					<x-base.table.th class="whitespace-nowrap border-b-0">
+                          #
+                        </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
                             Bill Number
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0"> Purchase Party </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0"> Vendor </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Bill Date </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0"> Delivery Date </x-base.table.th>
+                       <!-- <x-base.table.th class="whitespace-nowrap border-b-0"> Delivery Date </x-base.table.th> -->
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-right">
                             Total Amount
                         </x-base.table.th>
@@ -66,6 +69,12 @@
                     @isset($purchases)
                         @foreach ($purchases as $purchase)
                             <x-base.table.tr class="intro-x">
+							<x-base.table.td
+                                    class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    <div class="flex">
+                                        <div class="whitespace-nowrap font-medium">  {{ $loop->iteration }}</div>
+                                    </div>
+                                </x-base.table.td>
                                 <x-base.table.td
                                     class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="flex">
@@ -74,16 +83,16 @@
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->purchaseParty->party_name ?? '-' }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->vendor->name ?? '-' }}</div>
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->bill_date?->format('d/m/Y') ?? '-' }}</div>
                                 </x-base.table.td>
-                                <x-base.table.td
+                               <!-- <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->delivery_date?->format('d/m/Y') ?? '-' }}</div>
-                                </x-base.table.td>
+                                </x-base.table.td> -->
                                 <x-base.table.td
                                     class="border-b-0 bg-white text-right shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">₹{{ number_format($purchase->total_invoice_amount, 2) }}</div>

@@ -22,7 +22,7 @@
                     >
                         <img
                             class="w-6"
-                            src="{{ Vite::asset('resources/images/logo.svg') }}"
+                            src="{{ Vite::asset('resources/images/tanvi.svg') }}"
                             alt="Midone Tailwind HTML Admin Template"
                         />
                         <span class="ml-3 text-lg text-white"> Enigma </span>
@@ -53,18 +53,29 @@
                         <div class="intro-x mt-2 text-center text-slate-400 xl:hidden">
                             Smart ERP for Smarter Jewellery Manufacturing.
                         </div>
-                        <div class="intro-x mt-8">
+                        <form method="POST" action="{{ route('login') }}" class="intro-x mt-8" id="loginForm">
+                            @csrf
                             <x-base.form-input
-                                class="intro-x block min-w-full px-4 py-3 xl:min-w-[350px]"
+                                class="intro-x block min-w-full px-4 py-3 xl:min-w-[350px] @error('email') border-red-500 @enderror"
                                 type="text"
+                                name="email"
+                                value="{{ old('email') }}"
                                 placeholder="Email"
                             />
+                            @error('email')
+                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                            
                             <x-base.form-input
-                                class="intro-x mt-4 block min-w-full px-4 py-3 xl:min-w-[350px]"
+                                class="intro-x mt-4 block min-w-full px-4 py-3 xl:min-w-[350px] @error('password') border-red-500 @enderror"
                                 type="password"
+                                name="password"
                                 placeholder="Password"
                             />
-                        </div>
+                            @error('password')
+                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </form>
                         <div class="intro-x mt-4 flex text-xs text-slate-600 dark:text-slate-500 sm:text-sm">
                             <div class="mr-auto flex items-center">
                                 <x-base.form-check.input
@@ -85,6 +96,8 @@
                             <x-base.button
                                 class="w-full px-4 py-3 align-top xl:mr-3 xl:w-32"
                                 variant="primary"
+                                type="submit"
+
                             >
                                 Login
                             </x-base.button>

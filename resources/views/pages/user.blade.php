@@ -1,7 +1,7 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Users - Midone - Tailwind HTML Admin Template</title>
+    <title>Users - Tanvi Eternals</title>
 @endsection
 
 @section('subcontent')
@@ -13,7 +13,7 @@
                     Add New User
                 </x-base.button>
             </a>
-            <x-base.menu>
+            {{-- <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
                         <x-base.lucide class="h-4 w-4" icon="Plus" />
@@ -30,7 +30,7 @@
                         <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
-            </x-base.menu>
+            </x-base.menu> --}}
             <div class="mx-auto hidden text-slate-500 md:block">
                 @isset($users)
                     Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} entries

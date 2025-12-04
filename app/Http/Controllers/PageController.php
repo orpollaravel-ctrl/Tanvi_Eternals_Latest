@@ -3,6 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use App\Models\Department;
+use App\Models\ToolAssign;
+use App\Models\Bullion;
+use App\Models\BullionRateFix;
+use App\Models\DealerRateFix;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PageController extends Controller
 {
@@ -11,16 +18,113 @@ class PageController extends Controller
      *
      */
     public function dashboardOverview1(): View
-    {
-        return view('pages/dashboard-overview-1', [
-            // Specify the base layout.
-            // Eg: 'side-menu', 'simple-menu', 'top-menu', 'login'
-            // The default value is 'side-menu'
+{
+    $today = now()->format('Y-m-d');
 
-            // 'layout' => 'side-menu'
-        ]);
+    $departments = Department::all();
+    $summary = [];
+
+    foreach ($departments as $dept) {
+        
+        // --- TODAY TOTAL ---
+        $todayTotal = ToolAssign::where('d_id', $dept->id)
+            ->whereDate('date', $today)
+            ->with('items.product.purchaseItems')
+            ->get()
+            ->sum(function ($assign) {
+                return $assign->items->sum(function ($item) {
+                    $product = $item->product;
+                    if (!$product) return 0;
+
+                    $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
+
+                    return $item->quantity * $avgRate;
+                });
+            });
+
+        // --- TOTAL AMOUNT ---
+        $monthTotal = ToolAssign::where('d_id', $dept->id)
+            ->with('items.product.purchaseItems')
+            ->get()
+            ->sum(function ($assign) {
+                return $assign->items->sum(function ($item) {
+                    $product = $item->product;
+                    if (!$product) return 0;
+
+                    $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
+
+                    return $item->quantity * $avgRate;
+                });
+            });
+
+        $summary[] = [
+            'department_name' => $dept->name,
+            'today_amount'    => $todayTotal,
+            'month_amount'    => $monthTotal,
+        ];
     }
 
+    return view('dashboard/dashboard-overview-1', [
+        'summary' => $summary,
+        'departments' => $departments
+    ]);
+}
+
+	
+	public function Bulliondashboard(): View
+    {
+        $drf = DealerRateFix::query()->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
+            ->select(DB::raw('(dealer_rate_fixes.quantity*0.95) - sum(IFNULL(deals.quantity,0)) as pending,((dealer_rate_fixes.quantity*0.95) - sum(IFNULL(deals.quantity,0)))*0.10*dealer_rate_fixes.rate as pending_amt'))
+            ->havingRaw('pending > 0')
+            ->groupby('dealer_rate_fixes.id')
+            ->get();
+        // $brf=DB::table('bullion_rate_fixes')
+        // $brf_deals = DB::table('deals')->select('bullion_rate_fix_id', DB::raw('sum(IFNULL(quantity,0)) as qty'))->groupBy('bullion_rate_fix_id');
+        // $brf = DB::table('bullion_rate_fixes')->select(DB::raw('SUM(bullion_rate_fixes.quantity-qty) as pending,SUM((bullion_rate_fixes.quantity-qty)*bullion_rate_fixes.rate) as amt'))
+        //     ->joinSub($brf_deals, 'deals', function ($join) {
+        //         $join->on('bullion_rate_fixes.id', '=', 'deals.bullion_rate_fix_id');                
+        //     })->get();
+
+        $brf = BullionRateFix::query()->leftJoin('deals', 'bullion_rate_fixes.id', 'deals.bullion_rate_fix_id')
+            ->select(DB::raw('bullion_rate_fixes.quantity - sum(IFNULL(deals.quantity,0)) as pending,(bullion_rate_fixes.quantity - sum(IFNULL(deals.quantity,0)))*0.10*bullion_rate_fixes.rate as pending_amt'))
+            ->havingRaw('pending > 0')
+            ->groupby('bullion_rate_fixes.id')
+            ->get();
+        $bullions = Bullion::withSum('bullionRateFixes as brf_quantity', 'quantity')
+            ->addSelect(['pending_amount' => function ($query) {
+                $query->select(DB::raw('SUM(transactions.quantity*0.10*bullion_rate_fixes.rate)-IFNULL((select sum(IFNULL(amount,0)) from payment_transaction where transaction_id=transactions.id GROUP BY transaction_id),0)'))
+                    ->from('transactions')
+                    ->leftJoin('bullion_rate_fixes', 'bullion_rate_fixes.id', 'transactions.bullion_rate_fix_id')
+                    ->whereColumn('bullion_rate_fixes.bullion_id', 'bullions.id')
+                    ->groupBy('transactions.id',)
+                    ->limit(1);
+            }])
+            ->get();
+        $bullions->loadSum('bullionRateFixes as brf_amount', 'amount');
+        $bullions->loadSum('receipts as mr_quantity', 'quantity');
+        $bullions->loadSum('payments as payment_amount', 'amount');
+		
+		 $dealerQty  = $drf->sum('pending');
+        $dealerAmt  = $drf->sum('pending_amt');
+
+        $dealerAvrg = $drf->count() > 0 ? $dealerAmt / $dealerQty : 0;
+
+        $bullionQty = $brf->sum('pending');
+        $bullionAmt = $brf->sum('pending_amt');
+        $bullionAvrg = $brf->count() > 0 ? $bullionAmt / $bullionQty : 0;
+
+        return view('dashboard/bullion', [
+            'bullions' => $bullions,
+            'brf' => $brf,
+            'drf' => $drf,
+			'dealerQty' => $dealerQty,
+            'dealerAmt' => $dealerAmt,
+            'bullionQty' => $bullionQty,
+            'bullionAmt' => $bullionAmt,
+            'dealerAvrg' => $dealerAvrg,
+            'bullionAvrg' => $bullionAvrg,
+        ]);
+    }
     /**
      * Show specified view.
      *

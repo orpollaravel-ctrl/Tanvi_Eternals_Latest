@@ -68,7 +68,7 @@
                             <x-base.form-input type="number" step="0.001" class="text-right" name="weight" value="{{ old('weight') }}" placeholder="0.000" />
                         </div>
                         <div class="mt-3">
-                            <x-base.form-label>Client Rate Cut*</x-base.form-label>
+                            <x-base.form-label>Client Rate Cut (Per 10 gram)*</x-base.form-label>
                             <x-base.form-input type="number" step="0.01" class="text-right" name="rate" value="{{ old('rate') }}" placeholder="0.00" />
                         </div>
                         <div class="mt-3">

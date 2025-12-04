@@ -1,4 +1,4 @@
-<!-- BEGIN: Main Color Switcher -->
+<!-- BEGIN: Main Color Switcher 
 <div
     class="fixed bottom-0 right-0 z-50 flex items-center justify-center h-12 px-5 mb-10 border rounded-full shadow-md box mr-52">
     <div class="hidden mr-4 text-slate-600 dark:text-slate-200 sm:block">

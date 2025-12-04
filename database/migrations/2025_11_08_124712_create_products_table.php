@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('product_name');
             $table->string('barcode_number')->unique()->nullable();
             $table->string('tool_code')->unique()->nullable();
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('product_company')->nullable();
             $table->string('hsn_code')->nullable();
             $table->decimal('minimum_rate', 15, 2)->nullable();

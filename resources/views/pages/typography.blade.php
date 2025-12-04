@@ -114,8 +114,7 @@
             <!-- END: Heading -->
             <!-- BEGIN: Text Settings -->
             <x-base.preview-component class="intro-y box mt-5">
-                <div
-                    class="flex flex-col items-center border-b border-slate-200/60 p-5 dark:border-darkmode-400 sm:flex-row">
+                <div class="flex flex-col items-center border-b border-slate-200/60 p-5 dark:border-darkmode-400 sm:flex-row">
                     <h2 class="mr-auto text-base font-medium">
                         Text Settings
                     </h2>
@@ -126,8 +125,7 @@
                         <x-base.form-switch.input
                             class="ml-3 mr-0"
                             id="show-example-2"
-                            type="checkbox"
-                        />
+                            type="checkbox" />
                     </x-base.form-switch>
                 </div>
                 <div class="p-5">

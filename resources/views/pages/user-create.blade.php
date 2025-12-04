@@ -1,7 +1,7 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Create User - Midone - Tailwind HTML Admin Template</title>
+    <title>Create Users - Tanvi Eternals</title>
 @endsection
 
 @section('subcontent')
@@ -76,6 +76,54 @@
                             id="active"
                             name="active"
                             class="mt-2" >
+                    </div>
+                        <div class="mt-3">
+                        <x-base.form-label>Permissions</x-base.form-label>
+
+                        <table class="table border mt-2">
+                            <thead>
+                                <tr>
+                                    <th style="width: 180px;">Name</th>
+                                    <th>Permissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach($permissions as $group => $items)
+                                    <tr>
+                                        <!-- GROUP NAME -->
+                                        <td class="font-medium">
+                                            {{ ucfirst($group) }}
+                                        </td>
+
+                                        <!-- PERMISSIONS -->
+                                        <td>
+                                            <div class="grid grid-cols-3 gap-y-2">
+
+                                                @foreach($items as $permission)
+                                                    <label class="flex items-center space-x-2">
+                                                        <input 
+                                                            type="checkbox"
+                                                            name="permissions[]"
+                                                            value="{{ $permission->id }}"
+                                                            class="form-check-input"
+                                                            {{ !empty(old('permissions')) && in_array($permission->id, old('permissions')) ? 'checked' : '' }}
+                                                        >
+                                                        <span>{{ $permission->label }}</span>
+                                                    </label>
+                                                @endforeach
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+
+                        @error('permissions')
+                            <span class="text-danger"><strong>{{ $message }}</strong></span>
+                        @enderror
                     </div>
                     <div class="mt-5 flex items-center">
                         <a href="{{ route('users') }}" class="mr-3">

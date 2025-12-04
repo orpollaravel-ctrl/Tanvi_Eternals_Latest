@@ -39,7 +39,7 @@
 
                     <!-- Buttons -->
                     <div class="mt-5 flex items-center">
-                        <a href="{{ route('client-rate-fix') }}" class="mr-3">
+                        <a href="{{ route('client.index') }}" class="mr-3">
                             <x-base.button type="button" variant="outline-secondary">Cancel</x-base.button>
                         </a>
                         <x-base.button type="submit" variant="primary">Save</x-base.button>

@@ -1,7 +1,7 @@
 @extends('../layouts/' . $layout)
 
 @section('head')
-    <title>Login - Enigma - Tailwind HTML Admin Template</title>
+    <title>Login - Tanvi</title>
 @endsection
 
 @section('content')
@@ -20,15 +20,15 @@
                     >
                         <img
                             class="w-6"
-                            src="{{ Vite::asset('resources/images/logo.svg') }}"s
-                            alt="Midone Tailwind HTML Admin Template"
+                            src="{{ Vite::asset('resources/images/smart.svg') }}"s
+                            alt="Tanvi Eterenals"
                         />
-                        <span class="ml-3 text-lg text-white"> Enigma </span>
+                        <span class="ml-3 text-lg text-white"> Tanvi </span>
                     </a> --}}
                     <div class="my-auto">
-                        {{-- <img
+                        <img
                             class="-intro-x -mt-16 w-1/2" width="150"
-                            src="{{ Vite::asset('resources/images/Login.png') }}"/>                         --}}
+                            src="{{ Vite::asset('resources/images/smart.svg') }}"/>                        
                         <div class="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
                             Smart ERP for Smarter <br />
                             Jewellery Manufacturing.
@@ -43,9 +43,12 @@
                 <div class="my-10 flex h-screen py-5 xl:my-0 xl:h-auto xl:py-0">
                     <div
                         class="mx-auto my-auto w-full rounded-md bg-white text-center border p-8 shadow-xl sm:w-3/4 lg:w-2/4 xl:ml-20 xl:w-auto">
-                        {{-- <img
-                            class="-intro-x -mt-16 w-1/2"
-                            src="{{ Vite::asset('resources/images/tanvi.svg') }}"/>    --}}
+                        <div class="flex items-center justify-center bg-gray-50">
+                            <div class="w-full max-w-md">
+                                <img class="mx-auto w-1/2" src="{{ Vite::asset('resources/images/logo.svg') }}" alt="Sign In">
+                                ...
+                            </div>
+                        </div>
                         <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl">
                             Sign In
                         </h2>
@@ -55,7 +58,7 @@
                         <div class="intro-x mt-8">
                             <form id="login-form">
                                 <x-base.form-input class="intro-x login__input block min-w-full px-4 py-3 xl:min-w-[350px]"
-                                    id="email" type="text" value="midone@left4code.com" placeholder="Email" />
+                                    id="email" type="text" value="Tanvi@left4code.com" placeholder="Email" />
                                 <div class="login__input-error mt-2 text-danger" id="error-email"></div>
                                 <x-base.form-input
                                     class="intro-x login__input mt-4 block min-w-full px-4 py-3 xl:min-w-[350px]"
@@ -105,3 +108,5 @@
         @vite('resources/js/pages/login/index.js')
     @endpush
 @endonce
+
+

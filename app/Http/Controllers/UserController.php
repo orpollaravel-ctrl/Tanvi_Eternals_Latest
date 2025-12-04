@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\User;
+use App\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -26,8 +27,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        $permissions = Permission::all()->groupBy('group');
         return view('pages/user-create', [
-            'layout' => 'side-menu'
+            'layout' => 'side-menu',
+            'permissions' => $permissions,
         ]);
     }
 
@@ -43,6 +46,8 @@ class UserController extends Controller
             'gender' => ['required', 'in:male,female,other'],
             'contact_number' => ['required', 'string', 'max:50'],
             'active' => ['nullable', 'boolean'],
+             'permissions' => ['required', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ]);
 
         $user = User::create([
@@ -71,9 +76,11 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
+        $permissions = Permission::all();
         return view('pages/user-edit', [
             'layout' => 'side-menu',
             'user' => $user,
+            'permissions' => $permissions,
         ]);
     }
 
@@ -91,6 +98,8 @@ class UserController extends Controller
             'contact_number' => ['required', 'string', 'max:50'],
             'password' => ['nullable', 'confirmed', 'min:8'],
             'active' => ['nullable', 'boolean'],
+            'permissions' => ['required', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ]);
 
         $user->name = $validated['name'];
@@ -109,7 +118,9 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('users')->with('success', 'User updated successfully.');
+        $user->permissions()->sync($validated['permissions']);
+
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }
 
     /**

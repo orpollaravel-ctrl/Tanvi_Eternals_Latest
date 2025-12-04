@@ -41,8 +41,12 @@
                             <x-base.form-input
                                 type="text"
                                 name="barcode_number"
-                                value="{{ old('barcode_number') }}"
+                                value="{{ $barcode }}"
                                 placeholder="Enter barcode"
+								minlength="8"
+								maxlength="12"
+								pattern="\d{8,}"
+								readonly
                             />
                         </div>
 
@@ -52,12 +56,22 @@
                             <x-base.form-input
                                 type="text"
                                 name="tool_code"
-                                value="{{ old('tool_code') }}"
-                                placeholder="Enter tool code"
+                                 value="{{ old('tool_code', $nextToolCode) }}"
+                                placeholder="Enter tool code" readonly
                             />
                         </div>
+						
+						<!-- Product Type -->
+						<div class="col-span-12 sm:col-span-6">
+							<x-base.form-label>Product Type</x-base.form-label>
+							<x-base.form-select name="product_type">
+								<option value="">Select Product Type</option>
+								<option value="consumable" {{ old('product_type') == 'consumable' ? 'selected' : '' }}>Consumable</option>
+								<option value="repairable" {{ old('product_type') == 'repairable' ? 'selected' : '' }}>Repairable</option>
+							</x-base.form-select>
+						</div>
 
-                        <!-- Category -->
+                        <!-- Category
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Category *</x-base.form-label>
                             <x-base.form-select name="category_id" required>
@@ -68,7 +82,7 @@
                                     </option>
                                 @endforeach
                             </x-base.form-select>
-                        </div>
+                        </div> -->
 
                         <!-- Product Company -->
                         {{-- <div class="col-span-12 sm:col-span-6">
@@ -127,7 +141,7 @@
                             />
                         </div>
 
-                        <!-- Reorder Quantity -->
+                        <!-- Reorder Quantity 
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Reorder Quantity</x-base.form-label>
                             <x-base.form-input
@@ -136,7 +150,7 @@
                                 value="{{ old('reorder_quantity', 0) }}"
                                 placeholder="0"
                             />
-                        </div>
+                        </div>-->
 
                         <!-- Unit Type -->
                         <div class="col-span-12 sm:col-span-6">
@@ -151,14 +165,12 @@
                             </x-base.form-select>
                         </div>
 
-                        <!-- Product Photo -->
-                        <div class="col-span-12">
+                        <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Product Photo</x-base.form-label>
                             <x-base.form-file-input
                                 name="product_photo"
                                 type="file"
-                                accept="image/*"
-                            />
+                                accept="image/*" />
                             <p class="text-xs text-slate-500 mt-2">Max file size: 2MB. Supported: JPEG, PNG, JPG, GIF</p>
                         </div>
                     </div>

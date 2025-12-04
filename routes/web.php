@@ -16,7 +16,20 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchasePartyController;
 use App\Http\Controllers\VendorController;
-
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ToolAssignController;
+use App\Http\Controllers\InventoryCalculationController;
+use App\Http\Controllers\OpeningStockController;
+use App\Http\Controllers\BullionController;
+use App\Http\Controllers\BullionRateFixController;
+use App\Http\Controllers\DealerController;
+use App\Http\Controllers\DealerRateFixController;
+use App\Http\Controllers\NewPaymentController;
+use App\Http\Controllers\PaymentModeController;
+use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,7 +50,31 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+	
+	/*Route::get('/run-npm', function () {
+		if (request()->get('key') !== 'my-secret-key-123') {
+			abort(403, 'Unauthorized');
+		}
+
+		$output = shell_exec('npm run dev 2>&1');  
+		return "<pre>$output</pre>";
+	});
+	Route::get('/run-storage-link', function () {
+		if (request()->get('key') !== 'my-secret-key-123') {
+			abort(403, 'Unauthorized');
+		}
+
+		try {
+			Artisan::call('storage:link');
+			return "<pre>" . Artisan::output() . "</pre>";
+		} catch (\Exception $e) {
+			return "<pre>Error: " . $e->getMessage() . "</pre>";
+		}
+	});*/
+
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+	Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+	Route::get('/bullion-dashboard', [PageController::class, 'Bulliondashboard'])->name('bullion.dashboard');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard-overview-1');
         Route::get('dashboard-overview-2-page', 'dashboardOverview2')->name('dashboard-overview-2');
@@ -162,14 +199,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('client-rate-cut-pending/{id}', 'destroy')->name('client-rate-cut-pending.delete');
     });
 
-    Route::controller(PaymentController::class)->group(function () {
+    /*Route::controller(PaymentController::class)->group(function () {
         Route::get('payment', 'index')->name('payment');
         Route::get('payment/create', 'create')->name('payment.create');
         Route::post('payment', 'store')->name('payment.store');
         Route::get('payment/{id}/edit', 'edit')->name('payment.edit');
         Route::put('payment/{id}', 'update')->name('payment.update');
         Route::delete('payment/{id}', 'destroy')->name('payment.delete');
-    });
+    });*/
 
     Route::resource('client',ClientController::class);
     Route::resource('vendor',VendorController::class);
@@ -177,12 +214,15 @@ Route::middleware('auth')->group(function () {
     // Products CRUD
     Route::controller(ProductController::class)->group(function () {
         Route::get('products', 'index')->name('products.index');
+		Route::get('products/search', 'search')->name('products.search');
+        Route::get('products/print', 'printView')->name('products.print');
+        Route::get('products/export/excel', 'exportExcel')->name('products.export.excel');
         Route::get('products/create', 'create')->name('products.create');
         Route::post('products', 'store')->name('products.store');
         Route::get('products/{id}', 'show')->name('products.show');
         Route::get('products/{id}/edit', 'edit')->name('products.edit');
         Route::put('products/{id}', 'update')->name('products.update');
-        Route::delete('products/{id}', 'destroy')->name('products.delete');
+        Route::delete('products/{id}', 'destroy')->name('products.delete'); 
     });
 
     // Purchase Parties CRUD
@@ -204,4 +244,58 @@ Route::middleware('auth')->group(function () {
         Route::put('purchases/{id}', 'update')->name('purchases.update');
         Route::delete('purchases/{id}', 'destroy')->name('purchases.delete');
     });
+	
+	// Departments CRUD
+    Route::resource('departments', DepartmentController::class);
+	// Employees CRUD
+    Route::resource('employees', EmployeeController::class);
+	Route::post('employees/{id}/toggle-active', [EmployeeController::class, 'toggleActive'])->name('employees.toggle-active');
+    Route::resource('tool-assigns', ToolAssignController::class);
+	
+	 // Tool Assign Reports
+    Route::get('tool-assigns/reports/purchase-report', [ToolAssignController::class, 'purchaseReport'])->name('tool-assigns.purchase-report');
+    Route::get('tool-assigns/reports/product-report', [ToolAssignController::class, 'productReport'])->name('tool-assigns.product-report');
+    Route::get('tool-assigns/reports/department-wise-report', [ToolAssignController::class, 'departmentWiseReport'])->name('tool-assigns.department-wise-report');
+    Route::get('tool-assigns/reports/employee-wise-report', [ToolAssignController::class, 'employeeWiseReport'])->name('tool-assigns.employee-wise-report');
+	
+	 // Inventory Calculation
+    Route::controller(InventoryCalculationController::class)->group(function () {
+        Route::get('inventory-calculation', 'index')->name('inventory-calculation.index');
+        Route::get('inventory-calculation/print', 'printView')->name('inventory-calculation.print');
+        Route::get('inventory-calculation/export/excel', 'exportExcel')->name('inventory-calculation.export.excel');
+        Route::get('inventory-calculation/{product}/purchase-history', 'purchaseHistory')->name('inventory-calculation.purchase-history');
+        Route::get('inventory-calculation/{product}/assign-history', 'assignHistory')->name('inventory-calculation.assign-history');
+    });
+	
+	 // Opening Stock CRUD
+    Route::resource('opening-stock', OpeningStockController::class);
+	Route::prefix('report')->group(function () {
+        Route::get('booking-comparision', [ReportController::class, 'booking_comparision'])->name('booking_comparision');
+        Route::get('pending-deals', [ReportController::class, 'pending_deals'])->name('pending_deals');
+        Route::get('bullion-pending-deals', [ReportController::class, 'bullion_pending_deals'])->name('bullion_pending_deals');
+        Route::get('bullion-ledger', [ReportController::class, 'bullion_ledger'])->name('bullion_ledger');
+    });
+});
+Route::prefix('transaction')->group(function () {
+    Route::get('manual-deal', [BullionRateFixController::class, 'manual_deal_create'])->name('manual_deal');
+    Route::post('manual-deal', [BullionRateFixController::class, 'manual_deal_store'])->name('manual_deal');
+    Route::resources([
+        'receipts' => ReceiptController::class,
+        'brfs' => BullionRateFixController::class,
+        'drfs' => DealerRateFixController::class,
+        'payments' => PaymentController::class,
+    ]);
+});
+Route::prefix('master')->group(function () {
+	// Add import route for dealers
+	Route::post('dealers/import', [DealerController::class, 'importExcel'])->name('dealers.import');
+
+	Route::resources([
+		'dealers' => DealerController::class,
+		'bullions' => BullionController::class,
+		'users' => UserController::class,
+		'paymentmodes' => PaymentModeController::class
+	]);
+	// Route::middleware(['auth', 'isAdmin'])->group(function () {
+	// });
 });

@@ -20,7 +20,7 @@ class MenuComposer
             $activeMenu = $this->activeMenu($pageName, $layout);
 
             $view->with('topMenu', TopMenu::menu());
-            $view->with('sideMenu', SideMenu::menu());
+            $view->with('sideMenu', SideMenu::filteredMenu());
             $view->with('simpleMenu', SimpleMenu::menu());
             $view->with('firstLevelActiveIndex', $activeMenu['first_level_active_index']);
             $view->with('secondLevelActiveIndex', $activeMenu['second_level_active_index']);

@@ -1,7 +1,7 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Edit User - Midone - Tailwind HTML Admin Template</title>
+    <title>Edit Users - Tanvi Eternals</title>
 @endsection
 
 @section('subcontent')
@@ -80,13 +80,62 @@
                     </div>                    
                     <div class="mt-3">
                         <x-base.form-label>Active Status</x-base.form-label>
-                        <input
-                            type="checkbox"
-                            id="active"
-                            name="active"
-                            value="1"
-                            class="mt-2" {{ old('active', $user->active) ? 'checked' : '' }}>
-                    </div>                    
+                        <div class="mt-2">
+                            <label class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="active"
+                                    name="active"
+                                    value="1"
+                                    {{ old('active', $user->active) ? 'checked' : '' }}>
+                                <span class="ml-2">User is active</span>
+                            </label>
+                        </div>
+                    </div>  
+                    <div class="mt-3">
+                        <x-base.form-label>Permissions</x-base.form-label>
+
+                        <table class="table border mt-2" style="text-align: center;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 180px;">Name</th>
+                                    <th>Permissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                              @foreach($permissions->groupBy('group') as $group => $items)
+                                <tr class="border-b border-gray-300" style="border: 1px solid black;"> <!-- Add this -->
+                                    <td class="font-medium">
+                                        {{ ucfirst($group) }}
+                                    </td>
+                                    <td>
+                                        <div class="grid grid-cols-3 gap-y-2">
+                                            @foreach($items as $permission)
+                                                <label class="flex items-center space-x-2">
+                                                    <input 
+                                                        type="checkbox"
+                                                        name="permissions[]"
+                                                        value="{{ $permission->id }}"
+                                                        class="form-check-input"
+                                                        {{ in_array($permission->id, old('permissions', $user->permissions->pluck('id')->toArray())) ? 'checked' : '' }}
+                                                    >
+                                                    <span>{{ $permission->label }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+
+                            </tbody>
+                        </table>
+
+                        @error('permissions')
+                            <span class="text-danger"><strong>{{ $message }}</strong></span>
+                        @enderror
+                    </div>                  
                     <div class="mt-5 flex items-center">
                         <a href="{{ route('users') }}" class="mr-3">
                             <x-base.button type="button" variant="outline-secondary">Cancel</x-base.button>

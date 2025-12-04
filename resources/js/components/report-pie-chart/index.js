@@ -1,9 +1,11 @@
 (function () {
     "use strict";
 
-    // Chart
-    if ($("#report-pie-chart").length) {
-        let ctx = $("#report-pie-chart")[0].getContext("2d");
+    // -----------------------------
+    // Weekly Top Seller Pie Chart
+    // -----------------------------
+    if ($("#weekly-top-seller-chart").length) {
+        let ctx = $("#weekly-top-seller-chart")[0].getContext("2d");
         let myPieChart = new Chart(ctx, {
             type: "pie",
             data: {
@@ -42,4 +44,6 @@
             },
         });
     }
+
+
 })();

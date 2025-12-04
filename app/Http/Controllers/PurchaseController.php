@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
-use App\Models\PurchaseParty;
+use App\Models\Vendor;
 use App\Models\PurchaseItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,7 +15,7 @@ class PurchaseController extends Controller
      */
     public function index(): View
     {
-        $purchases = Purchase::with('purchaseParty')->latest()->paginate(10);
+        $purchases = Purchase::with('vendor')->latest()->paginate(10);
         return view('pages/purchase', [
             'layout' => 'side-menu',
             'purchases' => $purchases,
@@ -27,10 +27,12 @@ class PurchaseController extends Controller
      */
     public function create(): View
     {
-        $purchaseParties = PurchaseParty::all();
+        $vendors = Vendor::all();
+        $products = \App\Models\Product::all();
         return view('pages/purchase-create', [
             'layout' => 'side-menu',
-            'purchaseParties' => $purchaseParties,
+            'vendors' => $vendors,
+            'products' => $products,
         ]);
     }
 
@@ -40,10 +42,10 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'purchase_party_id' => ['required', 'exists:purchase_parties,id'],
+            'vendor_id' => ['required', 'exists:vendors,id'],
             'bill_date' => ['required', 'date'],
             'bill_number' => ['required', 'string', 'max:100', 'unique:purchases,bill_number'],
-            'delivery_date' => ['required', 'date'],
+            'delivery_date' => ['nullable', 'date'],
             'total_invoice_amount' => ['required', 'numeric', 'min:0'],
             'bill_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'items' => ['required', 'array', 'min:1'],
@@ -53,13 +55,16 @@ class PurchaseController extends Controller
             'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'items.*.rate' => ['required', 'numeric', 'min:0'],
             'items.*.amount' => ['required', 'numeric', 'min:0'],
+			 'items.*.gst_percentage' => ['nullable', 'numeric', 'in:0,3,5,12,18,28'],
+            'items.*.gst_value' => ['nullable', 'numeric', 'min:0'],
+            'items.*.final_amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $purchase = Purchase::create([
-            'purchase_party_id' => $validated['purchase_party_id'],
+            'vendor_id' => $validated['vendor_id'],
             'bill_date' => $validated['bill_date'],
             'bill_number' => $validated['bill_number'],
-            'delivery_date' => $validated['delivery_date'],
+            'delivery_date' => $validated['delivery_date'] ?? null,
             'total_invoice_amount' => $validated['total_invoice_amount'],
         ]);
 
@@ -81,6 +86,9 @@ class PurchaseController extends Controller
                 'quantity' => $item['quantity'],
                 'rate' => $item['rate'],
                 'amount' => $item['amount'],
+				   'gst_percentage' => $item['gst_percentage'] ?? null,
+                'gst_value' => $item['gst_value'] ?? null,
+                'final_amount' => $item['final_amount'] ?? null,
             ]);
         }
 
@@ -90,14 +98,16 @@ class PurchaseController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+   public function edit(string $id): View
     {
         $purchase = Purchase::with('items')->findOrFail($id);
-        $purchaseParties = PurchaseParty::all();
+        $vendors = Vendor::all();
+        $products = \App\Models\Product::all();
         return view('pages/purchase-edit', [
             'layout' => 'side-menu',
             'purchase' => $purchase,
-            'purchaseParties' => $purchaseParties,
+            'vendors' => $vendors,
+            'products' => $products,
         ]);
     }
 
@@ -109,10 +119,10 @@ class PurchaseController extends Controller
         $purchase = Purchase::with('items')->findOrFail($id);
 
         $validated = $request->validate([
-            'purchase_party_id' => ['required', 'exists:purchase_parties,id'],
+            'vendor_id' => ['required', 'exists:vendors,id'],
             'bill_date' => ['required', 'date'],
             'bill_number' => ['required', 'string', 'max:100', 'unique:purchases,bill_number,' . $purchase->id],
-            'delivery_date' => ['required', 'date'],
+            'delivery_date' => ['nullable', 'date'],
             'total_invoice_amount' => ['required', 'numeric', 'min:0'],
             'bill_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'items' => ['required', 'array', 'min:1'],
@@ -122,13 +132,16 @@ class PurchaseController extends Controller
             'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'items.*.rate' => ['required', 'numeric', 'min:0'],
             'items.*.amount' => ['required', 'numeric', 'min:0'],
+			'items.*.gst_percentage' => ['nullable', 'numeric', 'in:0,3,5,12,18,28'],
+            'items.*.gst_value' => ['nullable', 'numeric', 'min:0'],
+            'items.*.final_amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $purchase->update([
-            'purchase_party_id' => $validated['purchase_party_id'],
+            'vendor_id' => $validated['vendor_id'],
             'bill_date' => $validated['bill_date'],
             'bill_number' => $validated['bill_number'],
-            'delivery_date' => $validated['delivery_date'],
+            'delivery_date' => $validated['delivery_date'] ?? null,
             'total_invoice_amount' => $validated['total_invoice_amount'],
         ]);
 
@@ -151,6 +164,9 @@ class PurchaseController extends Controller
                 'quantity' => $item['quantity'],
                 'rate' => $item['rate'],
                 'amount' => $item['amount'],
+				'gst_percentage' => $item['gst_percentage'] ?? null,
+                'gst_value' => $item['gst_value'] ?? null,
+                'final_amount' => $item['final_amount'] ?? null,
             ]);
         }
 
@@ -162,9 +178,17 @@ class PurchaseController extends Controller
      */
     public function destroy(string $id)
     {
-        $purchase = Purchase::findOrFail($id);
-        $purchase->delete();
+        try {
+            $purchase = Purchase::findOrFail($id);
 
-        return redirect()->route('purchases.index')->with('success', 'Purchase deleted successfully.');
+            // Delete associated purchase items first
+            $purchase->items()->delete();
+
+            $purchase->delete();
+
+            return redirect()->route('purchases.index')->with('success', 'Purchase and associated items deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('purchases.index')->with('error', 'Unable to delete purchase. It may be referenced by other records.');
+        }
     }
 }

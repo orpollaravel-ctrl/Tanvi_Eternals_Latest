@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
-
+        
+        // Register view composer for menu
+        view()->composer('*', \App\View\Composers\MenuComposer::class);
     }
 }

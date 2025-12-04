@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\DepartmentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,3 +19,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/products/search', [ProductController::class, 'search']);
+// Employee search API for tool assign forms
+Route::get('/employees/search', [EmployeeController::class, 'search']);
+Route::get('/departments/search', [DepartmentController::class, 'search']);
+
+Route::put('/opening-stock/{productId}', [App\Http\Controllers\OpeningStockController::class, 'updateAjax']);

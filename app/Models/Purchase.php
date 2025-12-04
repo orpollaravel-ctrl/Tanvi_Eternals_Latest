@@ -12,7 +12,7 @@ class Purchase extends Model
     use HasFactory;
 
     protected $fillable = [
-        'purchase_party_id',
+        'vendor_id',
         'bill_date',
         'bill_number',
         'delivery_date',
@@ -27,11 +27,11 @@ class Purchase extends Model
     ];
 
     /**
-     * Get the purchase party
+     * Get the vendor
      */
-    public function purchaseParty(): BelongsTo
+    public function vendor(): BelongsTo
     {
-        return $this->belongsTo(PurchaseParty::class);
+        return $this->belongsTo(Vendor::class);
     }
 
     /**

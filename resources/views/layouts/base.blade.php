@@ -17,7 +17,7 @@ License: You must have a valid license purchased only from themeforest(the above
 <head>
     <meta charset="utf-8">
     <link
-        href="{{ Vite::asset('resources/images/logo.svg') }}"
+        href="{{ Vite::asset('resources/images/tanvi.svg') }}"
         rel="shortcut icon"
     >
     <meta

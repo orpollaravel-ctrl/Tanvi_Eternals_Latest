@@ -66,4 +66,14 @@ class User extends Authenticatable
             return url('media-example/no-image.png');
         }
     }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'permission_user');
+    }
+
+    public function hasPermission(string $permissionName): bool
+    {
+        return $this->permissions()->where('name', $permissionName)->exists();
+    }
 }

@@ -27,29 +27,34 @@
                             <div class="mt-2 font-medium">{{ $product->product_name }}</div>
                         </div>
 
-                        <!-- Category -->
+                        <!-- Category 
                         <div class="col-span-12 sm:col-span-6">
                             <div class="text-xs text-slate-500">Category</div>
                             <div class="mt-2 font-medium">{{ $product->category->name ?? '-' }}</div>
-                        </div>
+                        </div>-->
 
                         <!-- Barcode Number -->
                         <div class="col-span-12 sm:col-span-6">
                             <div class="text-xs text-slate-500">Barcode Number</div>
                             <div class="mt-2 font-medium">{{ $product->barcode_number ?? '-' }}</div>
                         </div>
-
+						
+						    <!-- Tool Code -->
+                        <div class="col-span-12 sm:col-span-6">
+                            <div class="text-xs text-slate-500">Product type</div>
+                            <div class="mt-2 font-medium">{{ $product->product_type ?? '-' }}</div>
+                        </div>
                         <!-- Tool Code -->
                         <div class="col-span-12 sm:col-span-6">
                             <div class="text-xs text-slate-500">Tool Code</div>
                             <div class="mt-2 font-medium">{{ $product->tool_code ?? '-' }}</div>
                         </div>
 
-                        <!-- Product Company -->
+                        <!-- Product Company 
                         <div class="col-span-12 sm:col-span-6">
                             <div class="text-xs text-slate-500">Product Company</div>
                             <div class="mt-2 font-medium">{{ $product->product_company ?? '-' }}</div>
-                        </div>
+                        </div>-->
 
                         <!-- HSN Code -->
                         <div class="col-span-12 sm:col-span-6">
@@ -75,11 +80,11 @@
                             <div class="mt-2 font-medium">{{ $product->minimum_quantity }}</div>
                         </div>
 
-                        <!-- Reorder Quantity -->
+                        <!-- Reorder Quantity 
                         <div class="col-span-12 sm:col-span-6">
                             <div class="text-xs text-slate-500">Reorder Quantity</div>
                             <div class="mt-2 font-medium">{{ $product->reorder_quantity }}</div>
-                        </div>
+                        </div>-->
 
                         <!-- Unit Type -->
                         <div class="col-span-12 sm:col-span-6">

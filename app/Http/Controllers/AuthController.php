@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -24,22 +25,31 @@ class AuthController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      */
-    public function login(LoginRequest $request): void
-    {
+    public function login(LoginRequest $request): RedirectResponse
+    { 
         if (!Auth::attempt([
             'email' => $request->email,
-            'password' => $request->password
+            'password' => $request->password,
+            'active' => 1
         ])) {
-            throw new \Exception('Wrong email or password.');
+            return back()->withErrors([
+                'email' => 'Invalid credentials or account is inactive.'
+            ])->withInput();
         }
+        
+        return redirect()->intended('/dashboard');
     }
 
     /**
      * Logout user.
      */
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
-        return redirect('login');
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
 }

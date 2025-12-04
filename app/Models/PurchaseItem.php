@@ -18,6 +18,9 @@ class PurchaseItem extends Model
         'quantity',
         'rate',
         'amount',
+        'gst_percentage',
+        'gst_value',
+        'final_amount',
     ];
 
     protected $casts = [
@@ -25,6 +28,9 @@ class PurchaseItem extends Model
         'quantity' => 'decimal:2',
         'rate' => 'decimal:2',
         'amount' => 'decimal:2',
+        'gst_percentage' => 'decimal:2',
+        'gst_value' => 'decimal:2',
+        'final_amount' => 'decimal:2',
     ];
 
     /**

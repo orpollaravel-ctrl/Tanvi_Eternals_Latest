@@ -1,9 +1,14 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Dashboard - Midone - Tailwind HTML Admin Template</title>
+    <title>Dashboard - Tanvi </title>
 @endsection
-
+<style>
+    #department-summaries{
+        height: 500px;
+        overflow-x: auto;
+    }
+</style>
 @section('subcontent')
     <div class="grid grid-cols-12 gap-6">
         <div class="col-span-12 2xl:col-span-9">
@@ -309,45 +314,38 @@
                     </div>
                 </div>
                 <!-- END: Official Store -->
-                <!-- BEGIN: Weekly Best Sellers -->
-                <div class="col-span-12 mt-6 xl:col-span-4">
+               <!-- BEGIN: Department Summaries -->
+                <div class="col-span-12 mt-6 xl:col-span-4" id="department-summaries">
                     <div class="intro-y flex h-10 items-center">
                         <h2 class="mr-5 truncate text-lg font-medium">
-                            Weekly Best Sellers
+                            Department Summaries
                         </h2>
                     </div>
                     <div class="mt-5">
-                        @foreach (array_slice($fakers, 0, 4) as $faker)
+                        @foreach ($summary as $deptSummary)
                             <div class="intro-y">
                                 <div class="box zoom-in mb-3 flex items-center px-4 py-4">
-                                    <div class="image-fit h-10 w-10 flex-none overflow-hidden rounded-md">
-                                        <img
-                                            src="{{ Vite::asset($faker['photos'][0]) }}"
-                                            alt="Midone Tailwind HTML Admin Template"
-                                        />
-                                    </div>
                                     <div class="ml-4 mr-auto">
-                                        <div class="font-medium">{{ $faker['users'][0]['name'] }}</div>
+                                        <div class="font-medium">{{ $deptSummary['department_name'] }}</div>
                                         <div class="mt-0.5 text-xs text-slate-500">
-                                            {{ $faker['dates'][0] }}
+                                            Today: Rs.{{ number_format($deptSummary['today_amount'], 2) }}
                                         </div>
                                     </div>
                                     <div
                                         class="cursor-pointer rounded-full bg-success px-2 py-1 text-xs font-medium text-white">
-                                        137 Sales
+                                        Rs.{{ number_format($deptSummary['month_amount'], 2) }}
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                         <a
                             class="intro-y block w-full rounded-md border border-dotted border-slate-400 py-4 text-center text-slate-500 dark:border-darkmode-300"
-                            href=""
-                        >
+                            href="">
                             View More
                         </a>
                     </div>
                 </div>
-                <!-- END: Weekly Best Sellers -->
+                <!-- END: Department Summaries -->
                 <!-- BEGIN: General Report -->
                 <div class="col-span-12 mt-8 grid grid-cols-12 gap-6">
                     <div class="intro-y col-span-12 sm:col-span-6 2xl:col-span-3">

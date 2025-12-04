@@ -47,4 +47,18 @@ class Product extends Model
             return url('media-example/no-image.png');
         }
     }
+
+    public function openingStock()
+    {
+        return $this->hasOne(OpeningStock::class);
+    }
+	 public function purchaseItems()
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
+
+    public function toolAssignItems()
+    {
+        return $this->hasMany(ToolAssignItem::class);
+    }
 }

@@ -40,7 +40,7 @@ class PaymentRequest extends FormRequest
             'date' => ['required', 'date'],
             'client_code' => ['required', 'string', 'max:255'],
             'client_name' => ['required', 'string', 'max:255'],
-            'transaction_no' => ['required'],
+            'transaction_no' => ['required','unique:payments,transaction_no'],
             'amount' => ['required', 'numeric', 'min:0'],
             'bank_cash' => ['required', 'string', 'max:255'],
         ];
