@@ -50,7 +50,7 @@
                             <x-base.form-input
                                 type="date"
                                 name="date"
-                                value="{{ old('date') }}"
+                                value="{{ old('date', now()->format('Y-m-d')) }}"
 								required
                             />
                         </div>
@@ -61,83 +61,110 @@
                     <div class="mt-5">
                         <h3 class="text-md font-medium mb-3">Tool Assignments</h3>
                         <div id="rows-container">
-                            <div class="grid grid-cols-12 gap-4 mb-4 row-item">
-                                <!-- Product (Item) -->
-                                <div class="col-span-4">
-                                    <x-base.form-label>Product (Item)</x-base.form-label>
-                                    <select
-                                        class="product-select tom-select w-full"
-                                        name="product_id[]"
-                                        data-placeholder="Search & select product..."
-                                    >
-                                        <option value="">Select product...</option>
-                                    </select>
-                                </div>
+                            @php
+                                $oldProductIds = old('product_id', []);
+                                $oldQuantities = old('add_quantity', []);
+                                $oldEmpIds = old('emp_id', []);
+                                $hasOldData = !empty($oldProductIds) || !empty($oldQuantities) || !empty($oldEmpIds);
+                                $rowCount = $hasOldData ? max(count($oldProductIds), count($oldQuantities), count($oldEmpIds)) : 1;
+                            @endphp
+                            
+                            @for ($i = 0; $i < $rowCount; $i++)
+                                <div class="grid grid-cols-12 gap-4 mb-4 row-item">
+                                    <!-- Product (Item) -->
+                                    <div class="col-span-4">
+                                        <x-base.form-label>Product (Item)</x-base.form-label>
+                                        <select
+                                            class="product-select tom-select w-full"
+                                            name="product_id[]"
+                                            data-placeholder="Search & select product..."
+                                        >
+                                            <option value="">Select product...</option>
+                                            @if($hasOldData && isset($oldProductIds[$i]) && $oldProductIds[$i])
+                                                @php
+                                                    $product = \App\Models\Product::find($oldProductIds[$i]);
+                                                @endphp
+                                                @if($product)
+                                                    <option value="{{ $product->id }}" selected>{{ $product->product_name }}</option>
+                                                @endif
+                                            @endif
+                                        </select>
+                                    </div>
 
-                                <!-- Quantity -->
-                                <div class="col-span-3">
-                                    <x-base.form-label>Quantity</x-base.form-label>
-                                    <x-base.form-input
-                                        type="number"
-                                        name="add_quantity[]"
-                                        placeholder="Enter quantity"
-										step="1" min="0"     
-                                    />
-                                </div>
+                                    <!-- Quantity -->
+                                    <div class="col-span-3">
+                                        <x-base.form-label>Quantity</x-base.form-label>
+                                        <x-base.form-input
+                                            type="number"
+                                            name="add_quantity[]"
+                                            placeholder="Enter quantity"
+                                            value="{{ $hasOldData ? ($oldQuantities[$i] ?? '') : '' }}"
+                                            step="1" min="0"     
+                                        />
+                                    </div>
 
-                                <!-- Employee -->
-                                <div class="col-span-4">
-                                    <x-base.form-label>Employee</x-base.form-label>
-                                    <select
-                                        class="employee-select tom-select w-full"
-                                        name="emp_id[]"
-                                        data-placeholder="Search & select employee..."
-                                    >
-                                        <option value="">Select employee...</option>
-                                    </select>
-                                </div>
+                                    <!-- Employee -->
+                                    <div class="col-span-4">
+                                        <x-base.form-label>Employee</x-base.form-label>
+                                        <select
+                                            class="employee-select tom-select w-full"
+                                            name="emp_id[]"
+                                            data-placeholder="Search & select employee..."
+                                        >
+                                            <option value="">Select employee...</option>
+                                            @if($hasOldData && isset($oldEmpIds[$i]) && $oldEmpIds[$i])
+                                                @php
+                                                    $employee = \App\Models\Employee::find($oldEmpIds[$i]);
+                                                @endphp
+                                                @if($employee)
+                                                    <option value="{{ $employee->id }}" selected>{{ $employee->name }}</option>
+                                                @endif
+                                            @endif
+                                        </select>
+                                    </div>
 
-                                <!-- Remove Button -->
-                                <div class="col-span-1 flex mt-4">
-                                     <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
+                                    <!-- Remove Button -->
+                                    <div class="col-span-1 flex mt-4">
+                                         <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            @endfor
                         </div>
 
                          <x-base.button type="button" id="add-row-btn" variant="primary">
                             Add Row
                         </x-base.button>
                     </div>
-                    <div id="row-template" class="hidden">
+                    <template id="row-template">
                         <div class="grid grid-cols-12 gap-4 mb-4 row-item">
                             <div class="col-span-4">
-                                <x-base.form-label>Product (Item)</x-base.form-label>
-                                <select class="product-select tom-select w-full" name="product_id[]">
+                                <label class="form-label">Product (Item)</label>
+                                <select class="product-select tom-select w-full" name="product_id[]" data-placeholder="Search & select product...">
                                     <option value="">Select product...</option>
                                 </select>
                             </div>
 
                             <div class="col-span-3">
-                                <x-base.form-label>Quantity</x-base.form-label>
-                                <x-base.form-input type="number" name="add_quantity[]" step="1" placeholder="Enter quantity"/>
+                                <label class="form-label">Quantity</label>
+                                <input type="number" name="add_quantity[]" step="1" min="0" placeholder="Enter quantity" class="disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80"/>
                             </div>
 
                             <div class="col-span-4">
-                                <x-base.form-label>Employee</x-base.form-label>
-                                <select class="employee-select tom-select w-full" name="emp_id[]">
+                                <label class="form-label">Employee</label>
+                                <select class="employee-select tom-select w-full" name="emp_id[]" data-placeholder="Search & select employee...">
                                     <option value="">Select employee...</option>
                                 </select>
                             </div>
 
                             <div class="col-span-1 flex mt-4">
                                 <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
-                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-4 w-4"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg> Delete
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    </template>
 
                     <div class="mt-5 flex items-center">
                         <a href="{{ route('tool-assigns.index') }}" class="mr-3">
@@ -341,36 +368,41 @@
                     }
                 }
 
-                // Initialize Tom Select for the initial product select
-                const initialProductSelect = document.querySelector('.product-select');
-                if (initialProductSelect) {
-                    initializeProductSelect(initialProductSelect);
-                }
+                // Initialize Tom Select for ALL existing product and employee selects
+                const allProductSelects = document.querySelectorAll('.product-select');
+                allProductSelects.forEach(select => {
+                    initializeProductSelect(select);
+                });
 
-                // Initialize Tom Select for the initial employee select
-                const initialEmployeeSelect = document.querySelector('.employee-select');
-                if (initialEmployeeSelect) {
-                    initializeEmployeeSelect(initialEmployeeSelect);
-                }
+                const allEmployeeSelects = document.querySelectorAll('.employee-select');
+                allEmployeeSelects.forEach(select => {
+                    initializeEmployeeSelect(select);
+                });
+
+                // Add click event to all existing rows
+                const allRows = document.querySelectorAll('.row-item');
+                allRows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        selectRow(this);
+                    });
+                });
 
                 // Add row button event listener
                document.getElementById('add-row-btn').addEventListener('click', function() {
                     const container = document.getElementById('rows-container');
-                    const template = document.getElementById('row-template').innerHTML;
-
-                    // Insert brand-new row
-                    const div = document.createElement('div');
-                    div.innerHTML = template.trim();
-
-                    const newRow = div.firstChild;
+                    const template = document.getElementById('row-template');
+                    
+                    const newRow = template.content.cloneNode(true);
                     container.appendChild(newRow);
 
-                    // Initialize TomSelect
-                    initializeProductSelect(newRow.querySelector('.product-select'));
-                    initializeEmployeeSelect(newRow.querySelector('.employee-select'));
+                    const row = container.lastElementChild;
+
+                    // Initialize TomSelect for new fields
+                    initializeProductSelect(row.querySelector('.product-select'));
+                    initializeEmployeeSelect(row.querySelector('.employee-select'));
 
                     // Add click event to new row
-                    newRow.addEventListener('click', function() {
+                    row.addEventListener('click', function() {
                         selectRow(this);
                     });
                 });
@@ -504,13 +536,7 @@
                     }
                 }
 
-                // Add click event to initial row
-                const initialRow = document.querySelector('.row-item');
-                if (initialRow) {
-                    initialRow.addEventListener('click', function() {
-                        selectRow(this);
-                    });
-                }
+
 				
 				// Form validation on submit
                 document.getElementById('create-form').addEventListener('submit', function(e) {

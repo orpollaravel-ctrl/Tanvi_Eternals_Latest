@@ -214,7 +214,6 @@
                                     </tr>
                                 @endforeach
                             </tbody>
-                            <!-- Table Footer -->
                             <tfoot class="bg-slate-100 border-t">
                                 <tr>
                                     <td colspan="6" class="px-4 py-3 text-right font-medium">Total Amount:</td>
@@ -256,6 +255,20 @@
 
     @push('scripts')
         @vite('resources/js/components/tom-select/index.js')
+        <style> 
+            .ts-dropdown {
+                z-index: 9999 !important;
+                position: absolute !important;
+            }
+            
+            .overflow-x-auto {
+                overflow: visible !important;
+            }
+            
+            .item-row td {
+                overflow: visible !important;
+            }
+        </style>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 let itemCount = {{ count($purchase->items) }};

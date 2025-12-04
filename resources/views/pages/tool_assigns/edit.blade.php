@@ -75,128 +75,190 @@
             <div class="mt-5">
                 <h3 class="text-md font-medium mb-3">Tool Assignments</h3>
                 <div id="rows-container">
-                    @forelse ($toolAssign->items as $index => $item)
-                        <div class="grid grid-cols-12 gap-4 mb-4 row-item">
-                            <!-- Product (Item) -->
-                            <div class="col-span-4">
-                                <x-base.form-label>Product (Item)</x-base.form-label>
-                                <select
-                                    class="product-select tom-select w-full"
-                                    name="product_id[]"
-                                    data-placeholder="Search & select product..." >
-                                    <option value="{{ $item->product_id }}" selected>{{ $item->product->product_name ?? 'Unnamed Product' }}</option>
-                                </select>
-                            </div>
+                    @php
+                        $oldProductIds = old('product_id', []);
+                        $oldQuantities = old('add_quantity', []);
+                        $oldEmpIds = old('emp_id', []);
+                        $hasOldData = !empty($oldProductIds) || !empty($oldQuantities) || !empty($oldEmpIds);
+                        
+                        if ($hasOldData) {
+                            $rowCount = max(count($oldProductIds), count($oldQuantities), count($oldEmpIds));
+                        } else {
+                            $rowCount = $toolAssign->items->count();
+                        }
+                    @endphp
+                    
+                    @if($hasOldData)
+                        @for ($i = 0; $i < $rowCount; $i++)
+                            <div class="grid grid-cols-12 gap-4 mb-4 row-item">
+                                <!-- Product (Item) -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Product (Item)</x-base.form-label>
+                                    <select
+                                        class="product-select tom-select w-full"
+                                        name="product_id[]"
+                                        data-placeholder="Search & select product..." >
+                                        <option value="">Select product...</option>
+                                        @if(isset($oldProductIds[$i]) && $oldProductIds[$i])
+                                            @php
+                                                $product = \App\Models\Product::find($oldProductIds[$i]);
+                                            @endphp
+                                            @if($product)
+                                                <option value="{{ $product->id }}" selected>{{ $product->product_name }}</option>
+                                            @endif
+                                        @endif
+                                    </select>
+                                </div>
 
-                            <!-- Quantity -->
-                            <div class="col-span-3">
-                                <x-base.form-label>Quantity</x-base.form-label>
-                                <x-base.form-input
-                                    type="number"
-                                    name="add_quantity[]"
-                                    placeholder="Enter quantity"
-                                    value="{{ $item->quantity }}"
-									step="1" min="0"
-                                />
-                            </div>
+                                <!-- Quantity -->
+                                <div class="col-span-3">
+                                    <x-base.form-label>Quantity</x-base.form-label>
+                                    <x-base.form-input
+                                        type="number"
+                                        name="add_quantity[]"
+                                        placeholder="Enter quantity"
+                                        value="{{ $oldQuantities[$i] ?? '' }}"
+                                        step="1" min="0"
+                                    />
+                                </div>
 
-                            <!-- Employee -->
-                            <div class="col-span-4">
-                                <x-base.form-label>Employee</x-base.form-label>
-                                <select
-                                    class="employee-select tom-select w-full"
-                                    name="emp_id[]"
-                                    data-placeholder="Search & select employee..."
-                                >
-                                    <option value="{{ $item->emp_id }}" selected>{{ $item->employee->name ?? 'Unnamed Employee' }}</option>
-                                </select>
-                            </div>
+                                <!-- Employee -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Employee</x-base.form-label>
+                                    <select
+                                        class="employee-select tom-select w-full"
+                                        name="emp_id[]"
+                                        data-placeholder="Search & select employee..."
+                                    >
+                                        <option value="">Select employee...</option>
+                                        @if(isset($oldEmpIds[$i]) && $oldEmpIds[$i])
+                                            @php
+                                                $employee = \App\Models\Employee::find($oldEmpIds[$i]);
+                                            @endphp
+                                            @if($employee)
+                                                <option value="{{ $employee->id }}" selected>{{ $employee->name }}</option>
+                                            @endif
+                                        @endif
+                                    </select>
+                                </div>
 
-                            <!-- Remove Button -->
-                            <div class="col-span-1 flex mt-3">
-                                  <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
-                                    <i class="fa fa-trash mr-1 text-red-600"></i> Delete
-                                </a>
+                                <!-- Remove Button -->
+                                <div class="col-span-1 flex mt-3">
+                                      <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
+                                        <i class="fa fa-trash mr-1 text-red-600"></i> Delete
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="grid grid-cols-12 gap-4 mb-4 row-item">
-                            <!-- Product (Item) -->
-                            <div class="col-span-4">
-                                <x-base.form-label>Product (Item)</x-base.form-label>
-                                <select
-                                    class="product-select tom-select w-full"
-                                    name="product_id[]"
-                                    data-placeholder="Search & select product..."
-                                >
-                                    <option value="">Select product...</option>
-                                    @foreach ($products as $prod)
-                                        <option value="{{ $prod->id }}">
-                                            {{ $prod->product_name ?? 'Unnamed Product' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        @endfor
+                    @else
+                        @forelse ($toolAssign->items as $index => $item)
+                            <div class="grid grid-cols-12 gap-4 mb-4 row-item">
+                                <!-- Product (Item) -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Product (Item)</x-base.form-label>
+                                    <select
+                                        class="product-select tom-select w-full"
+                                        name="product_id[]"
+                                        data-placeholder="Search & select product..." >
+                                        <option value="{{ $item->product_id }}" selected>{{ $item->product->product_name ?? 'Unnamed Product' }}</option>
+                                    </select>
+                                </div>
 
-                            <!-- Quantity -->
-                            <div class="col-span-3">
-                                <x-base.form-label>Quantity</x-base.form-label>
-                                <x-base.form-input
-                                    type="number"
-                                    name="add_quantity[]"
-                                    placeholder="Enter quantity"
-									step="1" min="0"
-                                />
-                            </div>
+                                <!-- Quantity -->
+                                <div class="col-span-3">
+                                    <x-base.form-label>Quantity</x-base.form-label>
+                                    <x-base.form-input
+                                        type="number"
+                                        name="add_quantity[]"
+                                        placeholder="Enter quantity"
+                                        value="{{ $item->quantity }}"
+                                        step="1" min="0"
+                                    />
+                                </div>
 
-                            <!-- Employee -->
-                            <div class="col-span-4">
-                                <x-base.form-label>Employee</x-base.form-label>
-                                <select
-                                    class="employee-select tom-select w-full"
-                                    name="emp_id[]"
-                                    data-placeholder="Search & select employee..."
-                                >
-                                    <option value="">Select employee...</option>
-                                    @foreach ($employees as $emp)
-                                        <option value="{{ $emp->id }}">
-                                            {{ $emp->name ?? 'Unnamed Employee' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                                <!-- Employee -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Employee</x-base.form-label>
+                                    <select
+                                        class="employee-select tom-select w-full"
+                                        name="emp_id[]"
+                                        data-placeholder="Search & select employee..."
+                                    >
+                                        <option value="{{ $item->emp_id }}" selected>{{ $item->employee->name ?? 'Unnamed Employee' }}</option>
+                                    </select>
+                                </div>
 
-                            <!-- Remove Button -->
-                            <div class="col-span-1 flex mt-3">
-                                <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
-                                   <i class="fa fa-trash mr-1 text-red-600"></i> Delete
-                                </a>
+                                <!-- Remove Button -->
+                                <div class="col-span-1 flex mt-3">
+                                      <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
+                                        <i class="fa fa-trash mr-1 text-red-600"></i> Delete
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    @endforelse
+                        @empty
+                            <div class="grid grid-cols-12 gap-4 mb-4 row-item">
+                                <!-- Product (Item) -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Product (Item)</x-base.form-label>
+                                    <select
+                                        class="product-select tom-select w-full"
+                                        name="product_id[]"
+                                        data-placeholder="Search & select product..."
+                                    >
+                                        <option value="">Select product...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Quantity -->
+                                <div class="col-span-3">
+                                    <x-base.form-label>Quantity</x-base.form-label>
+                                    <x-base.form-input
+                                        type="number"
+                                        name="add_quantity[]"
+                                        placeholder="Enter quantity"
+                                        step="1" min="0"
+                                    />
+                                </div>
+
+                                <!-- Employee -->
+                                <div class="col-span-4">
+                                    <x-base.form-label>Employee</x-base.form-label>
+                                    <select
+                                        class="employee-select tom-select w-full"
+                                        name="emp_id[]"
+                                        data-placeholder="Search & select employee..."
+                                    >
+                                        <option value="">Select employee...</option>
+                                    </select>
+                                </div>
+
+                                <!-- Remove Button -->
+                                <div class="col-span-1 flex mt-3">
+                                    <a class="flex items-center text-danger remove-row-btn" style="cursor: pointer;">
+                                       <i class="fa fa-trash mr-1 text-red-600"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        @endforelse
+                    @endif
 
                     <!-- CLEAN TEMPLATE OUTSIDE rows-container -->
                         <template id="row-template">
                             <div class="grid grid-cols-12 gap-4 mb-4 row-item">
                                 <div class="col-span-4">
-                                    <x-base.form-label>Product (Item)</x-base.form-label>
+                                    <label class="form-label">Product (Item)</label>
                                     <select class="product-select tom-select w-full" name="product_id[]" data-placeholder="Search & select product...">
                                         <option value="">Select product...</option>
                                     </select>
                                 </div>
 
                                 <div class="col-span-3">
-                                    <x-base.form-label>Quantity</x-base.form-label>
-                                   <x-base.form-input
-                                        type="number"
-                                        name="add_quantity[]"
-                                        placeholder="Enter quantity"
-										step="1" min="0"
-                                    />
+                                    <label class="form-label">Quantity</label>
+                                    <input type="number" name="add_quantity[]" placeholder="Enter quantity" step="1" min="0" class="disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80"/>
                                 </div>
 
                                 <div class="col-span-4">
-                                    <x-base.form-label>Employee</x-base.form-label>
+                                    <label class="form-label">Employee</label>
                                     <select class="employee-select tom-select w-full" name="emp_id[]" data-placeholder="Search & select employee...">
                                         <option value="">Select employee...</option>
                                     </select>
@@ -500,16 +562,23 @@
                         }, 100);
                     }
                 }
-                // Initialize Tom Select for existing product selects
-                const productSelects = document.querySelectorAll('.product-select');
-                productSelects.forEach(select => {
+                // Initialize Tom Select for ALL existing product and employee selects
+                const allProductSelects = document.querySelectorAll('.product-select');
+                allProductSelects.forEach(select => {
                     initializeProductSelect(select);
                 });
 
-                // Initialize Tom Select for existing employee selects
-                const employeeSelects = document.querySelectorAll('.employee-select');
-                employeeSelects.forEach(select => {
+                const allEmployeeSelects = document.querySelectorAll('.employee-select');
+                allEmployeeSelects.forEach(select => {
                     initializeEmployeeSelect(select);
+                });
+
+                // Add click event to all existing rows
+                const allRows = document.querySelectorAll('.row-item');
+                allRows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        selectRow(this);
+                    });
                 });
 
                 // Add row button event listener
@@ -572,13 +641,7 @@
                     }
                 });
 
-                // Add click event to all existing rows
-                const existingRows = document.querySelectorAll('.row-item');
-                existingRows.forEach(row => {
-                    row.addEventListener('click', function() {
-                        selectRow(this);
-                    });
-                });
+
 				// Form validation on submit
                 document.getElementById('edit-form').addEventListener('submit', function(e) {
                     const quantityInputs = document.querySelectorAll('input[name="add_quantity[]"]');

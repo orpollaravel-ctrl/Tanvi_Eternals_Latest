@@ -105,13 +105,14 @@ class ToolAssignController extends Controller
             'emp_id' => 'required|array',
             'emp_id.*' => 'nullable|integer',
         ]);
-		
-		 // Custom validation for remaining quantity
+		 
+        $errors = [];
+        $oldInput = $request->all();
+        
         foreach ($validated['product_id'] as $index => $product_id) {
             if (!empty($product_id) && !empty($validated['add_quantity'][$index])) {
                 $quantity = $validated['add_quantity'][$index];
-
-                // Calculate remaining quantity for this product
+ 
                 $purchases = \App\Models\PurchaseItem::where('product_id', $product_id)
                     ->with('purchase')
                     ->get()
@@ -132,9 +133,17 @@ class ToolAssignController extends Controller
                 }
 
                 if ($quantity > $remainingQty) {
-                    return back()->withErrors(['add_quantity.' . $index => 'Cannot assign more than remaining quantity (' . $remainingQty . ') for this product.'])->withInput();
+                    $errors['add_quantity.' . $index] = 'Cannot assign more than remaining quantity (' . $remainingQty . ') for this product.';
+                    // Clear only the invalid entries
+                    $oldInput['product_id'][$index] = '';
+                    $oldInput['add_quantity'][$index] = '';
+                    $oldInput['emp_id'][$index] = '';
                 }
             }
+        }
+        
+        if (!empty($errors)) {
+            return back()->withErrors($errors)->withInput($oldInput);
         }
 		
         $toolAssign = ToolAssign::create([
@@ -227,15 +236,44 @@ class ToolAssignController extends Controller
             'emp_id.*' => 'nullable|integer',
         ]);
 
+        foreach ($validated['product_id'] as $index => $product_id) {
+            if (!empty($product_id) && !empty($validated['add_quantity'][$index])) {
+                $quantity = $validated['add_quantity'][$index];
+ 
+                $purchases = \App\Models\PurchaseItem::where('product_id', $product_id)
+                    ->with('purchase')
+                    ->get()
+                    ->sortBy(function($pi) {
+                        return $pi->purchase->bill_date ?? $pi->purchase->created_at;
+                    });
+
+                $totalQty = $purchases->sum('quantity') + \App\Models\OpeningStock::where('product_id', $product_id)->sum('quantity');
+                $totalAssigned = \App\Models\ToolAssignItem::where('product_id', $product_id)
+                    ->where('tool_assign_id', '!=', $toolAssign->id)
+                    ->sum('quantity');
+
+                $remainingQty = $totalQty;
+                $deducted = 0;
+                foreach ($purchases as $pi) {
+                    if ($deducted >= $totalAssigned) break;
+                    $toDeduct = min($pi->quantity, $totalAssigned - $deducted);
+                    $remainingQty -= $toDeduct;
+                    $deducted += $toDeduct;
+                }
+
+                if ($quantity > $remainingQty) {
+                    return back()->withErrors(['add_quantity.' . $index => 'Cannot assign more than remaining quantity (' . $remainingQty . ') for this product.'])->withInput();
+                }
+            }
+        }
+
         $toolAssign->update([
             'd_id' => $validated['d_id'],
             'date' => $validated['date'],
         ]);
 
-        // Delete existing items
         $toolAssign->items()->delete();
 
-        // Create new items
         foreach ($validated['product_id'] as $index => $product_id) {
             if (!empty($product_id) || !empty($validated['add_quantity'][$index]) || !empty($validated['emp_id'][$index])) {
                 ToolAssignItem::create([
@@ -248,7 +286,7 @@ class ToolAssignController extends Controller
         }
 
         return redirect()->route('tool-assigns.index')
-            ->with('success', 'Tool assignment updated successfully.');
+            ->with('success', 'Tool assignment updated successfully.'); 
     }
 
 	public function destroy(ToolAssign $toolAssign)

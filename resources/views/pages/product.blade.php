@@ -670,24 +670,20 @@
 
     window.print();
 };
-
-// Print product table function
+ 
 function printProductTable() {
     const printWindow = window.open('', '', 'width=800,height=600');
     const table = document.querySelector('table');
-    
-    // Build clean table HTML without actions column
+     
     let tableHTML = '<table border="1" style="width:100%; border-collapse: collapse;">';
-    
-    // Headers (exclude last column - ACTIONS)
+     
     tableHTML += '<thead><tr>';
     const headers = table.querySelectorAll('thead th');
     for(let i = 0; i < headers.length - 1; i++) {
         tableHTML += `<th style="padding: 8px; background-color: #f2f2f2;">${headers[i].textContent.trim()}</th>`;
     }
     tableHTML += '</tr></thead>';
-    
-    // Data rows (exclude last column - ACTIONS)
+     
     tableHTML += '<tbody>';
     table.querySelectorAll('tbody tr').forEach(tr => {
         const cells = tr.querySelectorAll('td');
@@ -735,8 +731,7 @@ function printProductTable() {
 </script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<script> 
-// heeloo
+<script>  
     window.printProducts = function() {
         const search = document.getElementById('productSearch').value;
         const url = `{{ route('products.print') }}?search=${encodeURIComponent(search)}`;
