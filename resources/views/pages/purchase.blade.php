@@ -33,7 +33,7 @@
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
                 @isset($purchases)
-                    Showing {{ $purchases->firstItem() }} to {{ $purchases->lastItem() }} of {{ $purchases->total() }} entries
+                    Showing {{ $purchases->count() }} entries
                 @endisset
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
@@ -118,22 +118,7 @@
                 </x-base.table.tbody>
             </x-base.table>
         </div>
-        <!-- END: Data List -->
-        <!-- BEGIN: Pagination -->
-        @isset($purchases)
-            <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-                <div class="w-full sm:mr-auto sm:w-auto">
-                    {{ $purchases->onEachSide(1)->links() }}
-                </div>
-                <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>35</option>
-                    <option>50</option>
-                </x-base.form-select>
-            </div>
-        @endisset
-        <!-- END: Pagination -->
+        <!-- END: Data List --> 
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
     <x-base.dialog id="delete-confirmation-modal">

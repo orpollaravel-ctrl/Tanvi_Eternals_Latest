@@ -27,6 +27,7 @@ use App\Http\Controllers\DealerController;
 use App\Http\Controllers\DealerRateFixController;
 use App\Http\Controllers\NewPaymentController;
 use App\Http\Controllers\PaymentModeController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Artisan;
@@ -40,7 +41,17 @@ use Illuminate\Support\Facades\Artisan;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    return "Cache is cleared";
+});
+Route::get('migrate', function() {
+    Artisan::call('migrate', ['--force' => true]);
+    return "Migration completed";
+});
 Route::get('dark-mode-switcher', [DarkModeController::class, 'switch'])->name('dark-mode-switcher');
 Route::get('color-scheme-switcher/{color_scheme}', [ColorSchemeController::class, 'switch'])->name('color-scheme-switcher');
 
@@ -121,6 +132,7 @@ Route::middleware('auth')->group(function () {
         Route::get('register-page', 'register')->name('register');
         Route::get('error-page-page', 'errorPage')->name('error-page');
         Route::get('update-profile-page', 'updateProfile')->name('update-profile');
+        Route::put('profile/update', 'updateProfilePost')->name('profile.update');
         Route::get('change-password-page', 'changePassword')->name('change-password');
         Route::get('regular-table-page', 'regularTable')->name('regular-table');
         Route::get('tabulator-page', 'tabulator')->name('tabulator');
@@ -243,6 +255,18 @@ Route::middleware('auth')->group(function () {
         Route::get('purchases/{id}/edit', 'edit')->name('purchases.edit');
         Route::put('purchases/{id}', 'update')->name('purchases.update');
         Route::delete('purchases/{id}', 'destroy')->name('purchases.delete');
+    });
+
+    // Quotations CRUD
+    Route::controller(QuotationController::class)->group(function () {
+        Route::get('quotations', 'index')->name('quotations.index');
+        Route::get('quotations/print', 'print')->name('quotations.print');
+        Route::get('quotations/export/excel', 'exportExcel')->name('quotations.export.excel');
+        Route::get('quotations/create', 'create')->name('quotations.create');
+        Route::post('quotations', 'store')->name('quotations.store');
+        Route::get('quotations/{id}/edit', 'edit')->name('quotations.edit');
+        Route::put('quotations/{id}', 'update')->name('quotations.update');
+        Route::delete('quotations/{id}', 'destroy')->name('quotations.destroy');
     });
 	
 	// Departments CRUD

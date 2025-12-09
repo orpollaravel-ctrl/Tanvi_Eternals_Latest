@@ -15,35 +15,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-     public function index(Request $request)
+    public function index(Request $request)
     {
-        if ($request->ajax()) {
-            $page = $request->get('page', 1);
-            $perPage = 25;
-            $search = $request->get('search', '');
-
-            $query = Product::query()->with('category')->latest();
-
-            if (!empty($search)) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%' . $search . '%')
-                        ->orWhere('barcode_number', 'like', '%' . $search . '%')
-                        ->orWhere('tool_code', 'like', '%' . $search . '%');
-                });
-            }
-
-            $products = $query->paginate($perPage, ['*'], 'page', $page);
-
-            return response()->json([
-                'data' => $products->items(),
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'has_more' => $products->hasMorePages(),
-            ]);
-        }
-
-        // Initial load with first 25 records
-        $products = Product::query()->with('category')->latest()->paginate(25);
+        $products = Product::query()->latest()->get();
 
         return view('pages/product', [
             'layout' => 'side-menu',

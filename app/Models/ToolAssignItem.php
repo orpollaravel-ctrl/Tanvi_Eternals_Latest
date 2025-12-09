@@ -14,6 +14,7 @@ class ToolAssignItem extends Model
         'product_id',
         'quantity',
         'emp_id',
+        'serial_number',
     ];
 
     public function toolAssign()

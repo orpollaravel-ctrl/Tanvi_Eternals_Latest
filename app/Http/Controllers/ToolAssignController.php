@@ -14,7 +14,8 @@ class ToolAssignController extends Controller
      public function index(Request $request)
     {
         if ($request->ajax()) {
-            $perPage = $request->get('per_page', 10);
+            $offset = $request->get('offset', 0);
+            $limit = 25;
             $search = $request->get('search', '');
             $employeeId = $request->get('employee_id', '');
             $productId = $request->get('product_id', '');
@@ -23,7 +24,7 @@ class ToolAssignController extends Controller
             $sortBy = $request->get('sort_by', 'created_at');
             $sortOrder = $request->get('sort_order', 'desc');
 
-            $query = ToolAssign::with(['department', 'items.product', 'items.employee']);
+            $query = ToolAssign::with(['department']);
 
             // Apply filters
             if (!empty($search)) {
@@ -63,21 +64,19 @@ class ToolAssignController extends Controller
             // Apply sorting
             $query->orderBy($sortBy, $sortOrder);
 
-            $toolAssigns = $query->paginate($perPage);
+            $toolAssigns = $query->skip($offset)->take($limit)->get();
 
             return response()->json([
-                'data' => $toolAssigns->items(),
-                'current_page' => $toolAssigns->currentPage(),
-                'last_page' => $toolAssigns->lastPage(),
-                'has_more' => $toolAssigns->hasMorePages(),
-                'total' => $toolAssigns->total(),
+                'data' => $toolAssigns,
+                'has_more' => $toolAssigns->count() === $limit,
             ]);
         }
 
         // Initial load
-        $toolAssigns = ToolAssign::with(['department', 'items.product', 'items.employee'])
+        $toolAssigns = ToolAssign::with(['department'])
             ->latest()
-            ->paginate(10);
+            ->take(25)
+            ->get();
         $employees = Employee::all();
         $departments = Department::all();
         $products = Product::all();
@@ -100,6 +99,8 @@ class ToolAssignController extends Controller
             'date' => 'nullable|date',
             'product_id' => 'required|array',
             'product_id.*' => 'nullable|integer',
+            'serial_number' => 'nullable|array',
+            'serial_number.*' => 'nullable|string|max:255',
             'add_quantity' => 'required|array',
             'add_quantity.*' => 'nullable|integer',
             'emp_id' => 'required|array',
@@ -156,6 +157,7 @@ class ToolAssignController extends Controller
                 ToolAssignItem::create([
                     'tool_assign_id' => $toolAssign->id,
                     'product_id' => $product_id,
+                    'serial_number' => $validated['serial_number'][$index] ?? null,
                     'quantity' => $validated['add_quantity'][$index] ?? null,
                     'emp_id' => $validated['emp_id'][$index] ?? null,
                 ]);
@@ -230,6 +232,8 @@ class ToolAssignController extends Controller
             'date' => 'nullable|date',
             'product_id' => 'required|array',
             'product_id.*' => 'nullable|integer',
+            'serial_number' => 'nullable|array',
+            'serial_number.*' => 'nullable|string|max:255',
             'add_quantity' => 'required|array',
             'add_quantity.*' => 'nullable|integer',
             'emp_id' => 'required|array',
@@ -279,6 +283,7 @@ class ToolAssignController extends Controller
                 ToolAssignItem::create([
                     'tool_assign_id' => $toolAssign->id,
                     'product_id' => $product_id,
+                    'serial_number' => $validated['serial_number'][$index] ?? null,
                     'quantity' => $validated['add_quantity'][$index] ?? null,
                     'emp_id' => $validated['emp_id'][$index] ?? null,
                 ]);
@@ -307,6 +312,8 @@ class ToolAssignController extends Controller
 	
 	public function purchaseReport(Request $request)
     {
+        set_time_limit(120);
+        
         $query = \App\Models\Purchase::with(['vendor', 'items.product']);
 
         if ($request->filled('start_date')) {
@@ -321,7 +328,7 @@ class ToolAssignController extends Controller
             $query->where('vendor_id', $request->vendor_id);
         }
 
-        $purchases = $query->paginate(10);
+        $purchases = $query->latest('bill_date')->paginate(20);
         $vendors = \App\Models\Vendor::all();
 
         return view('pages.tool_assigns.reports.purchase-report', compact('purchases', 'vendors'));

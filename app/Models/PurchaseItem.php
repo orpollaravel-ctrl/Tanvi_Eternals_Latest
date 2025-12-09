@@ -14,6 +14,7 @@ class PurchaseItem extends Model
         'purchase_id',
         'product_id',
         'product_name',
+        'serial_number',
         'expiry_date',
         'quantity',
         'rate',

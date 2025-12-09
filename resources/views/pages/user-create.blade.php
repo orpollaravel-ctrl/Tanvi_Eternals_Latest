@@ -20,7 +20,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('users.store') }}">
+                <form method="POST" action="{{ route('users.store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="mt-3">
                         <x-base.form-label>Name</x-base.form-label>
@@ -56,6 +56,13 @@
                             placeholder="09123456789"/>
                     </div>
                     <div class="mt-3">
+                        <x-base.form-label>Photo</x-base.form-label>
+                        <x-base.form-input
+                            type="file"
+                            name="photo"
+                            accept="image/*"/>
+                    </div>
+                    <div class="mt-3">
                         <x-base.form-label>Password</x-base.form-label>
                         <x-base.form-input
                             type="password"
@@ -71,11 +78,17 @@
                     </div>
                     <div class="mt-3">
                         <x-base.form-label>Active Status</x-base.form-label>
-                        <input
-                            type="checkbox"
-                            id="active"
-                            name="active"
-                            class="mt-2" >
+                        <div class="mt-2">
+                            <label class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="active"
+                                    name="active"
+                                    value="1"
+                                    {{ old('active') ? 'checked' : '' }}>
+                                <span class="ml-2">User is active</span>
+                            </label>
+                        </div>
                     </div>
                         <div class="mt-3">
                         <x-base.form-label>Permissions</x-base.form-label>

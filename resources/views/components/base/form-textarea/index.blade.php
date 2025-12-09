@@ -18,4 +18,6 @@
                 $attributes->whereStartsWith('class')->first(),
             ]),
         )->merge($attributes->whereDoesntStartWith('class')->getAttributes()) }}
-></textarea>
+>
+    {{ $slot ?? $attributes->get('value') }}
+</textarea>

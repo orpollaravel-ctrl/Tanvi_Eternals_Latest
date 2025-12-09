@@ -20,7 +20,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('users.update', $user->id) }}">
+                <form method="POST" action="{{ route('users.update', $user->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mt-3">
@@ -61,6 +61,22 @@
                             placeholder="09123456789"
                             required
                         />
+                    </div>
+                    <div class="mt-3">
+                        <x-base.form-label>Photo</x-base.form-label>
+                        @if($user->photo)
+                            <div class="mb-2">
+                                <img src="{{ url('uploads/user/' . $user->photo) }}" alt="Current Photo" class="h-20 w-20 rounded-full object-cover">
+                            </div>
+                        @else
+                            <div class="mb-2">
+                                <img src="{{ url('media-example/no-image.png') }}" alt="Default Photo" class="h-20 w-20 rounded-full object-cover">
+                            </div>
+                        @endif
+                        <x-base.form-input
+                            type="file"
+                            name="photo"
+                            accept="image/*"/>
                     </div>
                     <div class="mt-3">
                         <x-base.form-label>Password</x-base.form-label>

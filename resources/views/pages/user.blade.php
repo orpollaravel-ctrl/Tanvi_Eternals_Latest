@@ -30,12 +30,7 @@
                         <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
-            </x-base.menu> --}}
-            <div class="mx-auto hidden text-slate-500 md:block">
-                @isset($users)
-                    Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} entries
-                @endisset
-            </div>
+            </x-base.menu> --}} 
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
                     <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
@@ -48,6 +43,9 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                            Photo
+                        </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
                             User Name
                         </x-base.table.th>
@@ -65,6 +63,16 @@
                     @isset($users)
                         @foreach ($users as $user)
                             <x-base.table.tr class="intro-x">
+                                <x-base.table.td
+                                    class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    <div class="flex justify-center">
+                                        @if($user->photo)
+                                            <img src="{{ url('uploads/user/' . $user->photo) }}" alt="User Photo" class="h-10 w-10 rounded-full object-cover">
+                                        @else
+                                            <img src="{{ url('uploads/logo.png') }}" alt="Default Photo" class="h-10 w-10 rounded-full object-cover">
+                                        @endif
+                                    </div>
+                                </x-base.table.td>
                                 <x-base.table.td
                                     class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="flex">

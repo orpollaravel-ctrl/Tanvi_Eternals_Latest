@@ -196,7 +196,7 @@
                                 <a href="javascript:void(0);" onclick="printInventory()" class="flex">
                                     <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
                                 </a>
-                            </x-base.menu.item>+*********
+                            </x-base.menu.item>
                             <x-base.menu.item>
                                 <a href="javascript:void(0);" onclick="exportInventoryToExcel()" class="flex">
                                     <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to Excel

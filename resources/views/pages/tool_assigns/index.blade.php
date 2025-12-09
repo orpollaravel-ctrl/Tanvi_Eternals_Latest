@@ -183,33 +183,20 @@
         </div>
         <!-- END: Data Table -->
 
-        <!-- BEGIN: Pagination -->
-        <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-            <div id="pagination-container" class="w-full sm:mr-auto sm:w-auto">
-                {{ $toolAssigns->links() }}
-            </div>
-            <select id="per-page-select" class="filter-select !box mt-3 w-20 sm:mt-0">
-                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
-                <option value="25" {{ request('per_page', 10) == 25 ? 'selected' : '' }}>25</option>
-                <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100</option>
-            </select>
-        </div>
-        <!-- END: Pagination -->
-
         <!-- Loading indicator -->
         <div id="loading-indicator" class="col-span-12 text-center py-4 hidden">
             <div class="inline-flex items-center">
                 <x-base.loading-icon class="animate-spin h-5 w-5 mr-2" />
-                Loading more tool assigns...
+                Loading tool assigns...
             </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let currentPage = 1;
+            let offset = 25;
             let isLoading = false;
-            let hasMorePages = {{ $toolAssigns->hasMorePages() ? 'true' : 'false' }};
+            let hasMore = true;
             let currentSearch = '';
             let currentEmployee = '';
             let currentProduct = '';
@@ -217,11 +204,9 @@
             let currentEndDate = '';
             let currentSortBy = 'created_at';
             let currentSortOrder = 'desc';
-            let currentPerPage = {{ request('per_page', 10) }};
 
             const tableBody = document.getElementById('tool-assign-table-body');
             const loadingIndicator = document.getElementById('loading-indicator');
-            const paginationContainer = document.getElementById('pagination-container');
 
             // Filter elements
             const searchInput = document.getElementById('search-input');
@@ -230,7 +215,6 @@
             const startDateInput = document.getElementById('start-date');
             const endDateInput = document.getElementById('end-date');
             const clearFiltersBtn = document.getElementById('clear-filters');
-            const perPageSelect = document.getElementById('per-page-select');
 
             // Sort headers
             const sortHeaders = document.querySelectorAll('.sort-header');
@@ -241,6 +225,7 @@
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
                     currentSearch = this.value.trim();
+                    offset = 0;
                     loadToolAssigns(true);
                 }, 500);
             });
@@ -248,21 +233,25 @@
             // Filter change events
             employeeFilter.addEventListener('change', function() {
                 currentEmployee = this.value;
+                offset = 0;
                 loadToolAssigns(true);
             });
 
             productFilter.addEventListener('change', function() {
                 currentProduct = this.value;
+                offset = 0;
                 loadToolAssigns(true);
             });
 
             startDateInput.addEventListener('change', function() {
                 currentStartDate = this.value;
+                offset = 0;
                 loadToolAssigns(true);
             });
 
             endDateInput.addEventListener('change', function() {
                 currentEndDate = this.value;
+                offset = 0;
                 loadToolAssigns(true);
             });
 
@@ -278,12 +267,7 @@
                 currentProduct = '';
                 currentStartDate = '';
                 currentEndDate = '';
-                loadToolAssigns(true);
-            });
-
-            // Per page change
-            perPageSelect.addEventListener('change', function() {
-                currentPerPage = parseInt(this.value);
+                offset = 0;
                 loadToolAssigns(true);
             });
 
@@ -298,6 +282,7 @@
                         currentSortOrder = 'asc';
                     }
                     updateSortIcons();
+                    offset = 0;
                     loadToolAssigns(true);
                 });
             });
@@ -315,22 +300,18 @@
 
             function loadToolAssigns(reset = false) {
                 if (reset) {
-                    currentPage = 1;
-                    hasMorePages = true;
+                    offset = 0;
                     tableBody.innerHTML = '';
+                    hasMore = true;
                 }
 
-                if (isLoading || !hasMorePages) return;
+                if (isLoading || !hasMore) return;
 
                 isLoading = true;
-                if (!reset) {
-                    loadingIndicator.classList.remove('hidden');
-                    currentPage++;
-                }
+                loadingIndicator.classList.remove('hidden');
 
                 const params = new URLSearchParams({
-                    page: currentPage,
-                    per_page: currentPerPage,
+                    offset: offset,
                     search: currentSearch,
                     employee_id: currentEmployee,
                     product_id: currentProduct,
@@ -350,9 +331,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.data && data.data.length > 0) {
-                        const startIndex = reset ? 1 : ((currentPage - 1) * currentPerPage + 1);
+                        const startNumber = offset + 1;
                         data.data.forEach((assign, index) => {
-                            const rowNumber = startIndex + index;
+                            const rowNumber = startNumber + index;
                             const rowHtml = `
                                 <tr class="intro-x">
                                     <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md" style="text-align: center;">
@@ -385,6 +366,7 @@
                             `;
                             tableBody.insertAdjacentHTML('beforeend', rowHtml);
                         });
+                        offset += data.data.length;
                     } else if (reset) {
                         tableBody.innerHTML = `
                             <tr>
@@ -395,14 +377,9 @@
                         `;
                     }
 
-                    hasMorePages = data.has_more;
+                    hasMore = data.has_more;
                     isLoading = false;
                     loadingIndicator.classList.add('hidden');
-
-                    // Update pagination
-                    if (reset) {
-                        updatePagination(data);
-                    }
                 })
                 .catch(error => {
                     console.error('Error loading tool assigns:', error);
@@ -411,27 +388,22 @@
                 });
             }
 
-            function updatePagination(data) {
-                // Simple pagination update - you might want to implement proper pagination links
-                paginationContainer.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">
-                            Showing ${data.data ? data.data.length : 0} results
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Infinite scroll functionality
+            // Infinite scroll with throttling
+            let scrollTimeout;
             window.addEventListener('scroll', function() {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const windowHeight = window.innerHeight;
-                const documentHeight = document.documentElement.scrollHeight;
+                if (scrollTimeout) return;
+                
+                scrollTimeout = setTimeout(() => {
+                    scrollTimeout = null;
+                    
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const windowHeight = window.innerHeight;
+                    const documentHeight = document.documentElement.scrollHeight;
 
-                // Load more when user is within 200px of bottom
-                if (documentHeight - (scrollTop + windowHeight) < 200) {
-                    loadToolAssigns(false);
-                }
+                    if (documentHeight - (scrollTop + windowHeight) < 300 && !isLoading && hasMore) {
+                        loadToolAssigns(false);
+                    }
+                }, 200);
             });
 
             // Initialize sort icons

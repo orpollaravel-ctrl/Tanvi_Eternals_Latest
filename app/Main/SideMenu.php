@@ -284,6 +284,17 @@ class SideMenu
                 ],
             ],
 
+            // ----------------------
+            // QUOTATION
+            // ----------------------
+            'quotation' => [
+                'icon' => 'file-text',
+                'route_name' => 'quotations.index',
+                'params' => ['layout' => 'side-menu'],
+                'title' => 'Quotation',
+                'permission' => 'view-quotations',
+            ],
+
         ];
 
     }

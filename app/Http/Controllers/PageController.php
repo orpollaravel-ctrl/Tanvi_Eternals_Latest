@@ -514,7 +514,10 @@ class PageController extends Controller
      */
     public function updateProfile(): View
     {
-        return view('pages/update-profile');
+        return view('pages/update-profile', [
+            'layout' => 'side-menu',
+            'user' => auth()->user(),
+        ]);
     }
 
     /**
@@ -524,6 +527,41 @@ class PageController extends Controller
     public function changePassword(): View
     {
         return view('pages/change-password');
+    }
+
+    /**
+     * Update user profile.
+     */
+    public function updateProfilePost(Request $request)
+    {
+        $user = auth()->user();
+        
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'contact_number' => ['required', 'string', 'max:50'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->contact_number = $validated['contact_number'];
+
+        if ($request->hasFile('photo')) { 
+            if ($user->photo && file_exists(public_path('uploads/user/' . $user->photo))) {
+                unlink(public_path('uploads/user/' . $user->photo));
+            }
+            
+            $file = $request->file('photo');
+            $fileName = $file->getClientOriginalName();
+            $filePath = 'uploads/user';
+            $file->move(public_path($filePath), $fileName);
+            $user->photo = $fileName;
+        }
+
+        $user->save();
+
+        return redirect()->route('update-profile')->with('success', 'Profile updated successfully.');
     }
 
     /**

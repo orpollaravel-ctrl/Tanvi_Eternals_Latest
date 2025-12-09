@@ -9,7 +9,6 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Filters -->
         <div class="intro-y col-span-6">
-            
 			 <form method="GET" action="{{ route('tool-assigns.department-wise-report') }}" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <!-- Employee Filter -->
                 <div class="w-full sm:w-48">
@@ -17,13 +16,11 @@
                         <option value="">All Departments</option>
                     </select>
                 </div>
-
                 <!-- Date Range -->
                 <div class="flex gap-2 w-full sm:w-auto">
                     <input type="date" id="start-date" name="start_date" value="{{ request('start_date') }}" class="filter-input box w-full sm:w-32">
                     <input type="date" id="end-date" name="end_date" value="{{ request('end_date') }}" class="filter-input box w-full sm:w-32">
                 </div>
-
                 <!-- Filter and Cancel Buttons -->
 				<div class="flex gap-2">
                     <x-base.button type="submit" variant="primary">Search</x-base.button>

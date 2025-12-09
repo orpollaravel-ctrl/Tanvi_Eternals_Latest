@@ -138,12 +138,7 @@
                     @endforelse
                 </x-base.table.tbody>
             </x-base.table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="intro-y col-span-12 flex flex-wrap items-center">
-            {{ $purchases->appends(request()->query())->links() }}
-        </div>
+        </div> 
     </div>
 
     @push('vendors')

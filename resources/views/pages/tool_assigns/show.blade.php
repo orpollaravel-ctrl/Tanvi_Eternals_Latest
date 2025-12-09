@@ -65,6 +65,7 @@
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Product</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Serial Number</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Quantity</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Employee</x-base.table.th>
                     </x-base.table.tr>
@@ -76,6 +77,9 @@
                                 {{ $item->product->product_name ?? 'N/A' }}
                             </x-base.table.td>
                             <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                                {{ $item->serial_number ?? '-' }}
+                            </x-base.table.td>
+                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                                 {{ $item->quantity ?? '0' }}
                             </x-base.table.td>
                             <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
@@ -84,7 +88,7 @@
                         </x-base.table.tr>
                     @empty
                         <x-base.table.tr>
-                            <x-base.table.td colspan="3" class="text-center text-slate-500 py-4">
+                            <x-base.table.td colspan="4" class="text-center text-slate-500 py-4">
                                 No items assigned.
                             </x-base.table.td>
                         </x-base.table.tr>

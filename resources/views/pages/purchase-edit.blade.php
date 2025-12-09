@@ -93,14 +93,14 @@
                             <!-- Table Header -->
                             <thead class="bg-slate-200 border-b">
                                 <tr class="text-left text-sm font-medium">
-                                    <th class="px-4 py-3 w-1/4">Product Name *</th>
-                                    <!--<th class="px-4 py-3 w-1/6">Expiry Date</th> -->
-                                    <th class="px-4 py-3 w-1/6">Quantity *</th>
-                                    <th class="px-4 py-3 w-1/6">Rate *</th>
-                                    <th class="px-4 py-3 w-1/6">Amount</th>
-									<th class="px-4 py-3 w-1/8">GST %</th>
-                                    <th class="px-4 py-3 w-1/8">GST Value</th>
-                                    <th class="px-4 py-3 w-1/8">Final Amount</th>
+                                    <th class="px-4 py-3" style="min-width: 250px;">Product Name *</th>
+                                    <th class="px-4 py-3" style="min-width: 120px;">Serial Number</th>
+                                    <th class="px-4 py-3" style="min-width: 100px;">Quantity *</th>
+                                    <th class="px-4 py-3" style="min-width: 100px;">Rate *</th>
+                                    <th class="px-4 py-3">Amount</th>
+									<th class="px-4 py-3">GST %</th>
+                                    <th class="px-4 py-3">GST Value</th>
+                                    <th class="px-4 py-3">Final Amount</th>
                                     <th class="px-4 py-3 w-12 text-center"></th>
                                 </tr>
                             </thead>
@@ -139,14 +139,14 @@
                                                 data-item-index="{{ $index }}" />
                                         </td>
 
-
-                                      <!--  <td class="px-4 py-3">
-                                            <input type="date"
-                                                class="expiry-date-input w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                name="items[{{ $index }}][expiry_date]"
-                                                value="{{ old('items.' . $index . '.expiry_date', $item->expiry_date?->format('Y-m-d')) }}"
+                                        <td class="px-4 py-3">
+                                            <input type="text"
+                                                class="serial-number-input w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                name="items[{{ $index }}][serial_number]"
+                                                value="{{ old('items.' . $index . '.serial_number', $item->serial_number) }}"
+                                                placeholder="Enter serial number"
                                                 data-item-index="{{ $index }}" />
-                                        </td> -->
+                                        </td>
 
                                         <td class="px-4 py-3">
                                             <input type="number" step="0.01"
@@ -216,7 +216,7 @@
                             </tbody>
                             <tfoot class="bg-slate-100 border-t">
                                 <tr>
-                                    <td colspan="6" class="px-4 py-3 text-right font-medium">Total Amount:</td>
+                                    <td colspan="7" class="px-4 py-3 text-right font-medium">Total Amount:</td>
                                     <td class="px-4 py-3">
                                         <input
                                             type="number"
@@ -342,9 +342,9 @@
                             <input type="hidden" name="items[${itemCount}][product_name]" class="product-name-input" data-item-index="${itemCount}" />
                         </td>
 
-                      <!--  <td class="px-4 py-3">
-                            <input type="date" name="items[${itemCount}][expiry_date]" class="expiry-date-input w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" data-item-index="${itemCount}" />
-                        </td> -->
+                        <td class="px-4 py-3">
+                            <input type="text" name="items[${itemCount}][serial_number]" placeholder="Enter serial number" class="serial-number-input w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" data-item-index="${itemCount}" />
+                        </td>
 
                         <td class="px-4 py-3">
                             <input type="number" step="0.01" name="items[${itemCount}][quantity]" placeholder="0.00" class="quantity-input w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" data-item-index="${itemCount}" required />

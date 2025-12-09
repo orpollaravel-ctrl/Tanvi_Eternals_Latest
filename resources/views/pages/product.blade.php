@@ -15,47 +15,42 @@
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">Products</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('products.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Product
-                </x-base.button>
-            </a>
-            <x-base.menu>
-                <x-base.menu.button class="!box px-2" as="x-base.button">
-                    <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide class="h-4 w-4" icon="Plus" />
-                    </span>
-                </x-base.menu.button>
-                <x-base.menu.items class="w-40">
-                    <x-base.menu.item>
-                        <a href="javascript:void(0);" onclick="printProductTable()" class="flex">
-                            <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
-                        </a>
-                    </x-base.menu.item>
-                    <x-base.menu.item>
-                        <a href="javascript:void(0);" onclick="exportToExcel()" class="flex">
-                            <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to Excel
-                        </a>
-                    </x-base.menu.item>
-                </x-base.menu.items>
-            </x-base.menu>
-            <div class="mx-auto hidden text-slate-500 md:block">
-                @isset($products)
-                    Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }} entries
-                @endisset
+        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
+            <div class="flex items-center gap-2">
+                <a href="{{ route('products.create') }}">
+                    <x-base.button class="shadow-md" variant="primary">
+                        Add New Product
+                    </x-base.button>
+                </a>
+                <x-base.menu>
+                    <x-base.menu.button class="!box px-2" as="x-base.button">
+                        <span class="flex h-5 w-5 items-center justify-center">
+                            <x-base.lucide class="h-4 w-4" icon="Plus" />
+                        </span>
+                    </x-base.menu.button>
+                    <x-base.menu.items class="w-40">
+                        <x-base.menu.item>
+                            <a href="javascript:void(0);" onclick="printProductTable()" class="flex">
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
+                            </a>
+                        </x-base.menu.item>
+                        <x-base.menu.item>
+                            <a href="javascript:void(0);" onclick="exportToExcel()" class="flex">
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to Excel
+                            </a>
+                        </x-base.menu.item>
+                    </x-base.menu.items>
+                </x-base.menu>
             </div>
-            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
-				<div class="relative w-56 text-slate-500">
-					<x-base.form-input 
-						class="!box w-56 pr-10" 
-						type="text" 
-						placeholder="Search..." 
-						id="productSearch" 
-						autocomplete="off"
-					/>
-					<x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
-				</div>
+            <div class="relative w-56 text-slate-500">
+                <x-base.form-input 
+                    class="!box w-56 pr-10" 
+                    type="text" 
+                    placeholder="Search..." 
+                    id="productSearch" 
+                    autocomplete="off"
+                />
+                <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
             </div>
         </div>
         <!-- BEGIN: Data List -->
@@ -80,67 +75,8 @@
                         </x-base.table.th>
                     </x-base.table.tr>
                 </x-base.table.thead>
-                <tbody  id="productTableBody">
-                    @isset($products)
-                        @foreach ($products as $product)
-                            <x-base.table.tr class="intro-x">
-                                <x-base.table.td
-                                    class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="flex">
-                                        <div class="whitespace-nowrap font-medium">{{ $product->product_name }}</div>
-                                    </div>
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $product->tool_code ?? '-' }}</div>
-                                </x-base.table.td>
-                               {{-- <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $product->category->name ?? '-' }}</div>
-                                </x-base.table.td>
-                                 <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $product->product_company ?? '-' }}</div>
-                                </x-base.table.td> --}}
-                                <x-base.table.td
-                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $product->minimum_rate ? number_format($product->minimum_rate, 2) : '-' }}</div>
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $product->maximum_rate ? number_format($product->maximum_rate, 2) : '-' }}</div>
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                    <div class="flex items-center justify-center">
-                                        <a href="javascript:void(0);" 
-                                            class="flex mr-3 btn btn-sm btn-outline-primary print-barcode-btn"
-                                            data-barcode="{{ $product->barcode_number }}"
-											data-code="{{ $product->code }}"
-                                            data-product_name="{{ $product->product_name }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Printer" /> Barcode
-                                        </a>
-
-                                        <a class="mr-3 flex items-center" href="{{ route('products.show', $product->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
-                                            View
-                                        </a>
-                                        <a class="mr-3 flex items-center" href="{{ route('products.edit', $product->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal" href="#"
-                                            data-delete-route="{{ route('products.delete', $product->id) }}"
-                                            data-delete-name="{{ $product->product_name }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    </div>
-                                </x-base.table.td>
-                            </x-base.table.tr>
-                        @endforeach
-                    @endisset
-                </tbody >
+                <tbody id="productTableBody">
+                </tbody>
             </x-base.table>
         </div>
         <!-- END: Data List -->
@@ -162,22 +98,7 @@
                     <!-- Content will be populated by JavaScript -->
                 </tbody>
             </table>
-        </div>
-        <!-- BEGIN: Pagination -->
-        @isset($products)
-            <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-                <div id="paginationLinks">
-					{{ $products->onEachSide(1)->links() }}
-				</div>
-                <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-					<option>10</option>
-					<option>25</option>
-					<option>35</option>
-					<option>50</option>
-				</x-base.form-select>
-            </div>
-        @endisset
-        <!-- END: Pagination -->
+        </div> 
     </div>
     <!-- BEGIN: Print Barcode Modal -->
 	<x-base.dialog id="barcodeModal">
@@ -249,24 +170,98 @@
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const deleteButtons = document.querySelectorAll('[data-delete-route]');
-                const deleteForm = document.getElementById('delete-product-form');
-                const deleteProductName = document.getElementById('delete-product-name');
+            const allProducts = @json($products);
+            let currentIndex = 0;
+            const batchSize = 50;
+            const tdClass = 'border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600';
+            const iconSvg = {
+                printer: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>',
+                eye: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+                edit: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+                trash: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>'
+            };
 
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        const route = this.getAttribute('data-delete-route');
-                        const name = this.getAttribute('data-delete-name');
+            function renderRow(p) {
+                return `<tr class="intro-x">
+                    <td class="w-40 ${tdClass} px-5 py-3"><div class="whitespace-nowrap font-medium">${p.product_name}</div></td>
+                    <td class="${tdClass} px-5 py-3"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.tool_code || '-'}</div></td>
+                    <td class="${tdClass} px-5 py-3 text-center"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.minimum_rate ? parseFloat(p.minimum_rate).toFixed(2) : '-'}</div></td>
+                    <td class="${tdClass} px-5 py-3 text-center"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.maximum_rate ? parseFloat(p.maximum_rate).toFixed(2) : '-'}</div></td>
+                    <td class="relative w-56 ${tdClass} px-5 py-3 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
+                        <div class="flex items-center justify-center">
+                            <a href="javascript:void(0);" class="flex mr-3 btn btn-sm btn-outline-primary print-barcode-btn" data-barcode="${p.barcode_number}" data-product_name="${p.product_name}">${iconSvg.printer} Barcode</a>
+                            <a class="mr-3 flex items-center" href="/products/${p.id}">${iconSvg.eye} View</a>
+                            <a class="mr-3 flex items-center" href="/products/${p.id}/edit">${iconSvg.edit} Edit</a>
+                            <a class="flex items-center text-danger" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal" href="#" data-delete-route="/products/${p.id}" data-delete-name="${p.product_name}">${iconSvg.trash} Delete</a>
+                        </div>
+                    </td>
+                </tr>`;
+            }
 
-                        if (deleteForm && route) {
-                            deleteForm.setAttribute('action', route);
-                        }
+            function loadBatch() {
+                const end = Math.min(currentIndex + batchSize, allProducts.length);
+                const frag = document.createDocumentFragment();
+                const temp = document.createElement('tbody');
+                for (let i = currentIndex; i < end; i++) {
+                    temp.innerHTML = renderRow(allProducts[i]);
+                    frag.appendChild(temp.firstChild);
+                }
+                document.getElementById('productTableBody').appendChild(frag);
+                currentIndex = end;
+                attachEvents();
+            }
 
-                        if (deleteProductName) {
-                            deleteProductName.textContent = name || 'this product';
-                        }
-                    });
+            function attachEvents() {
+                document.querySelectorAll('.print-barcode-btn').forEach(btn => {
+                    if (!btn.dataset.bound) {
+                        btn.dataset.bound = '1';
+                        btn.onclick = function() {
+                            document.getElementById('modalProductName').textContent = this.dataset.product_name;
+                            document.getElementById('modalBarcodeNumber').textContent = this.dataset.barcode;
+                            document.getElementById('modalBarcode').innerHTML = '<svg id="modalBarcodeSvg"></svg>';
+                            JsBarcode('#modalBarcodeSvg', this.dataset.barcode, {format: 'CODE128', width: 4, height: 80, displayValue: false});
+                            tailwind.Modal.getInstance(document.querySelector('#barcodeModal')).show();
+                            setTimeout(() => printBarcodeSection(), 800);
+                        };
+                    }
+                });
+                document.querySelectorAll('[data-delete-route]').forEach(btn => {
+                    if (!btn.dataset.bound) {
+                        btn.dataset.bound = '1';
+                        btn.onclick = function() {
+                            document.getElementById('delete-product-form').setAttribute('action', this.dataset.deleteRoute);
+                            document.getElementById('delete-product-name').textContent = this.dataset.deleteName;
+                        };
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                loadBatch();
+                const observer = new IntersectionObserver(entries => {
+                    if (entries[0].isIntersecting && currentIndex < allProducts.length) loadBatch();
+                }, {rootMargin: '200px'});
+                const sentinel = document.createElement('div');
+                document.getElementById('productTableBody').parentElement.appendChild(sentinel);
+                observer.observe(sentinel);
+
+                document.getElementById('productSearch').addEventListener('input', function(e) {
+                    const search = e.target.value.toLowerCase();
+                    const filtered = search ? allProducts.filter(p => 
+                        (p.product_name && p.product_name.toLowerCase().includes(search)) ||
+                        (p.barcode_number && p.barcode_number.toLowerCase().includes(search)) ||
+                        (p.tool_code && p.tool_code.toLowerCase().includes(search))
+                    ) : allProducts;
+                    currentIndex = 0;
+                    document.getElementById('productTableBody').innerHTML = '';
+                    const temp = allProducts.slice();
+                    allProducts.length = 0;
+                    allProducts.push(...filtered);
+                    loadBatch();
+                    if (search === '') {
+                        allProducts.length = 0;
+                        allProducts.push(...temp);
+                    }
                 });
             });
         </script>
@@ -316,9 +311,9 @@
 					svg {
 						max-width: 100%;
 						height: auto !important;
-						max-height: 0.6in;
+						max-height: 1.05in;
 						display: block;
-						margin: 0 auto 3px auto;
+						margin: 0 auto;
 					}
 					.barcode-number {
 						font-size: 11px;
@@ -338,7 +333,6 @@
 			<body>
 				<div class="label">
 				${barcodeSVG}
-				<div class="barcode-number">${code}</div>
 				<div class="product-name">${product}</div>
 				</div>
 			</body>
@@ -367,14 +361,9 @@
 
 				JsBarcode("#modalBarcodeSvg", barcode, {
 					format: "CODE128",
-					displayValue: false,
-					width: 1.5,
-					height: 40,
-					margin: 0,
-					marginTop: 0,
-					marginBottom: 0,
-					marginLeft: 0,
-					marginRight: 0
+					width: 4,
+					height: 80,
+					displayValue: false
 				});
 				// Open modal (Midone/Tailwind syntax)
 				const modal = tailwind.Modal.getInstance(document.querySelector("#barcodeModal"));
@@ -561,14 +550,9 @@
 
 					JsBarcode("#modalBarcodeSvg", barcode, {
 						format: "CODE128",
-						displayValue: false,
-						width: 5,
-						height: 40,
-						margin: 0,
-						marginTop: 0,
-						marginBottom: 0,
-						marginLeft: 0,
-						marginRight: 0
+						width: 4,
+						height: 80,
+						displayValue: false
 					});
  
 					const modal = tailwind.Modal.getInstance(document.querySelector("#barcodeModal"));

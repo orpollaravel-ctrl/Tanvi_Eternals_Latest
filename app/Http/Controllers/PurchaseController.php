@@ -15,7 +15,7 @@ class PurchaseController extends Controller
      */
     public function index(): View
     {
-        $purchases = Purchase::with('vendor')->latest()->paginate(10);
+        $purchases = Purchase::with('vendor')->get();
         return view('pages/purchase', [
             'layout' => 'side-menu',
             'purchases' => $purchases,
@@ -51,6 +51,7 @@ class PurchaseController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_name' => ['required', 'string', 'max:255'],
             'items.*.product_id' => ['nullable', 'exists:products,id'],
+            'items.*.serial_number' => ['nullable', 'string', 'max:255'],
             'items.*.expiry_date' => ['nullable', 'date'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'items.*.rate' => ['required', 'numeric', 'min:0'],
@@ -82,6 +83,7 @@ class PurchaseController extends Controller
                 'purchase_id' => $purchase->id,
                 'product_name' => $item['product_name'],
                 'product_id' => $item['product_id'] ?? null,
+                'serial_number' => $item['serial_number'] ?? null,
                 'expiry_date' => $item['expiry_date'] ?? null,
                 'quantity' => $item['quantity'],
                 'rate' => $item['rate'],
@@ -128,6 +130,7 @@ class PurchaseController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_name' => ['required', 'string', 'max:255'],
             'items.*.product_id' => ['nullable', 'exists:products,id'],
+            'items.*.serial_number' => ['nullable', 'string', 'max:255'],
             'items.*.expiry_date' => ['nullable', 'date'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'items.*.rate' => ['required', 'numeric', 'min:0'],
@@ -160,6 +163,7 @@ class PurchaseController extends Controller
                 'purchase_id' => $purchase->id,
                 'product_name' => $item['product_name'],
                 'product_id' => $item['product_id'] ?? null,
+                'serial_number' => $item['serial_number'] ?? null,
                 'expiry_date' => $item['expiry_date'] ?? null,
                 'quantity' => $item['quantity'],
                 'rate' => $item['rate'],

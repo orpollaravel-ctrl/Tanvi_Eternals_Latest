@@ -72,7 +72,7 @@
                             @for ($i = 0; $i < $rowCount; $i++)
                                 <div class="grid grid-cols-12 gap-4 mb-4 row-item">
                                     <!-- Product (Item) -->
-                                    <div class="col-span-4">
+                                    <div class="col-span-3">
                                         <x-base.form-label>Product (Item)</x-base.form-label>
                                         <select
                                             class="product-select tom-select w-full"
@@ -91,8 +91,19 @@
                                         </select>
                                     </div>
 
+                                    <!-- Serial Number -->
+                                    <div class="col-span-2">
+                                        <x-base.form-label>Serial Number</x-base.form-label>
+                                        <x-base.form-input
+                                            type="text"
+                                            name="serial_number[]"
+                                            placeholder="Enter serial number"
+                                            value="{{ $hasOldData ? (old('serial_number')[$i] ?? '') : '' }}"
+                                        />
+                                    </div>
+
                                     <!-- Quantity -->
-                                    <div class="col-span-3">
+                                    <div class="col-span-2">
                                         <x-base.form-label>Quantity</x-base.form-label>
                                         <x-base.form-input
                                             type="number"
@@ -104,7 +115,7 @@
                                     </div>
 
                                     <!-- Employee -->
-                                    <div class="col-span-4">
+                                    <div class="col-span-3">
                                         <x-base.form-label>Employee</x-base.form-label>
                                         <select
                                             class="employee-select tom-select w-full"
@@ -139,19 +150,24 @@
                     </div>
                     <template id="row-template">
                         <div class="grid grid-cols-12 gap-4 mb-4 row-item">
-                            <div class="col-span-4">
+                            <div class="col-span-3">
                                 <label class="form-label">Product (Item)</label>
                                 <select class="product-select tom-select w-full" name="product_id[]" data-placeholder="Search & select product...">
                                     <option value="">Select product...</option>
                                 </select>
                             </div>
 
-                            <div class="col-span-3">
+                            <div class="col-span-2">
+                                <label class="form-label">Serial Number</label>
+                                <input type="text" name="serial_number[]" placeholder="Enter serial number" class="disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80"/>
+                            </div>
+
+                            <div class="col-span-2">
                                 <label class="form-label">Quantity</label>
                                 <input type="number" name="add_quantity[]" step="1" min="0" placeholder="Enter quantity" class="disabled:bg-slate-100 disabled:cursor-not-allowed dark:disabled:bg-darkmode-800/50 dark:disabled:border-transparent [&[readonly]]:bg-slate-100 [&[readonly]]:cursor-not-allowed [&[readonly]]:dark:bg-darkmode-800/50 [&[readonly]]:dark:border-transparent transition duration-200 ease-in-out w-full text-sm border-slate-200 shadow-sm rounded-md placeholder:text-slate-400/90 focus:ring-4 focus:ring-primary focus:ring-opacity-20 focus:border-primary focus:border-opacity-40 dark:bg-darkmode-800 dark:border-transparent dark:focus:ring-slate-700 dark:focus:ring-opacity-50 dark:placeholder:text-slate-500/80"/>
                             </div>
 
-                            <div class="col-span-4">
+                            <div class="col-span-3">
                                 <label class="form-label">Employee</label>
                                 <select class="employee-select tom-select w-full" name="emp_id[]" data-placeholder="Search & select employee...">
                                     <option value="">Select employee...</option>

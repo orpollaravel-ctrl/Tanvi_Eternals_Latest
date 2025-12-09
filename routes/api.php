@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -16,12 +17,22 @@ use App\Http\Controllers\DepartmentController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/login', [AuthController::class, 'login']); 
+Route::get('/customers', [AuthController::class, 'customers']);
+Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+Route::get('/quotations', [AuthController::class, 'quotations']);
+Route::post('/quotations', [AuthController::class, 'createQuotation']);
+Route::get('/quotations/{id}', [AuthController::class, 'quotationDetails']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
+
 Route::get('/products/search', [ProductController::class, 'search']);
-// Employee search API for tool assign forms
 Route::get('/employees/search', [EmployeeController::class, 'search']);
 Route::get('/departments/search', [DepartmentController::class, 'search']);
-
 Route::put('/opening-stock/{productId}', [App\Http\Controllers\OpeningStockController::class, 'updateAjax']);

@@ -17,7 +17,7 @@ class Purchase extends Model
         'bill_number',
         'delivery_date',
         'total_invoice_amount',
-        'bill_photo',
+        'bill_photo', 
     ];
 
     protected $casts = [

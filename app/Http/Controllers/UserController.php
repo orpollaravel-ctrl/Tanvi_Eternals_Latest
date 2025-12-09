@@ -45,8 +45,9 @@ class UserController extends Controller
             'password' => ['required', 'confirmed', 'min:8'],
             'gender' => ['required', 'in:male,female,other'],
             'contact_number' => ['required', 'string', 'max:50'],
-            'active' => ['nullable', 'boolean'],
-             'permissions' => ['required', 'array'],
+            'active' => ['nullable', 'in:0,1'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'permissions' => ['required', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ]);
 
@@ -58,6 +59,16 @@ class UserController extends Controller
             'contact_number' => $validated['contact_number'],
             'active' => (bool) ($validated['active'] ?? false),
         ]);
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = $file->getClientOriginalName();
+            $filePath = 'uploade/user';
+            $file->move(public_path($filePath), $fileName);
+            $user->update(['photo' => $fileName]);
+        }
+
+        $user->permissions()->sync($validated['permissions']);
 
         return redirect()->route('users')->with('success', 'User created successfully.');
     }
@@ -97,7 +108,8 @@ class UserController extends Controller
             'gender' => ['nullable', 'in:male,female,other'],
             'contact_number' => ['required', 'string', 'max:50'],
             'password' => ['nullable', 'confirmed', 'min:8'],
-            'active' => ['nullable', 'boolean'],
+            'active' => ['nullable', 'in:0,1'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'permissions' => ['required', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ]);
@@ -114,6 +126,18 @@ class UserController extends Controller
 
         if (!empty($validated['password'] ?? null)) {
             $user->password = Hash::make($validated['password']);
+        }
+
+        if ($request->hasFile('photo')) { 
+            if ($user->photo && file_exists(public_path('uploads/user/' . $user->photo))) {
+                unlink(public_path('uploads/user/' . $user->photo));
+            }
+            
+            $file = $request->file('photo');
+            $fileName = $file->getClientOriginalName();
+            $filePath = 'uploads/user';
+            $file->move(public_path($filePath), $fileName);
+            $user->photo = $fileName;
         }
 
         $user->save();
