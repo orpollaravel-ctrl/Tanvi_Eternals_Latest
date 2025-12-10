@@ -51,7 +51,14 @@
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Name *</x-base.form-label>
-                            <x-base.form-input type="text" name="customer_name" value="{{ old('customer_name') }}" placeholder="Customer Name" required />
+                            <select id="customer-select" name="customer_name" class="tom-select w-full" required>
+                                <option value="">Select Customer</option>
+                                @foreach($clients as $client)
+                                    <option value="{{ $client->name }}" data-code="{{ $client->client_code }}" @selected(old('customer_name') == $client->name)>
+                                        {{ $client->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
@@ -59,7 +66,7 @@
                         </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Code *</x-base.form-label>
-                            <x-base.form-input type="text" name="customer_code" value="{{ old('customer_code') }}" placeholder="Customer Code" required />
+                            <x-base.form-input type="text" id="customer-code" name="customer_code" value="{{ old('customer_code') }}" placeholder="Customer Code" readonly required />
                         </div>
                         <div class="col-span-12 sm:col-span-6"></div>
                         <div class="col-span-12 sm:col-span-6">
@@ -178,8 +185,26 @@
         </div>
     </div>
 
+    @push('vendors')
+        @vite('resources/js/vendor/tom-select/index.js')
+    @endpush
+
+    @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Tom Select for customer
+            const customerSelect = document.getElementById('customer-select');
+            const customerCodeInput = document.getElementById('customer-code');
+            
+            new TomSelect(customerSelect, {
+                onChange: function(value) {
+                    const option = customerSelect.querySelector(`option[value="${value}"]`);
+                    if (option) {
+                        customerCodeInput.value = option.dataset.code || '';
+                    }
+                }
+            });
+
             // Handle regular radio buttons
             const radioLabels = document.querySelectorAll('label:has(input[type="radio"]):not(:has(.metal-option))');
             
@@ -224,4 +249,5 @@
             });
         });
     </script>
+    @endpush
 @endsection

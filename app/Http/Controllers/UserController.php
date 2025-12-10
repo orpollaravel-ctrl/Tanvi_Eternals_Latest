@@ -15,6 +15,9 @@ class UserController extends Controller
      */
     public function index() : View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-users')) {
+           abort(403,'Permission Denied');
+        }
         $users = User::all();
         return view('pages/user', [
             'layout' => 'side-menu',
@@ -27,6 +30,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-users')) {
+            abort(403,'Permission Denied');
+        }
+        
         $permissions = Permission::all()->groupBy('group');
         return view('pages/user-create', [
             'layout' => 'side-menu',
@@ -86,6 +93,9 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-users')) {
+            abort(403,'Permission Denied');
+        }
         $user = User::findOrFail($id);
         $permissions = Permission::all();
         return view('pages/user-edit', [
@@ -152,6 +162,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-users')) {
+            abort(403,'Permission Denied');
+        }
         $user = User::findOrFail($id);
         $user->delete();
 

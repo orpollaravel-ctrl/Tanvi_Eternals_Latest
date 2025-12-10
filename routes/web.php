@@ -52,6 +52,10 @@ Route::get('migrate', function() {
     Artisan::call('migrate', ['--force' => true]);
     return "Migration completed";
 });
+Route::get('db-seed', function() {
+    Artisan::call('db:seed');
+    return "Database seeded";
+});
 Route::get('dark-mode-switcher', [DarkModeController::class, 'switch'])->name('dark-mode-switcher');
 Route::get('color-scheme-switcher/{color_scheme}', [ColorSchemeController::class, 'switch'])->name('color-scheme-switcher');
 
@@ -60,28 +64,7 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
     Route::post('login', 'login')->name('login.check');
 });
 
-Route::middleware('auth')->group(function () {
-	
-	/*Route::get('/run-npm', function () {
-		if (request()->get('key') !== 'my-secret-key-123') {
-			abort(403, 'Unauthorized');
-		}
-
-		$output = shell_exec('npm run dev 2>&1');  
-		return "<pre>$output</pre>";
-	});
-	Route::get('/run-storage-link', function () {
-		if (request()->get('key') !== 'my-secret-key-123') {
-			abort(403, 'Unauthorized');
-		}
-
-		try {
-			Artisan::call('storage:link');
-			return "<pre>" . Artisan::output() . "</pre>";
-		} catch (\Exception $e) {
-			return "<pre>Error: " . $e->getMessage() . "</pre>";
-		}
-	});*/
+Route::middleware('auth')->group(function () { 
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
@@ -301,8 +284,8 @@ Route::middleware('auth')->group(function () {
     });
 });
 Route::prefix('transaction')->group(function () {
-    Route::get('manual-deal', [BullionRateFixController::class, 'manual_deal_create'])->name('manual_deal');
-    Route::post('manual-deal', [BullionRateFixController::class, 'manual_deal_store'])->name('manual_deal');
+    Route::get('manual-deal', [BullionRateFixController::class, 'manual_deal_create'])->name('manual_deal.create');
+    Route::post('manual-deal', [BullionRateFixController::class, 'manual_deal_store'])->name('manual_deal.store');
     Route::resources([
         'receipts' => ReceiptController::class,
         'brfs' => BullionRateFixController::class,
@@ -317,7 +300,6 @@ Route::prefix('master')->group(function () {
 	Route::resources([
 		'dealers' => DealerController::class,
 		'bullions' => BullionController::class,
-		'users' => UserController::class,
 		'paymentmodes' => PaymentModeController::class
 	]);
 	// Route::middleware(['auth', 'isAdmin'])->group(function () {

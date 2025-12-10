@@ -51,7 +51,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $appends = ['photo'];
+    // protected $appends = ['photo']; // Disabled for speed
 
     /**
      * The getter that return accessible URL for user photo.
@@ -72,8 +72,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Permission::class, 'permission_user');
     }
 
+    private $userPermissions = null;
+
     public function hasPermission(string $permissionName): bool
-    {
-        return $this->permissions()->where('name', $permissionName)->exists();
+    { 
+        if ($this->userPermissions === null) {
+            $this->userPermissions = $this->permissions()->pluck('name')->toArray();
+        }
+        return in_array($permissionName, $this->userPermissions);
     }
 }

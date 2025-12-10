@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuotationController extends Controller
 {
-    public function index(): View
+    public function index(): View   
     {
         $quotations = Quotation::latest()->get();
         return view('pages/quotation', [
@@ -20,8 +20,10 @@ class QuotationController extends Controller
 
     public function create(): View
     {
+        $clients = \App\Models\Client::orderBy('name')->get();
         return view('pages/quotation-create', [
             'layout' => 'side-menu',
+            'clients' => $clients,
         ]);
     }
 
@@ -49,9 +51,11 @@ class QuotationController extends Controller
     public function edit(string $id): View
     {
         $quotation = Quotation::findOrFail($id);
+        $clients = \App\Models\Client::orderBy('name')->get();
         return view('pages/quotation-edit', [
             'layout' => 'side-menu',
             'quotation' => $quotation,
+            'clients' => $clients,
         ]);
     }
 

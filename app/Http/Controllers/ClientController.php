@@ -14,6 +14,9 @@ class ClientController extends Controller
      */
     public function index(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-clients')) {
+           abort(403,'Permission Denied');
+        }
         $clients = Client::query()->latest()->paginate(10);
 
         return view('pages.client', [
@@ -27,6 +30,9 @@ class ClientController extends Controller
      */
     public function create(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-clients')) {
+            abort(403,'Permission Denied');
+        }
         return view('pages.client-create');
     }
 
@@ -53,6 +59,9 @@ class ClientController extends Controller
      */
     public function edit(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-clients')) {
+            abort(403,'Permission Denied');
+        }
         $client = Client::findOrFail($id);
         return view('pages.client-edit', [
             'layout' => 'side-menu',
@@ -76,6 +85,9 @@ class ClientController extends Controller
      */
     public function destroy(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-clients')) {
+            abort(403,'Permission Denied');
+        }
         $client = Client::findOrFail($id);
         $client->delete();
 

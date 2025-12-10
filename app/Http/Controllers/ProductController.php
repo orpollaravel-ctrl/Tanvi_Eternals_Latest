@@ -17,11 +17,32 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = Product::query()->latest()->get();
+        if ($request->ajax()) {
+            $offset = $request->get('offset', 0);
+            $limit = 50;
+            $search = $request->get('search', '');
+            
+            $query = Product::query()->latest();
+            
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('product_name', 'like', '%' . $search . '%')
+                      ->orWhere('barcode_number', 'like', '%' . $search . '%')
+                      ->orWhere('tool_code', 'like', '%' . $search . '%');
+                });
+            }
+            
+            $total = $query->count();
+            $products = $query->skip($offset)->take($limit)->get();
+            
+            return response()->json([
+                'products' => $products,
+                'hasMore' => ($offset + $limit) < $total
+            ]);
+        }
 
         return view('pages/product', [
             'layout' => 'side-menu',
-            'products' => $products,
         ]);
     }
 

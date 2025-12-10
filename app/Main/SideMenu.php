@@ -125,7 +125,7 @@ class SideMenu
                             ],
                             'manual-deal' => [
                                 'icon' => 'file-text',
-                                'route_name' => 'manual_deal',
+                                'route_name' => 'manual_deal.create',
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Manual Deal',
                                 'permission' => 'view-manual-deals',
@@ -194,7 +194,7 @@ class SideMenu
                             ],
                             'users' => [
                                 'icon' => 'user',
-                               'route_name' => 'users.index',
+                               'route_name' => 'users',
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Users',
                                 'permission' => 'view-users',

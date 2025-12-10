@@ -16,11 +16,13 @@
 
     <div class="mt-5 grid grid-cols-8 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('client.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Client
-                </x-base.button>
-            </a>
+            @if(auth()->check() && auth()->user()->hasPermission('create-users'))
+                <a href="{{ route('client.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Client
+                    </x-base.button>
+                </a>
+            @endif
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">

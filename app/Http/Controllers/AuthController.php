@@ -25,19 +25,12 @@ class AuthController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      */
-    public function login(LoginRequest $request): RedirectResponse
-    { 
-        if (!Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password,
-            'active' => 1
-        ])) {
-            return back()->withErrors([
-                'email' => 'Invalid credentials or account is inactive.'
-            ])->withInput();
+    public function login(Request $request)
+    {
+        if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect('/');
         }
-        
-        return redirect()->intended('/dashboard');
+        return back()->withErrors(['password' => 'Invalid credentials']);
     }
 
     /**
