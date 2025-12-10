@@ -37,7 +37,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('manual_deal') }}">
+                <form method="POST" action="{{ route('manual_deal.store') }}">
                     @csrf
 
                     <div class="grid grid-cols-12 gap-4">
@@ -98,7 +98,7 @@
 
                     <!-- Buttons -->
                     <div class="mt-5 flex items-center">
-                        <a href="{{ route('manual_deal') }}" class="mr-3">
+                        <a href="{{ route('manual_deal.create') }}" class="mr-3">
                             <x-base.button type="button" variant="outline-secondary">Cancel</x-base.button>
                         </a>
 

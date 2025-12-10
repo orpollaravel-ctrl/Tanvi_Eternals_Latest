@@ -7,7 +7,7 @@
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">Users</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
+        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
             @if(auth()->check() && auth()->user()->hasPermission('create-users'))
                 <a href="{{ route('users.create') }}">
                     <x-base.button class="mr-2 shadow-md" variant="primary">

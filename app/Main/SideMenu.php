@@ -191,14 +191,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Dealers',
                                 'permission' => 'view-dealers',
-                            ],
-                            'users' => [
-                                'icon' => 'user',
-                               'route_name' => 'users',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Users',
-                                'permission' => 'view-users',
-                            ],
+                            ], 
                             'payment-modes' => [
                                 'icon' => 'credit-card',
                                 'route_name' => 'paymentmodes.index',
