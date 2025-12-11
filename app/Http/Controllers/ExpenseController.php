@@ -46,6 +46,15 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
     }
 
+    public function show(string $id): View
+    {
+        $expense = Expense::findOrFail($id);
+        return view('expenses/expense-show', [
+            'layout' => 'side-menu',
+            'expense' => $expense,
+        ]);
+    }
+
     public function edit(string $id): View
     {
         $expense = Expense::findOrFail($id);

@@ -262,6 +262,7 @@ Route::middleware('auth')->group(function () {
         Route::get('expenses', 'index')->name('expenses.index');
         Route::get('expenses/create', 'create')->name('expenses.create');
         Route::post('expenses', 'store')->name('expenses.store');
+        Route::get('expenses/{id}', 'show')->name('expenses.show');
         Route::get('expenses/{id}/edit', 'edit')->name('expenses.edit');
         Route::put('expenses/{id}', 'update')->name('expenses.update');
         Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');

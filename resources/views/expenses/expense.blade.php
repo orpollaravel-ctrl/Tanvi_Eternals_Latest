@@ -27,7 +27,7 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Amount</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Remark</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Bill</x-base.table.th>
-                        @if(auth()->check() && (auth()->user()->hasPermission('edit-expenses') || auth()->user()->hasPermission('delete-expenses')))
+                        @if(auth()->check() && (auth()->user()->hasPermission('view-expenses') || auth()->user()->hasPermission('edit-expenses') || auth()->user()->hasPermission('delete-expenses')))
                             <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
                         @endif
                     </x-base.table.tr>
@@ -54,9 +54,15 @@
                                     -
                                 @endif
                             </x-base.table.td>
-                            @if(auth()->check() && (auth()->user()->hasPermission('edit-expenses') || auth()->user()->hasPermission('delete-expenses')))
+                            @if(auth()->check() && (auth()->user()->hasPermission('view-expenses') || auth()->user()->hasPermission('edit-expenses') || auth()->user()->hasPermission('delete-expenses')))
                                 <x-base.table.td class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
+                                        @if(auth()->check() && auth()->user()->hasPermission('view-expenses'))
+                                            <a class="mr-3 flex items-center" href="{{ route('expenses.show', $expense->id) }}">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
+                                                View
+                                            </a>
+                                        @endif
                                         @if(auth()->check() && auth()->user()->hasPermission('edit-expenses'))
                                             <a class="mr-3 flex items-center" href="{{ route('expenses.edit', $expense->id) }}">
                                                 <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
