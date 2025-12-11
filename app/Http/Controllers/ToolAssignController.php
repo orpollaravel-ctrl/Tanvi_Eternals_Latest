@@ -13,6 +13,9 @@ class ToolAssignController extends Controller
 {
      public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-tool-issues')) {
+            abort(403,'Permission Denied');
+        }
         if ($request->ajax()) {
             $offset = $request->get('offset', 0);
             $limit = 25;
@@ -86,6 +89,9 @@ class ToolAssignController extends Controller
 
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-tool-issues')) {
+            abort(403,'Permission Denied');
+        }
         $employees = Employee::all();
         $departments = Department::all();
         $products = Product::all();
@@ -218,6 +224,9 @@ class ToolAssignController extends Controller
 
     public function edit(ToolAssign $toolAssign)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-tool-issues')) {
+            abort(403,'Permission Denied');
+        }
         $employees = Employee::all();
         $departments = Department::all();
         $products = Product::all();
@@ -296,6 +305,9 @@ class ToolAssignController extends Controller
 
 	public function destroy(ToolAssign $toolAssign)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-tool-issues')) {
+            abort(403,'Permission Denied');
+        }
         try {
             // Delete associated tool assign items first
             $toolAssign->items()->delete();

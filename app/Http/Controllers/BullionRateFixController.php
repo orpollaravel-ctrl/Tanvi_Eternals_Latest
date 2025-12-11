@@ -35,6 +35,9 @@ class BullionRateFixController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullion-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         $bullions = Bullion::where('status', 1)->get();
         // dd($brfs);
         $brfs = BullionRateFix::with('bullion', 'fixedBy', 'createdBy', 'updatedBy')
@@ -53,6 +56,9 @@ class BullionRateFixController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullion-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         $bullions = Bullion::where('status', 1)->get();
         // $users = User::where('status', 1)->get();
         $users = User::all();
@@ -208,6 +214,9 @@ class BullionRateFixController extends Controller
      */
     public function edit(BullionRateFix $brf)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullion-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -273,6 +282,9 @@ class BullionRateFixController extends Controller
      */
     public function destroy(BullionRateFix $brf)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullion-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }

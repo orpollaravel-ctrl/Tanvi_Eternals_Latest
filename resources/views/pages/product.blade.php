@@ -4,12 +4,10 @@
     <title>Products - Jewelry ERP</title>
 @endsection
 <style>
-
-/* Screen view — hidden */
-#printArea {
-    display: none;
-}
-
+    /* Screen view — hidden */
+    #printArea {
+        display: none;
+    }
 </style>
 
 @section('subcontent')
@@ -17,11 +15,13 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
             <div class="flex items-center gap-2">
-                <a href="{{ route('products.create') }}">
-                    <x-base.button class="shadow-md" variant="primary">
-                        Add New Product
-                    </x-base.button>
-                </a>
+                @if (auth()->check() && auth()->user()->hasPermission('create-products'))
+                    <a href="{{ route('products.create') }}">
+                        <x-base.button class="shadow-md" variant="primary">
+                            Add New Product
+                        </x-base.button>
+                    </a>
+                @endif
                 <x-base.menu>
                     <x-base.menu.button class="!box px-2" as="x-base.button">
                         <span class="flex h-5 w-5 items-center justify-center">
@@ -43,13 +43,8 @@
                 </x-base.menu>
             </div>
             <div class="relative w-56 text-slate-500">
-                <x-base.form-input 
-                    class="!box w-56 pr-10" 
-                    type="text" 
-                    placeholder="Search..." 
-                    id="productSearch" 
-                    autocomplete="off"
-                />
+                <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="productSearch"
+                    autocomplete="off" />
                 <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
             </div>
         </div>
@@ -69,9 +64,11 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Max Rate
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-products') || auth()->user()->hasPermission('delete-products')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <tbody id="productTableBody">
@@ -97,49 +94,49 @@
                     <!-- Content will be populated by JavaScript -->
                 </tbody>
             </table>
-        </div> 
+        </div>
     </div>
     <!-- BEGIN: Print Barcode Modal -->
-	<x-base.dialog id="barcodeModal">
-		<x-base.dialog.panel>
-			<div class="p-5 text-center">
-				<x-base.lucide class="mx-auto mt-3 h-16 w-16 text-primary" icon="Printer" />
-				<div class="mt-4 text-2xl font-semibold">Print Barcode</div>
+    <x-base.dialog id="barcodeModal">
+        <x-base.dialog.panel>
+            <div class="p-5 text-center">
+                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-primary" icon="Printer" />
+                <div class="mt-4 text-2xl font-semibold">Print Barcode</div>
 
-				<!-- Barcode Section -->
-				<div class="mt-6 flex justify-center">
-					<div id="modalBarcode">
-						<svg id="modalBarcodeSvg"></svg>
-					</div>
-				</div>
+                <!-- Barcode Section -->
+                <div class="mt-6 flex justify-center">
+                    <div id="modalBarcode">
+                        <svg id="modalBarcodeSvg"></svg>
+                    </div>
+                </div>
 
-				<!-- Product Info Row -->
-				<div class="mt-6 grid grid-cols-1 gap-4">
-					<div>
-						<div class="text-sm text-slate-500">Product Name</div>
-						<div id="modalProductName" class="font-semibold text-base mt-1"></div>
-					</div>
-					<div class="">
-						<div class="text-sm text-slate-500">Code Value</div>
-						<div id="modalBarcodeNumber" class="font-semibold text-base mt-1"></div>
-					</div>
-				</div>
-			</div>
-			<!-- Footer Buttons -->
-			<div class="px-5 pb-8 text-center">
-				<x-base.button class="mr-2 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
-					Close
-				</x-base.button>
-				<!-- <x-base.button class="w-24" variant="primary" onclick="printBarcodeNow()">
-					<x-base.lucide icon="Printer" class="mr-1 h-4 w-4" /> Print
-				</x-base.button> -->
-			</div>
-		</x-base.dialog.panel>
-	</x-base.dialog>
-	<!-- END: Print Barcode Modal -->
-	<div id="printArea">
-	</div>
-    
+                <!-- Product Info Row -->
+                <div class="mt-6 grid grid-cols-1 gap-4">
+                    <div>
+                        <div class="text-sm text-slate-500">Product Name</div>
+                        <div id="modalProductName" class="font-semibold text-base mt-1"></div>
+                    </div>
+                    <div class="">
+                        <div class="text-sm text-slate-500">Code Value</div>
+                        <div id="modalBarcodeNumber" class="font-semibold text-base mt-1"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Buttons -->
+            <div class="px-5 pb-8 text-center">
+                <x-base.button class="mr-2 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
+                    Close
+                </x-base.button>
+                <!-- <x-base.button class="w-24" variant="primary" onclick="printBarcodeNow()">
+         <x-base.lucide icon="Printer" class="mr-1 h-4 w-4" /> Print
+        </x-base.button> -->
+            </div>
+        </x-base.dialog.panel>
+    </x-base.dialog>
+    <!-- END: Print Barcode Modal -->
+    <div id="printArea">
+    </div>
+
     <!-- BEGIN: Delete Confirmation Modal -->
     <x-base.dialog id="delete-confirmation-modal">
         <x-base.dialog.panel>
@@ -155,8 +152,7 @@
                 <form id="delete-product-form" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button"
-                        variant="outline-secondary">
+                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
                         Cancel
                     </x-base.button>
                     <x-base.button class="w-24" type="submit" variant="danger">
@@ -173,7 +169,8 @@
             let isLoading = false;
             let hasMore = true;
             let searchQuery = '';
-            const tdClass = 'border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600';
+            const tdClass =
+                'border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600';
             const iconSvg = {
                 printer: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>',
                 eye: '<svg class="mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -188,38 +185,43 @@
                     <td class="${tdClass} px-5 py-3"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.barcode_number || '-'}</div></td>
                     <td class="${tdClass} px-5 py-3 text-center"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.minimum_rate ? parseFloat(p.minimum_rate).toFixed(2) : '-'}</div></td>
                     <td class="${tdClass} px-5 py-3 text-center"><div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${p.maximum_rate ? parseFloat(p.maximum_rate).toFixed(2) : '-'}</div></td>
-                    <td class="relative w-56 ${tdClass} px-5 py-3 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
-                        <div class="flex items-center justify-center">
-                            <a href="javascript:void(0);" class="flex mr-3 btn btn-sm btn-outline-primary print-barcode-btn" data-barcode="${p.barcode_number || ''}" data-product_name="${p.product_name}">${iconSvg.printer} Barcode</a>
-                            <a class="mr-3 flex items-center" href="/products/${p.id}">${iconSvg.eye} View</a>
-                            <a class="mr-3 flex items-center" href="/products/${p.id}/edit">${iconSvg.edit} Edit</a>
-                            <a class="flex items-center text-danger" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal" href="#" data-delete-route="/products/${p.id}" data-delete-name="${p.product_name}">${iconSvg.trash} Delete</a>
-                        </div>
-                    </td>
+                    ${@json(auth()->check() && (auth()->user()->hasPermission('edit-products') || auth()->user()->hasPermission('delete-products'))) ? `
+                        <td class="relative w-56 ${tdClass} px-5 py-3 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
+                            <div class="flex items-center justify-center">
+                                <a href="javascript:void(0);" class="flex mr-3 btn btn-sm btn-outline-primary print-barcode-btn" data-barcode="${p.barcode_number || ''}" data-product_name="${p.product_name}">${iconSvg.printer} Barcode</a>
+                                <a class="mr-3 flex items-center" href="/products/${p.id}">${iconSvg.eye} View</a>
+                                ${@json(auth()->check() && auth()->user()->hasPermission('edit-products')) ? `
+                                    <a class="mr-3 flex items-center" href="/products/${p.id}/edit">${iconSvg.edit} Edit</a>` : ''}
+                                ${@json(auth()->check() && auth()->user()->hasPermission('delete-products')) ? `
+                                    <a class="flex items-center text-danger" data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal" href="#" data-delete-route="/products/${p.id}" data-delete-name="${p.product_name}">${iconSvg.trash} Delete</a>` : ''}
+                            </div>
+                        </td>` : ''}
                 </tr>`;
             }
 
             function loadProducts() {
                 if (isLoading || !hasMore) return;
                 isLoading = true;
-                
+
                 fetch(`{{ route('products.index') }}?offset=${offset}&search=${encodeURIComponent(searchQuery)}`, {
-                    headers: {'X-Requested-With': 'XMLHttpRequest'}
-                })
-                .then(r => r.json())
-                .then(data => {
-                    const tbody = document.getElementById('productTableBody');
-                    data.products.forEach(p => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = renderRow(p).replace(/<\/?tr[^>]*>/g, '');
-                        tbody.appendChild(tr);
-                    });
-                    hasMore = data.hasMore;
-                    offset += data.products.length;
-                    isLoading = false;
-                    attachEvents();
-                })
-                .catch(() => isLoading = false);
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        const tbody = document.getElementById('productTableBody');
+                        data.products.forEach(p => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = renderRow(p).replace(/<\/?tr[^>]*>/g, '');
+                            tbody.appendChild(tr);
+                        });
+                        hasMore = data.hasMore;
+                        offset += data.products.length;
+                        isLoading = false;
+                        attachEvents();
+                    })
+                    .catch(() => isLoading = false);
             }
 
             function attachEvents() {
@@ -231,7 +233,12 @@
                         document.getElementById('modalProductName').textContent = this.dataset.product_name;
                         document.getElementById('modalBarcodeNumber').textContent = barcode;
                         document.getElementById('modalBarcode').innerHTML = '<svg id="modalBarcodeSvg"></svg>';
-                        JsBarcode('#modalBarcodeSvg', barcode, {format: 'CODE128', width: 4, height: 80, displayValue: false});
+                        JsBarcode('#modalBarcodeSvg', barcode, {
+                            format: 'CODE128',
+                            width: 4,
+                            height: 80,
+                            displayValue: false
+                        });
                         tailwind.Modal.getInstance(document.querySelector('#barcodeModal')).show();
                         setTimeout(() => printBarcodeSection(), 800);
                     };
@@ -239,7 +246,8 @@
                 document.querySelectorAll('[data-delete-route]:not([data-bound])').forEach(btn => {
                     btn.dataset.bound = '1';
                     btn.onclick = function() {
-                        document.getElementById('delete-product-form').setAttribute('action', this.dataset.deleteRoute);
+                        document.getElementById('delete-product-form').setAttribute('action', this.dataset
+                            .deleteRoute);
                         document.getElementById('delete-product-name').textContent = this.dataset.deleteName;
                     };
                 });
@@ -247,10 +255,12 @@
 
             document.addEventListener('DOMContentLoaded', function() {
                 loadProducts();
-                
+
                 const observer = new IntersectionObserver(entries => {
                     if (entries[0].isIntersecting) loadProducts();
-                }, {rootMargin: '200px'});
+                }, {
+                    rootMargin: '200px'
+                });
                 const sentinel = document.createElement('div');
                 document.querySelector('table').parentElement.appendChild(sentinel);
                 observer.observe(sentinel);
@@ -270,15 +280,15 @@
         </script>
     @endpush
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script>
-function printBarcodeSection() {
-		const barcodeSVG = document.getElementById('modalBarcodeSvg').outerHTML;
-		const product = document.getElementById('modalProductName').textContent;
-		const code = document.getElementById('modalBarcodeNumber').textContent;
+    <script>
+        function printBarcodeSection() {
+            const barcodeSVG = document.getElementById('modalBarcodeSvg').outerHTML;
+            const product = document.getElementById('modalProductName').textContent;
+            const code = document.getElementById('modalBarcodeNumber').textContent;
 
-		const printWindow = window.open('', '', 'width=400,height=400');
+            const printWindow = window.open('', '', 'width=400,height=400');
 
-		printWindow.document.write(`
+            printWindow.document.write(`
 			<html>
 			<head>
 				<title>Print Barcode</title>
@@ -341,29 +351,29 @@ function printBarcodeSection() {
 			</html>
 		`);
 
-		printWindow.document.close();
-		printWindow.onload = function() {
-			printWindow.focus();
-			printWindow.print();
-			printWindow.close();
-		};
-	}
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        }
 
-window.printBarcodeNow = function () {
+        window.printBarcodeNow = function() {
 
-    // Make sure print area exists
-    const printArea = document.getElementById("printArea");
-    if (!printArea) {
-        console.error("printArea missing in DOM");
-        return;
-    }
+            // Make sure print area exists
+            const printArea = document.getElementById("printArea");
+            if (!printArea) {
+                console.error("printArea missing in DOM");
+                return;
+            }
 
-    // Build the print content cleanly
-    const barcodeSVG = document.getElementById("modalBarcodeSvg")?.outerHTML || "";
-    const productName = document.getElementById("modalProductName")?.textContent || "";
-    const codeValue = document.getElementById("modalBarcodeNumber")?.textContent || "";
+            // Build the print content cleanly
+            const barcodeSVG = document.getElementById("modalBarcodeSvg")?.outerHTML || "";
+            const productName = document.getElementById("modalProductName")?.textContent || "";
+            const codeValue = document.getElementById("modalBarcodeNumber")?.textContent || "";
 
-    printArea.innerHTML = `
+            printArea.innerHTML = `
 		<style>
 			@page {
 				size: 2.50in 1.13in;
@@ -420,26 +430,20 @@ window.printBarcodeNow = function () {
         
     `;
 
-    window.print();
-};
- 
-function printProductTable() {
-    const search = document.getElementById('productSearch').value;
-    const url = `{{ route('products.print') }}?search=${encodeURIComponent(search)}`;
-    window.open(url, '_blank');
-}
+            window.print();
+        };
 
-
-
-	
-	
-</script>
-<script>
-window.exportToExcel = function() {
-    const search = document.getElementById('productSearch').value;
-    const url = `{{ route('products.export.excel') }}?search=${encodeURIComponent(search)}`;
-    window.location.href = url;
-};
-</script>
-
+        function printProductTable() {
+            const search = document.getElementById('productSearch').value;
+            const url = `{{ route('products.print') }}?search=${encodeURIComponent(search)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+    <script>
+        window.exportToExcel = function() {
+            const search = document.getElementById('productSearch').value;
+            const url = `{{ route('products.export.excel') }}?search=${encodeURIComponent(search)}`;
+            window.location.href = url;
+        };
+    </script>
 @endsection

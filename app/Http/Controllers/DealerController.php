@@ -29,6 +29,9 @@ class DealerController extends Controller
      */
     public function index(Request $request)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-bullions')) {
+            abort(403,'Permission Denied');
+        }
         if ($request->ajax()) {
             $page = $request->get('page', 1);
             $perPage = 25;
@@ -66,6 +69,9 @@ class DealerController extends Controller
      */
     public function create()
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-bullions')) {
+            abort(403,'Permission Denied');
+        }
         return view('dealer.create');
     }
 
@@ -114,6 +120,9 @@ class DealerController extends Controller
      */
     public function edit(Dealer $dealer)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('edit-bullions')) {
+            abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -159,6 +168,9 @@ class DealerController extends Controller
      */
     public function destroy(Dealer $dealer)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('delete-bullions')) {
+            abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }

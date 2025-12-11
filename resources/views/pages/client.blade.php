@@ -16,7 +16,7 @@
 
     <div class="mt-5 grid grid-cols-8 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            @if(auth()->check() && auth()->user()->hasPermission('create-users'))
+            @if(auth()->check() && auth()->user()->hasPermission('create-clients'))
                 <a href="{{ route('client.create') }}">
                     <x-base.button class="mr-2 shadow-md" variant="primary">
                         Add New Client
@@ -60,9 +60,11 @@
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Client Code </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Client Name </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
+                        @if(auth()->check() && (auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <x-base.table.tbody>
@@ -77,21 +79,26 @@
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $client->name }}</div>
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                @if(auth()->check() && (auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
+                                    <x-base.table.td class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
-                                        <a class="mr-3 flex items-center" href="{{ route('client.edit', $client->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal" href="#"
-                                            data-delete-route="{{ route('client.destroy', $client->id) }}"
-                                            data-delete-name="{{ $client->client_name }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    </div>
-                                </x-base.table.td>
+                                            @if(auth()->check() && auth()->user()->hasPermission('edit-clients'))
+                                                <a class="mr-3 flex items-center" href="{{ route('client.edit', $client->id) }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                    Edit
+                                                </a>
+                                            @endif
+                                            @if(auth()->check() && auth()->user()->hasPermission('delete-clients'))
+                                                <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                    data-tw-target="#delete-confirmation-modal" href="#"
+                                                    data-delete-route="{{ route('client.destroy', $client->id) }}"
+                                                    data-delete-name="{{ $client->client_name }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </x-base.table.td>
+                                @endif
                             </x-base.table.tr>
                         @empty
                             <x-base.table.tr>

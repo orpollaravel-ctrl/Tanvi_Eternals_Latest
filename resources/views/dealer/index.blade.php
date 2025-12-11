@@ -12,7 +12,8 @@
         {{-- Success Message --}}
         @if (session('success_message'))
             <div class="intro-y col-span-12">
-                <div class="alert alert-success show mb-4 shadow-md rounded border border-success/60 bg-success/10 text-success py-4">
+                <div
+                    class="alert alert-success show mb-4 shadow-md rounded border border-success/60 bg-success/10 text-success py-4">
                     {{ session('success_message') }}
                 </div>
             </div>
@@ -21,7 +22,8 @@
         {{-- Validation Errors from import --}}
         @if (session('validation_errors') && count(session('validation_errors')) > 0)
             <div class="intro-y col-span-12">
-                <div class="alert alert-danger show mb-4 shadow-md rounded border border-danger/60 bg-danger/10 text-danger py-4">
+                <div
+                    class="alert alert-danger show mb-4 shadow-md rounded border border-danger/60 bg-danger/10 text-danger py-4">
                     <ul class="list-disc list-inside">
                         @foreach (session('validation_errors') as $error)
                             @php
@@ -46,7 +48,8 @@
         {{-- Error Messages --}}
         @if ($errors->any())
             <div class="intro-y col-span-12">
-                <div class="alert alert-danger show mb-4 shadow-md rounded border border-danger/60 bg-danger/10 text-danger py-4">
+                <div
+                    class="alert alert-danger show mb-4 shadow-md rounded border border-danger/60 bg-danger/10 text-danger py-4">
                     <ul class="list-disc list-inside">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -59,22 +62,24 @@
 
         <!-- BEGIN: Header Actions -->
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('dealers.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Dealer
-                </x-base.button>
-            </a>
+            @if (auth()->check() && auth()->user()->hasPermission('create-bullions'))
+                <a href="{{ route('dealers.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add Dealer
+                    </x-base.button>
+                </a>
+            @endif
 
-			<!-- <form action="{{ route('dealers.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center">
-                @csrf
-                <input type="file" name="file" accept=".xls,.xlsx" required
-                    class="mr-2 block w-60 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer" />
-                <x-base.button type="submit" class="shadow-md" variant="success">
-                    Import Excel
-                </x-base.button>
-            </form>
-			-->
-			 <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
+            <!-- <form action="{{ route('dealers.import') }}" method="POST" enctype="multipart/form-data" class="flex items-center">
+                    @csrf
+                    <input type="file" name="file" accept=".xls,.xlsx" required
+                        class="mr-2 block w-60 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark cursor-pointer" />
+                    <x-base.button type="submit" class="shadow-md" variant="success">
+                        Import Excel
+                    </x-base.button>
+                </form>
+       -->
+            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
                     <input type="text" id="dealer-search" class="form-control !box w-56 pr-10"
                         placeholder="Search dealers...">
@@ -97,7 +102,10 @@
                         <th class="whitespace-nowrap border-b-0">Location</th>
                         <th class="whitespace-nowrap border-b-0">Pincode</th>
                         <th class="whitespace-nowrap border-b-0 text-center">Status</th>
-                        <th class="whitespace-nowrap border-b-0 text-center">Actions</th>
+                        @if (auth()->check() &&
+                                (auth()->user()->hasPermission('edit-bullions') || auth()->user()->hasPermission('delete-bullions')))
+                            <th class="whitespace-nowrap border-b-0 text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody id="dealer-table-body">
@@ -165,38 +173,39 @@
                 const search = searchInput.value;
 
                 fetch(`{{ route('dealers.index') }}?page=${currentPage}&search=${encodeURIComponent(search)}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (reset) {
-                        tableBody.innerHTML = '';
-                    }
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (reset) {
+                            tableBody.innerHTML = '';
+                        }
 
-                    if (data.data.length > 0) {
-                        data.data.forEach((dealer, index) => {
-                            const rowNumber = (currentPage - 1) * 25 + index + 1;
-                            const rowHtml = generateDealerRow(dealer, rowNumber);
-                            tableBody.insertAdjacentHTML('beforeend', rowHtml);
-                        });
+                        if (data.data.length > 0) {
+                            data.data.forEach((dealer, index) => {
+                                const rowNumber = (currentPage - 1) * 25 + index + 1;
+                                const rowHtml = generateDealerRow(dealer, rowNumber);
+                                tableBody.insertAdjacentHTML('beforeend', rowHtml);
+                            });
 
-                        currentPage++;
-                        hasMorePages = data.has_more;
-                    } else if (reset) {
-                        tableBody.innerHTML = '<tr><td colspan="9" class="text-center text-slate-500 py-4">No dealers found.</td></tr>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading dealers:', error);
-                })
-                .finally(() => {
-                    isLoading = false;
-                    loadingIndicator.classList.add('hidden');
-                });
+                            currentPage++;
+                            hasMorePages = data.has_more;
+                        } else if (reset) {
+                            tableBody.innerHTML =
+                                '<tr><td colspan="9" class="text-center text-slate-500 py-4">No dealers found.</td></tr>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading dealers:', error);
+                    })
+                    .finally(() => {
+                        isLoading = false;
+                        loadingIndicator.classList.add('hidden');
+                    });
             }
 
             function generateDealerRow(dealer, rowNumber) {
@@ -214,26 +223,29 @@
                         <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">${dealer.location || '-'}</td>
                         <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">${dealer.pincode}</td>
                         <td class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b]">${statusBadge}</td>
+                        ${@json(auth()->check() && (auth()->user()->hasPermission('edit-bullions') || auth()->user()->hasPermission('delete-bullions'))) ? `
                         <td class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
                             <div class="flex items-center justify-center">
+                                ${@json(auth()->check() && auth()->user()->hasPermission('edit-bullions')) ? `
                                 <a href="/master/dealers/${dealer.id}/edit" class="flex items-center mr-3 text-success">
                                     <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11h6m-3-3v6m7 3v-2a1 1 0 00-1-1h-1m-10 0H5a1 1 0 00-1 1v2m10 0H7a2 2 0 01-2-2v-5a2 2 0 012-2h8a2 2 0 012 2v5a2 2 0 01-2 2z" />
                                     </svg>
                                     Edit
-                                </a>
+                                </a>` : ''}
+                                ${@json(auth()->check() && auth()->user()->hasPermission('delete-bullions')) ? `
                                 <form action="/master/dealers/${dealer.id}" method="POST" onsubmit="return confirm('Are you sure you want to delete this dealer?')" class="m-0 p-0">
-                                    @csrf
-                                    @method('DELETE')
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="flex items-center text-danger bg-transparent border-0 cursor-pointer">
                                         <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                         Delete
                                     </button>
-                                </form>
+                                </form>` : ''}
                             </div>
-                        </td>
+                        </td>` : ''}
                     </tr>
                 `;
             }

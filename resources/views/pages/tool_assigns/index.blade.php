@@ -13,7 +13,7 @@
 
     .tool-assign-table tbody tr {
         background: #ffffff;
-        box-shadow: 0px 4px 14px rgba(0,0,0,0.08);
+        box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.08);
         border-radius: 12px;
         overflow: hidden;
     }
@@ -42,7 +42,7 @@
 
     .tool-assign-table tbody tr:hover {
         transform: translateY(-2px);
-        box-shadow: 0px 6px 18px rgba(0,0,0,0.12);
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.12);
     }
 
     .filter-input {
@@ -56,7 +56,7 @@
     .filter-input:focus {
         border-color: #6366f1;
         background: #fff;
-        box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
     }
 
     .filter-select {
@@ -70,7 +70,7 @@
     .filter-select:focus {
         border-color: #6366f1;
         background: #fff;
-        box-shadow: 0 0 0 2px rgba(99,102,241,0.15);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
     }
 </style>
 
@@ -78,13 +78,15 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Tool Assign List</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Header Actions -->
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('tool-assigns.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Tool Assign
-                </x-base.button>
-            </a>
-        </div>
+        @if (auth()->check() && auth()->user()->hasPermission('create-tool-issues'))
+            <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
+                <a href="{{ route('tool-assigns.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Tool Assign
+                    </x-base.button>
+                </a>
+            </div>
+        @endif
         <!-- END: Header Actions -->
 
         <!-- BEGIN: Filters -->
@@ -92,20 +94,24 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <!-- Search -->
                 <div class="relative w-full sm:w-64">
-                    <x-base.lucide class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4 text-slate-500" icon="Search" />
-                    <input type="text" id="search-input" class="filter-input box pl-10 w-full" placeholder="Search departments, employees, products...">
+                    <x-base.lucide class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4 text-slate-500"
+                        icon="Search" />
+                    <input type="text" id="search-input" class="filter-input box pl-10 w-full"
+                        placeholder="Search departments, employees, products...">
                 </div>
 
                 <!-- Employee Filter -->
                 <div class="w-full sm:w-48">
-                    <select id="employee-filter" class="employee-select tom-select w-full" data-placeholder="Search & select employee...">
+                    <select id="employee-filter" class="employee-select tom-select w-full"
+                        data-placeholder="Search & select employee...">
                         <option value="">All Employees</option>
                     </select>
                 </div>
 
                 <!-- Product Filter -->
                 <div class="w-full sm:w-48">
-                    <select id="product-filter" class="product-select tom-select w-full" data-placeholder="Search & select product...">
+                    <select id="product-filter" class="product-select tom-select w-full"
+                        data-placeholder="Search & select product...">
                         <option value="">All Products</option>
                     </select>
                 </div>
@@ -128,48 +134,64 @@
                 <thead>
                     <tr>
                         <th class="whitespace-nowrap border-b-0">#</th>
-                        <th class="whitespace-nowrap border-b-0 cursor-pointer sort-header" data-sort="department">Department <span class="sort-icon">↕</span></th>
-                        <th class="whitespace-nowrap border-b-0 cursor-pointer sort-header" data-sort="date">Date <span class="sort-icon">↕</span></th>
-                        <th class="whitespace-nowrap border-b-0 text-center">Actions</th>
+                        <th class="whitespace-nowrap border-b-0 cursor-pointer sort-header" data-sort="department">
+                            Department <span class="sort-icon">↕</span></th>
+                        <th class="whitespace-nowrap border-b-0 cursor-pointer sort-header" data-sort="date">Date <span
+                                class="sort-icon">↕</span></th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-tool-issues') || auth()->user()->hasPermission('delete-tool-issues')))
+                            <th class="whitespace-nowrap border-b-0 text-center">Actions</th>
+                        @endif
                     </tr>
                 </thead>
 
                 <tbody id="tool-assign-table-body">
                     @forelse ($toolAssigns as $assign)
                         <tr class="intro-x">
-                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md" style="text-align: center;">
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md"
+                                style="text-align: center;">
                                 {{ $loop->iteration }}
                             </td>
 
-                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]" style="text-align: center;">
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]"
+                                style="text-align: center;">
                                 {{ $assign->department->name ?? '-' }}
                             </td>
 
-                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]" style="text-align: center;">
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]"
+                                style="text-align: center;">
                                 {{ $assign->date ? \Carbon\Carbon::parse($assign->date)->format('d M Y') : '-' }}
                             </td>
-
-                            <td class="relative border-b-0 bg-white py-0 text-center dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
-                                <div class="flex items-center justify-center">
-                                    <!-- View -->
-                                    <a href="{{ route('tool-assigns.show', $assign->id) }}" class="flex items-center mr-3 text-primary">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" /> View
-                                    </a>
-                                    <!-- Edit -->
-                                    <a href="{{ route('tool-assigns.edit', $assign->id) }}" class="flex items-center mr-3 text-success">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
-                                    </a>
-                                    <!-- Delete -->
-                                    <form action="{{ route('tool-assigns.destroy', $assign->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex items-center text-danger	mt-3"
-                                            onclick="return confirm('Are you sure you want to delete this tool assign record?')">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-tool-issues') || auth()->user()->hasPermission('delete-tool-issues')))
+                                <td
+                                    class="relative border-b-0 bg-white py-0 text-center dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
+                                    <div class="flex items-center justify-center">
+                                        <!-- View -->
+                                        <a href="{{ route('tool-assigns.show', $assign->id) }}"
+                                            class="flex items-center mr-3 text-primary">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" /> View
+                                        </a>
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-tool-issues'))
+                                            <!-- Edit -->
+                                            <a href="{{ route('tool-assigns.edit', $assign->id) }}"
+                                                class="flex items-center mr-3 text-success">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
+                                            </a>
+                                        @endif
+                                        @if (auth()->check() && auth()->user()->hasPermission('delete-tool-issues'))
+                                            <!-- Delete -->
+                                            <form action="{{ route('tool-assigns.destroy', $assign->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center text-danger	mt-3"
+                                                    onclick="return confirm('Are you sure you want to delete this tool assign record?')">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
@@ -193,7 +215,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             let offset = 25;
             let isLoading = false;
             let hasMore = true;
@@ -322,19 +344,19 @@
                 });
 
                 fetch(`{{ route('tool-assigns.index') }}?${params}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.data && data.data.length > 0) {
-                        const startNumber = offset + 1;
-                        data.data.forEach((assign, index) => {
-                            const rowNumber = startNumber + index;
-                            const rowHtml = `
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.data && data.data.length > 0) {
+                            const startNumber = offset + 1;
+                            data.data.forEach((assign, index) => {
+                                const rowNumber = startNumber + index;
+                                const rowHtml = `
                                 <tr class="intro-x">
                                     <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md" style="text-align: center;">
                                         ${rowNumber}
@@ -364,43 +386,44 @@
                                     </td>
                                 </tr>
                             `;
-                            tableBody.insertAdjacentHTML('beforeend', rowHtml);
-                        });
-                        offset += data.data.length;
-                    } else if (reset) {
-                        tableBody.innerHTML = `
+                                tableBody.insertAdjacentHTML('beforeend', rowHtml);
+                            });
+                            offset += data.data.length;
+                        } else if (reset) {
+                            tableBody.innerHTML = `
                             <tr>
                                 <td colspan="4" class="text-center text-slate-500 py-4">
                                     No tool assign records found.
                                 </td>
                             </tr>
                         `;
-                    }
+                        }
 
-                    hasMore = data.has_more;
-                    isLoading = false;
-                    loadingIndicator.classList.add('hidden');
-                })
-                .catch(error => {
-                    console.error('Error loading tool assigns:', error);
-                    isLoading = false;
-                    loadingIndicator.classList.add('hidden');
-                });
+                        hasMore = data.has_more;
+                        isLoading = false;
+                        loadingIndicator.classList.add('hidden');
+                    })
+                    .catch(error => {
+                        console.error('Error loading tool assigns:', error);
+                        isLoading = false;
+                        loadingIndicator.classList.add('hidden');
+                    });
             }
 
             // Infinite scroll with throttling
             let scrollTimeout;
             window.addEventListener('scroll', function() {
                 if (scrollTimeout) return;
-                
+
                 scrollTimeout = setTimeout(() => {
                     scrollTimeout = null;
-                    
+
                     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
                     const windowHeight = window.innerHeight;
                     const documentHeight = document.documentElement.scrollHeight;
 
-                    if (documentHeight - (scrollTop + windowHeight) < 300 && !isLoading && hasMore) {
+                    if (documentHeight - (scrollTop + windowHeight) < 300 && !isLoading &&
+                        hasMore) {
                         loadToolAssigns(false);
                     }
                 }, 200);
@@ -417,7 +440,7 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 // Initialize Tom Select for employee filter
                 const employeeFilter = document.getElementById('employee-filter');
                 if (employeeFilter) {

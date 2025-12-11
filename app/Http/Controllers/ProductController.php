@@ -17,6 +17,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-products')) {
+            abort(403,'Permission Denied');
+        }
         if ($request->ajax()) {
             $offset = $request->get('offset', 0);
             $limit = 50;
@@ -51,6 +54,9 @@ class ProductController extends Controller
      */
     public function create(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-products')) {
+            abort(403,'Permission Denied');
+        }
         $categories = Category::all();
         $units = Unit::all();
 		do {
@@ -132,6 +138,9 @@ class ProductController extends Controller
      */
     public function edit(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-products')) {
+            abort(403,'Permission Denied');
+        }
         $product = Product::findOrFail($id);
         $categories = Category::all();
         $units = Unit::all();
@@ -198,6 +207,9 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-products')) {
+            abort(403,'Permission Denied');
+        }
         $product = Product::findOrFail($id);
         $product->delete();
 

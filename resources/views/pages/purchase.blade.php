@@ -8,11 +8,13 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Purchases</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('purchases.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Purchase
-                </x-base.button>
-            </a>
+            @if (auth()->check() && auth()->user()->hasPermission('create-tool-purchases'))
+                <a href="{{ route('purchases.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Purchase
+                    </x-base.button>
+                </a>
+            @endif
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
@@ -48,31 +50,33 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
-					<x-base.table.th class="whitespace-nowrap border-b-0">
-                          #
+                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                            #
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
                             Bill Number
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Vendor </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Bill Date </x-base.table.th>
-                       <!-- <x-base.table.th class="whitespace-nowrap border-b-0"> Delivery Date </x-base.table.th> -->
+                        <!-- <x-base.table.th class="whitespace-nowrap border-b-0"> Delivery Date </x-base.table.th> -->
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-right">
                             Total Amount
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-tool-purchases') || auth()->user()->hasPermission('delete-tool-purchases')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <x-base.table.tbody>
                     @isset($purchases)
                         @foreach ($purchases as $purchase)
                             <x-base.table.tr class="intro-x">
-							<x-base.table.td
+                                <x-base.table.td
                                     class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="flex">
-                                        <div class="whitespace-nowrap font-medium">  {{ $loop->iteration }}</div>
+                                        <div class="whitespace-nowrap font-medium"> {{ $loop->iteration }}</div>
                                     </div>
                                 </x-base.table.td>
                                 <x-base.table.td
@@ -83,42 +87,52 @@
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->vendor->name ?? '-' }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        {{ $purchase->vendor->name ?? '-' }}</div>
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->bill_date?->format('d/m/Y') ?? '-' }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        {{ $purchase->bill_date?->format('d/m/Y') ?? '-' }}</div>
                                 </x-base.table.td>
-                               <!-- <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->delivery_date?->format('d/m/Y') ?? '-' }}</div>
-                                </x-base.table.td> -->
+                                <!-- <x-base.table.td
+                                            class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                            <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $purchase->delivery_date?->format('d/m/Y') ?? '-' }}</div>
+                                        </x-base.table.td> -->
                                 <x-base.table.td
                                     class="border-b-0 bg-white text-right shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">₹{{ number_format($purchase->total_invoice_amount, 2) }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        ₹{{ number_format($purchase->total_invoice_amount, 2) }}</div>
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                    <div class="flex items-center justify-center">
-                                        <a class="mr-3 flex items-center" href="{{ route('purchases.edit', $purchase->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal" href="#"
-                                            data-delete-route="{{ route('purchases.delete', $purchase->id) }}"
-                                            data-delete-name="{{ $purchase->bill_number }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    </div>
-                                </x-base.table.td>
+                                @if (auth()->check() && (auth()->user()->hasPermission('edit-tool-purchases') || auth()->user()->hasPermission('delete-tool-purchases')))
+                                    <x-base.table.td
+                                        class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                        <div class="flex items-center justify-center">
+                                            @if (auth()->check() && auth()->user()->hasPermission('edit-tool-purchases'))
+                                                <a class="mr-3 flex items-center"
+                                                    href="{{ route('purchases.edit', $purchase->id) }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                    Edit
+                                                </a>
+                                            @endif
+                                            @if (auth()->check() && auth()->user()->hasPermission('delete-tool-purchases'))
+                                                <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                    data-tw-target="#delete-confirmation-modal" href="#"
+                                                    data-delete-route="{{ route('purchases.delete', $purchase->id) }}"
+                                                    data-delete-name="{{ $purchase->bill_number }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </x-base.table.td>
+                                @endif
                             </x-base.table.tr>
                         @endforeach
                     @endisset
                 </x-base.table.tbody>
             </x-base.table>
         </div>
-        <!-- END: Data List --> 
+        <!-- END: Data List -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
     <x-base.dialog id="delete-confirmation-modal">
@@ -135,8 +149,7 @@
                 <form id="delete-purchase-form" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button"
-                        variant="outline-secondary">
+                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
                         Cancel
                     </x-base.button>
                     <x-base.button class="w-24" type="submit" variant="danger">
@@ -149,13 +162,13 @@
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-purchase-form');
                 const deletePurchaseName = document.getElementById('delete-purchase-name');
 
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
+                deleteButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
                         const route = this.getAttribute('data-delete-route');
                         const name = this.getAttribute('data-delete-name');
 

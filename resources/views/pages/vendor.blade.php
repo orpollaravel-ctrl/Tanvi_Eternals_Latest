@@ -16,11 +16,13 @@
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('vendor.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Vendor
-                </x-base.button>
-            </a>
+            @if(auth()->check() && auth()->user()->hasPermission('create-vendors'))
+                <a href="{{ route('vendor.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Vendor
+                    </x-base.button>
+                </a>
+            @endif
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
@@ -60,9 +62,11 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Code</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Contact No.</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Email</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
+                        @if(auth()->check() && (auth()->user()->hasPermission('edit-vendors') || auth()->user()->hasPermission('delete-vendors')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <x-base.table.tbody>
@@ -87,21 +91,27 @@
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $vendor->email ?? 'N/A' }}</div>
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                    <div class="flex items-center justify-center">
-                                        <a class="mr-3 flex items-center" href="{{ route('vendor.edit', $vendor->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal" href="#"
-                                            data-delete-route="{{ route('vendor.destroy', $vendor->id) }}"
-                                            data-delete-name="{{ $vendor->name ?? 'Vendor #' . $vendor->id }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    </div>
-                                </x-base.table.td>
+                                @if(auth()->check() && (auth()->user()->hasPermission('edit-vendors') || auth()->user()->hasPermission('delete-vendors')))
+                                    <x-base.table.td
+                                        class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                        <div class="flex items-center justify-center">
+                                            @if(auth()->check() && auth()->user()->hasPermission('edit-vendors'))
+                                                <a class="mr-3 flex items-center" href="{{ route('vendor.edit', $vendor->id) }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                    Edit
+                                                </a>
+                                            @endif
+                                            @if(auth()->check() && auth()->user()->hasPermission('edit-vendors'))
+                                                <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                    data-tw-target="#delete-confirmation-modal" href="#"
+                                                    data-delete-route="{{ route('vendor.destroy', $vendor->id) }}"
+                                                    data-delete-name="{{ $vendor->name ?? 'Vendor #' . $vendor->id }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </x-base.table.td>
+                                @endif
                             </x-base.table.tr>
                         @empty
                             <x-base.table.tr>

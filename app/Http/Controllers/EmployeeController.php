@@ -13,6 +13,9 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-employees')) {
+           abort(403,'Permission Denied');
+        }
         if ($request->ajax()) {
             $page = $request->get('page', 1);
             $perPage = 25;
@@ -53,6 +56,9 @@ class EmployeeController extends Controller
      */
     public function create(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-employees')) {
+           abort(403,'Permission Denied');
+        }
 			do {
         $barcode = rand(10000000, 99999999);
 		} while (\App\Models\Employee::where('barcode', $barcode)->exists());
@@ -111,6 +117,9 @@ class EmployeeController extends Controller
      */
     public function show(string $id): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-employees')) {
+           abort(403,'Permission Denied');
+        }
         $employee = Employee::findOrFail($id);
         return view('pages/employee/show', [
             'layout' => 'side-menu',
@@ -123,6 +132,9 @@ class EmployeeController extends Controller
      */
     public function edit(string $id): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('edit-employees')) {
+           abort(403,'Permission Denied');
+        }
         $employee = Employee::findOrFail($id);
 		$employees = Employee::get();
         return view('pages/employee/edit', [
@@ -135,52 +147,52 @@ class EmployeeController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-{
-    $employee = Employee::findOrFail($id);
+    {
+        $employee = Employee::findOrFail($id);
 
-    $validated = $request->validate([
-        'name' => ['nullable', 'string', 'max:255'],
-        'code' => ['nullable', 'string', 'max:255'],
-        'barcode' => ['nullable', 'string', 'max:255','unique:employees,barcode,'.$id],
-        'images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        'active' => ['nullable', 'boolean'],
-    ]);
+        $validated = $request->validate([
+            'name' => ['nullable', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:255'],
+            'barcode' => ['nullable', 'string', 'max:255','unique:employees,barcode,'.$id],
+            'images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'active' => ['nullable', 'boolean'],
+        ]);
 
-    $imagePath = $employee->images;
+        $imagePath = $employee->images;
 
-    if ($request->hasFile('images')) {
+        if ($request->hasFile('images')) {
 
-        // Delete old image
-        if ($employee->images && file_exists(public_path('storage/' . $employee->images))) {
-            unlink(public_path('storage/' . $employee->images));
+            // Delete old image
+            if ($employee->images && file_exists(public_path('storage/' . $employee->images))) {
+                unlink(public_path('storage/' . $employee->images));
+            }
+
+            // Create folder if not exists
+            $folderPath = public_path('storage/employees');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+
+            // Generate new filename
+            $filename = time() . '_' . uniqid() . '.' . $request->file('images')->getClientOriginalExtension();
+
+            // Move new file
+            $request->file('images')->move($folderPath, $filename);
+
+            // Save new path
+            $imagePath = 'employees/' . $filename;
         }
 
-        // Create folder if not exists
-        $folderPath = public_path('storage/employees');
-        if (!file_exists($folderPath)) {
-            mkdir($folderPath, 0755, true);
-        }
+        $employee->update([
+            'name' => $validated['name'] ?? $employee->name,
+            'code' => $validated['code'] ?? $employee->code,
+            'barcode' => $validated['barcode'] ?? $employee->barcode,
+            'images' => $imagePath,
+            'active' => $validated['active'] ?? $employee->active,
+        ]);
 
-        // Generate new filename
-        $filename = time() . '_' . uniqid() . '.' . $request->file('images')->getClientOriginalExtension();
-
-        // Move new file
-        $request->file('images')->move($folderPath, $filename);
-
-        // Save new path
-        $imagePath = 'employees/' . $filename;
+        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
-
-    $employee->update([
-        'name' => $validated['name'] ?? $employee->name,
-        'code' => $validated['code'] ?? $employee->code,
-        'barcode' => $validated['barcode'] ?? $employee->barcode,
-        'images' => $imagePath,
-        'active' => $validated['active'] ?? $employee->active,
-    ]);
-
-    return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
-}
 
 
     /**
@@ -188,6 +200,9 @@ class EmployeeController extends Controller
      */
     public function destroy(string $id)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('delete-employees')) {
+           abort(403,'Permission Denied');
+        }
         $employee = Employee::findOrFail($id);
         $employee->delete();
 

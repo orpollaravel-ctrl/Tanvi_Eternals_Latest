@@ -11,6 +11,9 @@ class QuotationController extends Controller
 {
     public function index(): View   
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-quotations')) {
+            abort(403,'Permission Denied');
+        }
         $quotations = Quotation::latest()->get();
         return view('pages/quotation', [
             'layout' => 'side-menu',
@@ -20,6 +23,9 @@ class QuotationController extends Controller
 
     public function create(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-quotations')) {
+            abort(403,'Permission Denied');
+        }
         $clients = \App\Models\Client::orderBy('name')->get();
         return view('pages/quotation-create', [
             'layout' => 'side-menu',
@@ -50,6 +56,9 @@ class QuotationController extends Controller
 
     public function edit(string $id): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('edit-quotations')) {
+            abort(403,'Permission Denied');
+        }
         $quotation = Quotation::findOrFail($id);
         $clients = \App\Models\Client::orderBy('name')->get();
         return view('pages/quotation-edit', [
@@ -84,6 +93,9 @@ class QuotationController extends Controller
 
     public function destroy(string $id)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('delete-quotations')) {
+            abort(403,'Permission Denied');
+        }
         $quotation = Quotation::findOrFail($id);
         $quotation->delete();
 

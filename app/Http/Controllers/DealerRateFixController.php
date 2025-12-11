@@ -34,6 +34,9 @@ class DealerRateFixController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-dealer-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         $dealers = Dealer::where('status', 1)->get();
         $perPage = $request->get('per_page', 10);
         $query = DealerRateFix::with('dealer', 'fixedBy', 'createdBy', 'updatedBy')->withCount('deals')
@@ -60,6 +63,9 @@ class DealerRateFixController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-dealer-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         $dealers = Dealer::where('status', 1)->get();
         // $users = User::where('status', 1)->get();
         $users = User::all();
@@ -119,6 +125,9 @@ class DealerRateFixController extends Controller
      */
     public function edit(DealerRateFix $drf)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-dealer-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -179,6 +188,9 @@ class DealerRateFixController extends Controller
      */
     public function destroy(DealerRateFix $drf)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-dealer-rate-fixes')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }

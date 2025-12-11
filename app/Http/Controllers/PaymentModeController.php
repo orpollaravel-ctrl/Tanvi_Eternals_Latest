@@ -15,6 +15,9 @@ class PaymentModeController extends Controller
      */
     public function index()
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-payment-modes')) {
+            abort(403,'Permission Denied');
+        }
         $paymentmodes=PaymentMode::withCount('payments')->latest()->paginate(10);
         return view('paymentmode.index',compact('paymentmodes'));
     }
@@ -26,6 +29,9 @@ class PaymentModeController extends Controller
      */
     public function create()
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-payment-modes')) {
+            abort(403,'Permission Denied');
+        }
         return view('paymentmode.create');
     }
 
@@ -63,6 +69,9 @@ class PaymentModeController extends Controller
      */
     public function edit(PaymentMode $paymentmode)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('edit-payment-modes')) {
+            abort(403,'Permission Denied');
+        }
         // dd($paymentmode);
         return view('paymentmode.edit',compact('paymentmode'));
     }
@@ -89,8 +98,14 @@ class PaymentModeController extends Controller
      * @param  \App\Models\PaymentMode  $paymentMode
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PaymentMode $paymentMode)
+    public function destroy(PaymentMode $paymentMode, $id)
     {
-        //
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-payment-modes')) {
+            abort(403,'Permission Denied');
+        }
+        $paymentMode = PaymentMode::findOrFail($id);
+        $paymentMode->delete();
+
+        return redirect()->route('paymentmodes.index')->with('success', 'PaymentMode deleted successfully.');   
     }
 }

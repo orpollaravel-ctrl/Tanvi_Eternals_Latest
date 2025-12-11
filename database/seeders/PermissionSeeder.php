@@ -58,7 +58,7 @@ class PermissionSeeder extends Seeder
             ['label' => 'Create Tool Issues', 'name' => 'create-tool-issues', 'group' => 'tools'],
             ['label' => 'Edit Tool Issues', 'name' => 'edit-tool-issues', 'group' => 'tools'],
             ['label' => 'Delete Tool Issues', 'name' => 'delete-tool-issues', 'group' => 'tools'],
-            ['label' => 'Create Quotations', 'name' => 'delete-quotations', 'group' => 'quotation'],
+            ['label' => 'Create Quotations', 'name' => 'create-quotations', 'group' => 'quotation'],
             ['label' => 'Edit Quotations', 'name' => 'edit-quotations', 'group' => 'quotation'],
             ['label' => 'Delete Quotations', 'name' => 'delete-quotations', 'group' => 'quotation'],
             

@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index() : View
     {
-         if (!auth()->check() || !auth()->user()->hasPermission('view-users')) {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-users')) {
            abort(403,'Permission Denied');
         }
         $users = User::all();
@@ -168,6 +168,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('users')->with('success', 'User deleted successfully.');
+        return redirect()->route('users')->with('success', 'User deleted successfully.');   
     }
 }

@@ -30,27 +30,21 @@
 
                 <!-- BEGIN: Login Form -->
                 <div class="my-10 flex h-screen py-5 xl:my-0 xl:h-auto xl:py-0">
-                    <div
-                        class="mx-auto my-auto w-full rounded-md bg-white text-center border p-8 shadow-xl sm:w-3/4 lg:w-2/4 xl:ml-20 xl:w-auto">
-                        
+                    <div class="mx-auto my-auto w-full rounded-md bg-white text-center border p-8 shadow-xl sm:w-3/4 lg:w-2/4 xl:ml-20 xl:w-auto">
                         <div class="flex items-center justify-center bg-gray-50">
                             <div class="w-full max-w-md">
                                 <img class="mx-auto w-1/2" src="{{ Vite::asset('resources/images/logo.svg') }}" alt="Sign In">
                             </div>
                         </div>
-
                         <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl">
                             Sign In
                         </h2>
-
                         <div class="intro-x mt-2 text-center text-slate-400 xl:hidden">
                             Smart ERP for Smarter Jewellery Manufacturing.
                         </div>
-
                         <div class="intro-x mt-8">
                             <form method="POST" action="{{ route('login.check') }}">
                                 @csrf
-
                                 <x-base.form-input
                                     class="intro-x login__input block min-w-full px-4 py-3 xl:min-w-[350px]"
                                     id="email"
@@ -83,7 +77,6 @@
                                 </div>
                             </form>
                         </div>
-
                     </div>
                 </div>
                 <!-- END: Login Form -->

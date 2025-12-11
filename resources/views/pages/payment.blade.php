@@ -6,7 +6,7 @@
 
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">Payment</h2>
-    
+
     {{-- Success Message --}}
     @if (session('success'))
         <div class="mt-5 rounded-md border border-success/20 bg-success/10 p-4 text-success dark:border-success/30">
@@ -16,11 +16,13 @@
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('payment.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Payment
-                </x-base.button>
-            </a>
+            @if (auth()->check() && auth()->user()->hasPermission('create-payments'))
+                <a href="{{ route('payment.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Payment
+                    </x-base.button>
+                </a>
+            @endif
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
@@ -64,9 +66,11 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Client Name </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Transaction Date </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-right"> Amount </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-payments') || auth()->user()->hasPermission('delete-payments')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <x-base.table.tbody>
@@ -87,46 +91,59 @@
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $clientRate->client_code }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $clientRate->client_code }}
+                                    </div>
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $clientRate->client_name }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ $clientRate->client_name }}
+                                    </div>
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ \Carbon\Carbon::parse($clientRate->transaction_date)->format('d/m/Y') }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        {{ \Carbon\Carbon::parse($clientRate->transaction_date)->format('d/m/Y') }}</div>
                                 </x-base.table.td>
                                 <x-base.table.td
                                     class="border-b-0 bg-white text-right shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">{{ number_format($clientRate->amount, 2) }}</div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        {{ number_format($clientRate->amount, 2) }}</div>
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                    <div class="flex items-center justify-center">
-                                        <a class="mr-3 flex items-center" href="{{ route('payment.edit', $clientRate->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal" href="#"
-                                            data-delete-route="{{ route('payment.delete', $clientRate->id) }}"
-                                            data-delete-name="{{ $clientRate->client_name }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    </div>
-                                </x-base.table.td>
+                                @if (auth()->check() && (auth()->user()->hasPermission('edit-payments') || auth()->user()->hasPermission('delete-payments')))
+                                    <x-base.table.td
+                                        class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                        <div class="flex items-center justify-center">
+                                            @if (auth()->check() && auth()->user()->hasPermission('edit-payments'))
+                                                <a class="mr-3 flex items-center"
+                                                    href="{{ route('payment.edit', $clientRate->id) }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                    Edit
+                                                </a>
+                                            @endif
+                                            @if (auth()->check() && auth()->user()->hasPermission('delete-payments'))
+                                                <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                    data-tw-target="#delete-confirmation-modal" href="#"
+                                                    data-delete-route="{{ route('payment.delete', $clientRate->id) }}"
+                                                    data-delete-name="{{ $clientRate->client_name }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </x-base.table.td>
+                                @endif
                             </x-base.table.tr>
                         @empty
                             <x-base.table.tr>
-                                <x-base.table.td colspan="6" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                                <x-base.table.td colspan="6"
+                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="py-8 text-slate-500">No Payment records found.</div>
                                 </x-base.table.td>
                             </x-base.table.tr>
                         @endforelse
                     @else
                         <x-base.table.tr>
-                            <x-base.table.td colspan="6" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                            <x-base.table.td colspan="6"
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                 <div class="py-8 text-slate-500">No Payment records found.</div>
                             </x-base.table.td>
                         </x-base.table.tr>
@@ -166,8 +183,7 @@
                 <form id="delete-user-form" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button"
-                        variant="outline-secondary">
+                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
                         Cancel
                     </x-base.button>
                     <x-base.button class="w-24" type="submit" variant="danger">
@@ -180,13 +196,13 @@
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-user-form');
                 const deleteUserName = document.getElementById('delete-user-name');
 
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
+                deleteButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
                         const route = this.getAttribute('data-delete-route');
                         const name = this.getAttribute('data-delete-name');
 
@@ -203,4 +219,3 @@
         </script>
     @endpush
 @endsection
-

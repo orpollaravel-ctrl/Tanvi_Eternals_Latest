@@ -31,6 +31,9 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-payments')) {
+           abort(403,'Permission Denied');
+        }
         $bullions = Bullion::where('status', 1)->get();
         $payments = Payment::with('bullion', 'paymentMode', 'transferredBy', 'createdBy', 'updatedBy')
             ->when($request->get('bullion'), function ($q) use ($request) {
@@ -48,6 +51,9 @@ class PaymentController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-payments')) {
+           abort(403,'Permission Denied');
+        }
         // DB::enableQueryLog();
         // $transactions = Transaction::query()->leftJoin('payment_transaction', 'transactions.id', 'payment_transaction.transaction_id')
         //     ->leftJoin('bullion_rate_fixes', 'bullion_rate_fixes.id', 'transactions.bullion_rate_fix_id')
@@ -123,6 +129,9 @@ class PaymentController extends Controller
      */
     public function edit(Payment $payment)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-payments')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -185,6 +194,9 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-payments')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }

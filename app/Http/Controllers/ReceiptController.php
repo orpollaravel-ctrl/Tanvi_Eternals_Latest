@@ -31,6 +31,9 @@ class ReceiptController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-metal-receipts')) {
+           abort(403,'Permission Denied');
+        }
         $bullions = Bullion::where('status', 1)->get();
         // DB::enableQueryLog();        
         $receipts = Receipt::with('bullion', 'createdBy', 'updatedBy')
@@ -50,6 +53,9 @@ class ReceiptController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-metal-receipts')) {
+           abort(403,'Permission Denied');
+        }
         $bullions = Bullion::where('status', 1)->get();
         return view('receipt.create', compact('bullions'));
     }
@@ -108,6 +114,9 @@ class ReceiptController extends Controller
      */
     public function edit(Receipt $receipt)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-metal-receipts')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -166,6 +175,9 @@ class ReceiptController extends Controller
      */
     public function destroy(Receipt $receipt)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-metal-receipts')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }

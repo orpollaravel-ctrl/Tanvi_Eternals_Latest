@@ -21,7 +21,8 @@
                                 <option value="0">ALL</option>
                                 @if (!empty($bullions))
                                     @foreach ($bullions as $bullion)
-                                        <option value="{{ $bullion->id }}" @if ($bullion->id == request()->input('bullion')) selected @endif>
+                                        <option value="{{ $bullion->id }}"
+                                            @if ($bullion->id == request()->input('bullion')) selected @endif>
                                             {{ $bullion->name }}</option>
                                     @endforeach
                                 @endif
@@ -29,23 +30,15 @@
                         </div>
                         <div class="col-span-12 sm:col-span-3">
                             <x-base.form-label>From Date</x-base.form-label>
-                            <x-base.form-input
-                                type="date"
-                                name="from_date"
+                            <x-base.form-input type="date" name="from_date"
                                 value="{{ request()->input('from_date', now()->format('Y-m-d')) }}"
-                                max="{{ now()->format('Y-m-d') }}"
-                                required
-                            />
+                                max="{{ now()->format('Y-m-d') }}" required />
                         </div>
                         <div class="col-span-12 sm:col-span-3">
                             <x-base.form-label>To Date</x-base.form-label>
-                            <x-base.form-input
-                                type="date"
-                                name="to_date"
+                            <x-base.form-input type="date" name="to_date"
                                 value="{{ request()->input('to_date', now()->format('Y-m-d')) }}"
-                                max="{{ now()->format('Y-m-d') }}"
-                                required
-                            />
+                                max="{{ now()->format('Y-m-d') }}" required />
                         </div>
                         <div class="col-span-12 sm:col-span-2 flex items-end gap-2">
                             <x-base.button type="submit" variant="primary">Search</x-base.button>
@@ -60,13 +53,15 @@
         <!-- END: Filters -->
 
         <!-- BEGIN: Header Actions -->
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('brfs.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Bullion Rate Fix
-                </x-base.button>
-            </a>
-        </div>
+        @if (auth()->check() && auth()->user()->hasPermission('create-bullion-rate-fixes'))
+            <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
+                <a href="{{ route('brfs.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add Bullion Rate Fix
+                    </x-base.button>
+                </a>
+            </div>
+        @endif
         <!-- END: Header Actions -->
 
         <!-- BEGIN: Success/Error Messages -->
@@ -98,7 +93,9 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Created By</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Updated By</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Created At</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-bullion-rate-fixes') || auth()->user()->hasPermission('delete-bullion-rate-fixes')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
 
@@ -148,7 +145,8 @@
 
                             <!-- Updated By -->
                             <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
-                                @if ($brf->updatedBy) {{ $brf->updatedBy->name }} @endif
+                                @if ($brf->updatedBy)
+                                    {{ $brf->updatedBy->name }} @endif
                             </x-base.table.td>
 
                             <!-- Created At -->
@@ -157,28 +155,31 @@
                             </x-base.table.td>
 
                             <!-- Actions -->
-                            <x-base.table.td
-                                class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-bullion-rate-fixes') || auth()->user()->hasPermission('delete-bullion-rate-fixes')))
+                                <x-base.table.td
+                                    class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
 
-                                <div class="flex items-center justify-center gap-2">
-                                    
-                                    <a href="{{ route('brfs.edit', $brf->id) }}"
-                                        class="flex items-center text-success">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Pencil" /> Edit
-                                    </a>
+                                    <div class="flex items-center justify-center gap-2">
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-bullion-rate-fixes'))
+                                            <a href="{{ route('brfs.edit', $brf->id) }}"
+                                                class="flex items-center text-success">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Pencil" /> Edit
+                                            </a>
+                                        @endif
+                                        @if (auth()->check() && auth()->user()->hasPermission('delete-bullion-rate-fixes'))
+                                            <form action="{{ route('brfs.destroy', $brf->id) }}" method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this bullion rate fix?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center text-danger">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </button>
+                                            </form>
 
-                                    <form action="{{ route('brfs.destroy', $brf->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this bullion rate fix?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex items-center text-danger">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </button>
-                                    </form>
-                                   
-                                </div>
+                                    </div>
 
-                            </x-base.table.td>
+                                </x-base.table.td>
+                            @endif
 
                         </x-base.table.tr>
                     @empty
@@ -204,5 +205,3 @@
 
     </div>
 @endsection
-
-

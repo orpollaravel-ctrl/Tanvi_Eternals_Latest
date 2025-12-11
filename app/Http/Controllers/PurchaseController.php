@@ -15,6 +15,9 @@ class PurchaseController extends Controller
      */
     public function index(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-tool-purchases')) {
+            abort(403,'Permission Denied');
+        }
         $purchases = Purchase::with('vendor')->get();
         return view('pages/purchase', [
             'layout' => 'side-menu',
@@ -27,6 +30,9 @@ class PurchaseController extends Controller
      */
     public function create(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-tool-purchases')) {
+            abort(403,'Permission Denied');
+        }
         $vendors = Vendor::all();
         $products = \App\Models\Product::all();
         return view('pages/purchase-create', [
@@ -102,6 +108,9 @@ class PurchaseController extends Controller
      */
    public function edit(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-tool-purchases')) {
+            abort(403,'Permission Denied');
+        }
         $purchase = Purchase::with('items')->findOrFail($id);
         $vendors = Vendor::all();
         $products = \App\Models\Product::all();
@@ -182,6 +191,9 @@ class PurchaseController extends Controller
      */
     public function destroy(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-tool-purchases')) {
+            abort(403,'Permission Denied');
+        }
         try {
             $purchase = Purchase::findOrFail($id);
 

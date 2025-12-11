@@ -10,6 +10,9 @@ class VendorController extends Controller
 {
     public function index(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-vendors')) {
+           abort(403,'Permission Denied');
+        }
         $vendors = Vendor::latest()->paginate(10);
 
         return view('pages.vendor', [
@@ -20,6 +23,9 @@ class VendorController extends Controller
 
     public function create(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-vendors')) {
+           abort(403,'Permission Denied');
+        }
         return view('pages.vendor-create', [
             'layout' => 'side-menu',
         ]);
@@ -27,6 +33,7 @@ class VendorController extends Controller
 
     public function store(VendorRequest $request)
     {
+        
         Vendor::create($request->validated());
 
         return redirect()->route('vendor.index')->with('success', 'Vendor created successfully.');
@@ -34,6 +41,9 @@ class VendorController extends Controller
 
     public function edit(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-vendors')) {
+           abort(403,'Permission Denied');
+        }
         $vendor = Vendor::findOrFail($id);
 
         return view('pages.vendor-edit', [
@@ -44,6 +54,7 @@ class VendorController extends Controller
 
     public function update(VendorRequest $request, string $id)
     {
+         
         $vendor = Vendor::findOrFail($id);
         $vendor->update($request->validated());
 
@@ -52,6 +63,9 @@ class VendorController extends Controller
 
     public function destroy(string $id)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('delete-vendors')) {
+           abort(403,'Permission Denied');
+        }
         $vendor = Vendor::findOrFail($id);
         $vendor->delete();
 

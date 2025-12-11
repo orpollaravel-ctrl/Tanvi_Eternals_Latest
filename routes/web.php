@@ -56,6 +56,10 @@ Route::get('db-seed', function() {
     Artisan::call('db:seed');
     return "Database seeded";
 });
+Route::get('permission-seed', function() {
+    Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+    return "Permissions seeded";
+});
 Route::get('dark-mode-switcher', [DarkModeController::class, 'switch'])->name('dark-mode-switcher');
 Route::get('color-scheme-switcher/{color_scheme}', [ColorSchemeController::class, 'switch'])->name('color-scheme-switcher');
 

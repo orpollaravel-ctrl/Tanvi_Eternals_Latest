@@ -15,11 +15,13 @@
                 <div class="accordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                 Filters
                             </button>
                         </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                            data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <form action="">
                                     <div class="grid grid-cols-12 gap-4">
@@ -29,7 +31,8 @@
                                                 <option value="0">ALL</option>
                                                 @if (!empty($bullions))
                                                     @foreach ($bullions as $bullion)
-                                                        <option value="{{ $bullion->id }}" @if ($bullion->id == request()->input('bullion')) selected @endif>
+                                                        <option value="{{ $bullion->id }}"
+                                                            @if ($bullion->id == request()->input('bullion')) selected @endif>
                                                             {{ $bullion->name }}
                                                         </option>
                                                     @endforeach
@@ -38,28 +41,23 @@
                                         </div>
                                         <div class="col-span-12 sm:col-span-3">
                                             <x-base.form-label>From Date</x-base.form-label>
-                                            <x-base.form-input
-                                                type="date"
-                                                name="from_date"
+                                            <x-base.form-input type="date" name="from_date"
                                                 max="{{ now()->format('Y-m-d') }}"
                                                 value="{{ request()->input('from_date', now()->format('Y-m-d')) }}"
-                                                required
-                                            />
+                                                required />
                                         </div>
                                         <div class="col-span-12 sm:col-span-3">
                                             <x-base.form-label>To Date</x-base.form-label>
-                                            <x-base.form-input
-                                                type="date"
-                                                name="to_date"
+                                            <x-base.form-input type="date" name="to_date"
                                                 max="{{ now()->format('Y-m-d') }}"
                                                 value="{{ request()->input('to_date', now()->format('Y-m-d')) }}"
-                                                required
-                                            />
+                                                required />
                                         </div>
                                         <div class="col-span-12 sm:col-span-2 flex items-end gap-2">
                                             <x-base.button type="submit" variant="primary">Search</x-base.button>
                                             <a href="{{ route('receipts.index') }}">
-                                                <x-base.button type="button" variant="outline-secondary">Clear</x-base.button>
+                                                <x-base.button type="button"
+                                                    variant="outline-secondary">Clear</x-base.button>
                                             </a>
                                         </div>
                                     </div>
@@ -73,13 +71,15 @@
         <!-- END: Filters -->
 
         <!-- BEGIN: Header Actions -->
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('receipts.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Metal Receipt
-                </x-base.button>
-            </a>
-        </div>
+        @if (auth()->check() && auth()->user()->hasPermission('create-metal-receipts'))
+            <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
+                <a href="{{ route('receipts.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add Metal Receipt
+                    </x-base.button>
+                </a>
+            </div>
+        @endif
         <!-- END: Header Actions -->
 
         <!-- BEGIN: Success/Error Messages -->
@@ -109,7 +109,9 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Updated By</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Remark</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Created At</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-metal-receipts') || auth()->user()->hasPermission('delete-metal-receipts')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
 
@@ -156,33 +158,34 @@
                             <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
                                 {{ $receipt->created_at->diffForHumans() }}
                             </x-base.table.td>
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-metal-receipts') || auth()->user()->hasPermission('delete-metal-receipts')))
+                                <!-- Actions -->
+                                <x-base.table.td
+                                    class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
 
-                            <!-- Actions -->
-                            <x-base.table.td
-                                class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
+                                    <div class="flex items-center justify-center">
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-metal-receipts'))
+                                            <!-- Edit -->
+                                            <a href="{{ route('receipts.edit', $receipt->id) }}"
+                                                class="flex items-center mr-3 text-success">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Pencil" /> Edit
+                                            </a>
+                                        @endif
+                                        @if (auth()->check() && auth()->user()->hasPermission('delete-metal-receipts'))
+                                            <!-- Delete -->
+                                            <form action="{{ route('receipts.destroy', $receipt->id) }}" method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this receipt?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center text-danger">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </button>
+                                            </form>
+                                        @endif  
+                                    </div>
 
-                                <div class="flex items-center justify-center">
-
-                                    <!-- Edit -->
-                                    <a href="{{ route('receipts.edit', $receipt->id) }}"
-                                        class="flex items-center mr-3 text-success">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Pencil" /> Edit
-                                    </a>
-
-                                    <!-- Delete -->
-                                    <form action="{{ route('receipts.destroy', $receipt->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this receipt?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex items-center text-danger">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </button>
-                                    </form>
-
-                                </div>
-
-                            </x-base.table.td>
-
+                                </x-base.table.td>
+                            @endif
                         </x-base.table.tr>
                     @empty
                         <x-base.table.tr>
@@ -207,5 +210,3 @@
 
     </div>
 @endsection
-
-

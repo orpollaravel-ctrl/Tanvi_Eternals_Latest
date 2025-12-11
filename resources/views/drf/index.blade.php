@@ -8,17 +8,14 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Dealer Rate Fixes</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
-
         <!-- BEGIN: Filters -->
         <div class="intro-y col-span-12">
             <div class="box p-5">
-
                 <form action="">
                     <div class="grid grid-cols-12 gap-4">
-
                         <div class="col-span-12 sm:col-span-4">
                             <x-base.form-label>Dealer Name</x-base.form-label>
-                             <x-base.form-select name="dealer" class="form-control">
+                            <x-base.form-select name="dealer" class="form-control">
                                 <option value="0">ALL</option>
                                 @if (!empty($dealers))
                                     @foreach ($dealers as $dealer)
@@ -45,30 +42,29 @@
 
                         <div class="col-span-12 sm:col-span-2 flex items-end gap-2">
                             <x-base.button type="submit" variant="primary">Search</x-base.button>
-
                             <a href="{{ route('drfs.index') }}">
                                 <x-base.button type="button" variant="outline-secondary">
                                     Clear
                                 </x-base.button>
                             </a>
                         </div>
-
                     </div>
                 </form>
-
             </div>
         </div>
 
         <!-- END: Filters -->
 
         <!-- BEGIN: Header Actions -->
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('drfs.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Dealer Rate Fix
-                </x-base.button>
-            </a>
-        </div>
+        @if (auth()->check() && auth()->user()->hasPermission('create-dealer-rate-fixes'))
+            <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
+                <a href="{{ route('drfs.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add Dealer Rate Fix
+                    </x-base.button>
+                </a>
+            </div>
+        @endif
         <!-- END: Header Actions -->
 
         <!-- BEGIN: Success/Error Messages -->
@@ -96,7 +92,9 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Rate</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Amount</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Fixed By</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-dealer-rate-fixes') || auth()->user()->hasPermission('delete-dealer-rate-fixes')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
 
@@ -138,32 +136,35 @@
                             <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
                                 {{ $drf->fixedBy->name }}
                             </x-base.table.td>
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-dealer-rate-fixes') || auth()->user()->hasPermission('delete-dealer-rate-fixes')))
+                                {{-- Actions --}}
+                                <x-base.table.td
+                                    class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
 
-                            {{-- Actions --}}
-                            <x-base.table.td
-                                class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
+                                    <div class="flex items-center justify-center">
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-dealer-rate-fixes'))
+                                            {{-- Edit --}}
+                                            <a href="{{ route('drfs.edit', $drf->id) }}"
+                                                class="flex items-center mr-3 text-success">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
+                                            </a>
+                                        @endif
+                                        @if (auth()->check() && auth()->user()->hasPermission('delete-dealer-rate-fixes'))
+                                            {{-- Delete --}}
+                                            <form action="{{ route('drfs.destroy', $drf->id) }}" method="POST"
+                                                onsubmit="return confirm('Are you sure you want to delete this dealer rate fix?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center text-danger">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </button>
+                                            </form>
+                                        @endif
 
-                                <div class="flex items-center justify-center">
+                                    </div>
 
-                                    {{-- Edit --}}
-                                    <a href="{{ route('drfs.edit', $drf->id) }}"
-                                        class="flex items-center mr-3 text-success">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
-                                    </a>
-
-                                    {{-- Delete --}}
-                                    <form action="{{ route('drfs.destroy', $drf->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this dealer rate fix?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex items-center text-danger">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </button>
-                                    </form>
-
-                                </div>
-
-                            </x-base.table.td>
+                                </x-base.table.td>
+                            @endif
 
                         </x-base.table.tr>
                     @empty
@@ -177,10 +178,9 @@
 
                 <!-- Footer with Totals -->
                 @if ($drfs->count() > 0)
-                   <tfoot>
+                    <tfoot>
                         <tr class="bg-gray-50 text-sm text-gray-700 font-semibold">
-                            <td colspan="3" 
-                                class="py-4 text-center border-t border-gray-200 rounded-bl-xl">
+                            <td colspan="3" class="py-4 text-center border-t border-gray-200 rounded-bl-xl">
                                 Total
                             </td>
 
@@ -196,12 +196,10 @@
                                 {{ $totals->total_amount }}
                             </td>
 
-                            <td colspan="2" 
-                                class="py-4 border-t border-gray-200 rounded-br-xl">
+                            <td colspan="2" class="py-4 border-t border-gray-200 rounded-br-xl">
                             </td>
                         </tr>
                     </tfoot>
-
                 @endif
 
             </x-base.table>

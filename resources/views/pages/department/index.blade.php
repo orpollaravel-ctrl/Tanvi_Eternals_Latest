@@ -9,12 +9,14 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Header Actions -->
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route('departments.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Department
-                </x-base.button>
-            </a>
-{{-- 
+            @if (auth()->check() && auth()->user()->hasPermission('create-departments'))
+                <a href="{{ route('departments.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Department
+                    </x-base.button>
+                </a>
+            @endif
+            {{-- 
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
@@ -33,7 +35,7 @@
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu> --}}
-{{-- 
+            {{-- 
             <div class="mx-auto hidden text-slate-500 md:block">
                 Showing {{ $departments->firstItem() ?? 0 }} to {{ $departments->lastItem() ?? 0 }} of {{ $departments->total() ?? 0 }} entries
             </div> --}}
@@ -63,48 +65,62 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Name</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Code</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-departments') || auth()->user()->hasPermission('delete-departments')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
 
                 <x-base.table.tbody>
                     @forelse ($departments as $department)
                         <x-base.table.tr class="intro-x">
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
                                 {{ $loop->iteration }}
                             </x-base.table.td>
 
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium">
                                 {{ $department->name }}
                             </x-base.table.td>
 
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                                 {{ $department->code ?? '-' }}
                             </x-base.table.td>
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-departments') || auth()->user()->hasPermission('delete-departments')))
+                                <x-base.table.td
+                                    class="relative border-b-0 bg-white py-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] text-center first:rounded-l-md last:rounded-r-md before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
+                                    <div class="flex items-center justify-center">
+                                        <!-- View -->
+                                       
+                                            <a href="{{ route('departments.show', $department->id) }}"
+                                                class="flex items-center mr-3 text-primary">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" /> View
+                                            </a>
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-departments'))
+                                            <!-- Edit -->
+                                            <a href="{{ route('departments.edit', $department->id) }}"
+                                                class="flex items-center mr-3 text-success">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
+                                            </a>
+                                        @endif
+                                        <!-- Delete -->
+                                         @if (auth()->check() && auth()->user()->hasPermission('delete-departments'))
+                                            <form action="{{ route('departments.destroy', $department->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="flex items-center text-danger"
+                                                    onclick="return confirm('Are you sure you want to delete this department?')">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                                </button>
+                                            </form>
+                                        @endif
 
-                            <x-base.table.td
-                                class="relative border-b-0 bg-white py-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] text-center first:rounded-l-md last:rounded-r-md before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400"
-                            >
-                                <div class="flex items-center justify-center">
-                                    <!-- View -->
-                                    <a href="{{ route('departments.show', $department->id) }}" class="flex items-center mr-3 text-primary">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" /> View
-                                    </a>
-                                    <!-- Edit -->
-                                    <a href="{{ route('departments.edit', $department->id) }}" class="flex items-center mr-3 text-success">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" /> Edit
-                                    </a>
-                                    <!-- Delete -->
-                                    <form action="{{ route('departments.destroy', $department->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex items-center text-danger"
-                                            onclick="return confirm('Are you sure you want to delete this department?')">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </x-base.table.td>
+                                    </div>
+                                </x-base.table.td>
+                            @endif
                         </x-base.table.tr>
                     @empty
                         <x-base.table.tr>

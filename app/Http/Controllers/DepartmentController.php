@@ -13,6 +13,9 @@ class DepartmentController extends Controller
      */
     public function index(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-departments')) {
+           abort(403,'Permission Denied');
+        }
         $departments = Department::query()->latest()->paginate(10);
         return view('pages/department/index', [
             'layout' => 'side-menu',
@@ -25,6 +28,9 @@ class DepartmentController extends Controller
      */
     public function create(): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('create-departments')) {
+           abort(403,'Permission Denied');
+        }
         return view('pages/department/create', [
             'layout' => 'side-menu',
         ]);
@@ -35,6 +41,7 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
+         
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:255', 'unique:departments,name'],
             'code' => ['nullable', 'string', 'max:255','unique:departments,code'],
@@ -53,6 +60,9 @@ class DepartmentController extends Controller
      */
     public function show(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-departments')) {
+           abort(403,'Permission Denied');
+        }
         $department = Department::findOrFail($id);
         return view('pages/department/show', [
             'layout' => 'side-menu',
@@ -65,6 +75,9 @@ class DepartmentController extends Controller
      */
     public function edit(string $id): View
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('edit-departments')) {
+           abort(403,'Permission Denied');
+        }
         $department = Department::findOrFail($id);
         return view('pages/department/edit', [
             'layout' => 'side-menu',
@@ -97,6 +110,9 @@ class DepartmentController extends Controller
      */
     public function destroy(string $id)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-departments')) {
+           abort(403,'Permission Denied');
+        }
         $department = Department::findOrFail($id);
         $department->delete();
 

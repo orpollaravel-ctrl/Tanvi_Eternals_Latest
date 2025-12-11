@@ -8,11 +8,13 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Quotations</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
-            <a href="{{ route('quotations.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add New Quotation
-                </x-base.button>
-            </a>
+            @if (auth()->check() && auth()->user()->hasPermission('create-quotations'))
+                <a href="{{ route('quotations.create') }}">
+                    <x-base.button class="mr-2 shadow-md" variant="primary">
+                        Add New Quotation
+                    </x-base.button>
+                </a>
+            @endif
             <x-base.menu>
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
@@ -44,44 +46,60 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Metal</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Purity</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Diamond</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
+                        @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
                 <x-base.table.tbody>
                     @foreach ($quotations as $quotation)
                         <x-base.table.tr class="intro-x">
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap font-medium">{{ $quotation->customer_name }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->contact }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->customer_code }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ ucfirst($quotation->metal) }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->purity }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->diamond }}</div>
                             </x-base.table.td>
-                            <x-base.table.td class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('quotations.edit', $quotation->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                        Edit
-                                    </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal" href="#"
-                                        data-delete-route="{{ route('quotations.destroy', $quotation->id) }}"
-                                        data-delete-name="{{ $quotation->customer_name }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
-                                </div>
-                            </x-base.table.td>
+                            @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
+                                <x-base.table.td
+                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                    <div class="flex items-center justify-center">
+                                        @if (auth()->check() && auth()->user()->hasPermission('edit-quotations'))
+                                            <a class="mr-3 flex items-center"
+                                                href="{{ route('quotations.edit', $quotation->id) }}">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                Edit
+                                            </a>
+                                        @endif
+                                        @if (auth()->check() && auth()->user()->hasPermission('delete-quotations'))
+                                            <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                data-tw-target="#delete-confirmation-modal" href="#"
+                                                data-delete-route="{{ route('quotations.destroy', $quotation->id) }}"
+                                                data-delete-name="{{ $quotation->customer_name }}">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                            </a>
+                                        @endif
+                                    </div>
+                                </x-base.table.td>
+                            @endif
                         </x-base.table.tr>
                     @endforeach
                 </x-base.table.tbody>
@@ -117,13 +135,13 @@
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-quotation-form');
                 const deleteQuotationName = document.getElementById('delete-quotation-name');
 
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
+                deleteButtons.forEach(function(button) {
+                    button.addEventListener('click', function() {
                         const route = this.getAttribute('data-delete-route');
                         const name = this.getAttribute('data-delete-name');
 

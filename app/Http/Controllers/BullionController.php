@@ -26,6 +26,9 @@ class BullionController extends Controller
      */
     public function index()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullions')) {
+           abort(403,'Permission Denied');
+        }
         $bullions=Bullion::withCount('deals')->paginate(10);
         return view('bullion.index', compact('bullions'));
     }
@@ -37,6 +40,9 @@ class BullionController extends Controller
      */
     public function create()
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullions')) {
+           abort(403,'Permission Denied');
+        }
         return view('bullion.create');
     }
 
@@ -78,6 +84,9 @@ class BullionController extends Controller
      */
     public function edit(Bullion $bullion)
     {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-bullions')) {
+           abort(403,'Permission Denied');
+        }
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
@@ -116,6 +125,12 @@ class BullionController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (!auth()->check() || !auth()->user()->hasPermission('delete-bullions')) {
+            abort(403,'Permission Denied');
+        }
+        $bullion = Bullion::findOrFail($id);
+        $bullion->delete();
+
+        return redirect()->route('bullions.index')->with('success', 'Bullion deleted successfully.');
     }
 }
