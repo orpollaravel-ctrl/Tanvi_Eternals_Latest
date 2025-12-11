@@ -288,6 +288,17 @@ class SideMenu
                 'permission' => 'view-quotations',
             ],
 
+            // ----------------------
+            // EXPENSE
+            // ----------------------
+            'expense' => [
+                'icon' => 'dollar-sign',
+                'route_name' => 'expenses.index',
+                'params' => ['layout' => 'side-menu'],
+                'title' => 'Expense',
+                'permission' => 'view-expenses',
+            ],
+
         ];
 
     }

@@ -61,6 +61,10 @@ class PermissionSeeder extends Seeder
             ['label' => 'Create Quotations', 'name' => 'create-quotations', 'group' => 'quotation'],
             ['label' => 'Edit Quotations', 'name' => 'edit-quotations', 'group' => 'quotation'],
             ['label' => 'Delete Quotations', 'name' => 'delete-quotations', 'group' => 'quotation'],
+            ['label' => 'View Expenses', 'name' => 'view-expenses', 'group' => 'expense'],
+            ['label' => 'Create Expenses', 'name' => 'create-expenses', 'group' => 'expense'],
+            ['label' => 'Edit Expenses', 'name' => 'edit-expenses', 'group' => 'expense'],
+            ['label' => 'Delete Expenses', 'name' => 'delete-expenses', 'group' => 'expense'],
             
         ];
 

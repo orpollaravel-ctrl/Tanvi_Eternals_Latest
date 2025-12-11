@@ -28,6 +28,7 @@ use App\Http\Controllers\DealerRateFixController;
 use App\Http\Controllers\NewPaymentController;
 use App\Http\Controllers\PaymentModeController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Artisan;
@@ -254,6 +255,16 @@ Route::middleware('auth')->group(function () {
         Route::get('quotations/{id}/edit', 'edit')->name('quotations.edit');
         Route::put('quotations/{id}', 'update')->name('quotations.update');
         Route::delete('quotations/{id}', 'destroy')->name('quotations.destroy');
+    });
+
+    // Expenses CRUD
+    Route::controller(ExpenseController::class)->group(function () {
+        Route::get('expenses', 'index')->name('expenses.index');
+        Route::get('expenses/create', 'create')->name('expenses.create');
+        Route::post('expenses', 'store')->name('expenses.store');
+        Route::get('expenses/{id}/edit', 'edit')->name('expenses.edit');
+        Route::put('expenses/{id}', 'update')->name('expenses.update');
+        Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
     });
 	
 	// Departments CRUD
