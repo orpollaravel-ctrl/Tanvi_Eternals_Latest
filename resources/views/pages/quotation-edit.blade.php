@@ -9,7 +9,6 @@
     $optionClass = 'cursor-pointer px-3 py-2 border border-gray-300 rounded-md text-sm font-medium transition-all duration-200 hover:bg-slate-50 hover:border-slate-400';
     $activeClass = 'radio-active text-white';
 @endphp
-
 <style>
     .radio-active {
         background-color: #164E63 !important;
@@ -195,7 +194,6 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Tom Select for customer
             const customerSelect = document.getElementById('customer-select');
             const customerCodeInput = document.getElementById('customer-code');
             
@@ -207,8 +205,7 @@
                     }
                 }
             });
-
-            // Handle regular radio buttons
+ 
             const radioLabels = document.querySelectorAll('label:has(input[type="radio"]):not(:has(.metal-option))');
             
             radioLabels.forEach(label => {
@@ -230,15 +227,13 @@
                     }, 10);
                 });
             });
-            
-            // Handle metal image selection
+             
             const metalLabels = document.querySelectorAll('label:has(.metal-option)');
             metalLabels.forEach(label => {
                 const radio = label.querySelector('input[type="radio"]');
                 const metalOption = label.querySelector('.metal-option');
                 
-                label.addEventListener('click', function() {
-                    // Remove selected class from all metal options
+                label.addEventListener('click', function() { 
                     document.querySelectorAll('.metal-option').forEach(option => {
                         option.classList.remove('selected');
                     });
@@ -252,5 +247,29 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    if (this.name === 'metal') { 
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(function(r) {
+                            r.closest('label').querySelector('.metal-option').classList.remove('selected');
+                        });
+                        if (this.checked) {
+                            this.closest('label').querySelector('.metal-option').classList.add('selected');
+                        }
+                    } else { 
+                        document.querySelectorAll(`input[name="${this.name}"]`).forEach(function(r) {
+                            r.closest('label').classList.remove('radio-active', 'text-white');
+                        });
+                        if (this.checked) {
+                            this.closest('label').classList.add('radio-active', 'text-white');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+   
     @endpush
 @endsection     

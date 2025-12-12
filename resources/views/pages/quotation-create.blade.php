@@ -31,6 +31,30 @@
         transform: scale(1.05);
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() { 
+    document.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.name === 'metal') {  
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(function(r) {
+                    r.closest('label').querySelector('.metal-option').classList.remove('selected');
+                });
+                if (this.checked) {
+                    this.closest('label').querySelector('.metal-option').classList.add('selected');
+                }
+            } else { 
+                document.querySelectorAll(`input[name="${this.name}"]`).forEach(function(r) {
+                    r.closest('label').classList.remove('radio-active', 'text-white');
+                });
+                if (this.checked) {
+                    this.closest('label').classList.add('radio-active', 'text-white');
+                }
+            }
+        });
+    });
+});
+</script>
     <h2 class="intro-y mt-10 text-lg font-medium">Create Quotation</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 lg:col-span-8">
@@ -191,8 +215,7 @@
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Tom Select for customer
+        document.addEventListener('DOMContentLoaded', function() { 
             const customerSelect = document.getElementById('customer-select');
             const customerCodeInput = document.getElementById('customer-code');
             
