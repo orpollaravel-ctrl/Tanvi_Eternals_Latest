@@ -175,7 +175,7 @@
                                                     <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
                                                 </button>
                                             </form>
-
+                                        @endif
                                     </div>
 
                                 </x-base.table.td>

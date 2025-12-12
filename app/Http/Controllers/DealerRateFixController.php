@@ -45,7 +45,7 @@ class DealerRateFixController extends Controller
             })->when($request->get('from_date') && $request->get('from_date'), function ($q) use ($request) {
                 return $q->whereBetween('drf_date', [$request->get('from_date'), $request->get('to_date')]);
             })->latest();
-        $drfs = $query->paginate($perPage);
+        $drfs = $query->get();
         $totalsQuery = DealerRateFix::query()
             ->when($request->get('dealer'), function ($q) use ($request) {
                 return $q->where('dealer_id', $request->get('dealer'));

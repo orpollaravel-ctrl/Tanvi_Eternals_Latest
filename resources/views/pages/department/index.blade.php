@@ -71,8 +71,8 @@
                     </x-base.table.tr>
                 </x-base.table.thead>
 
-                <x-base.table.tbody>
-                    @forelse ($departments as $department)
+                <x-base.table.tbody id="departments-tbody">
+                    @forelse ($departments->take(20) as $department)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
                                 class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
@@ -134,18 +134,7 @@
         </div>
         <!-- END: Data Table -->
 
-        <!-- BEGIN: Pagination -->
-        <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-            <x-base.pagination class="w-full sm:mr-auto sm:w-auto">
-                {{ $departments->links() }}
-            </x-base.pagination>
-            <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-            </x-base.form-select>
-        </div>
-        <!-- END: Pagination -->
+
     </div>
 
     <!-- BEGIN: Delete Confirmation Modal -->
@@ -170,4 +159,50 @@
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Delete Confirmation Modal -->
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const tbody = document.getElementById('departments-tbody');
+                let allDepartments = @json($departments);
+                let displayedCount = 20;
+
+                function loadMoreDepartments() {
+                    if (displayedCount >= allDepartments.length) return;
+                    
+                    const nextBatch = allDepartments.slice(displayedCount, displayedCount + 20);
+                    nextBatch.forEach((department, index) => {
+                        const row = `<tr class="intro-x">
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
+                                ${displayedCount + index + 1}
+                            </td>
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium">
+                                ${department.name}
+                            </td>
+                            <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                                ${department.code || '-'}
+                            </td>
+                            <td class="relative border-b-0 bg-white py-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] text-center first:rounded-l-md last:rounded-r-md">
+                                <div class="flex items-center justify-center">
+                                    <a href="/departments/${department.id}" class="flex items-center mr-3 text-primary">
+                                        <i class="mr-1 h-4 w-4"></i> View
+                                    </a>
+                                    <a href="/departments/${department.id}/edit" class="flex items-center mr-3 text-success">
+                                        <i class="mr-1 h-4 w-4"></i> Edit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                    displayedCount += 20;
+                }
+
+                window.addEventListener('scroll', function() {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                        loadMoreDepartments();
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endsection

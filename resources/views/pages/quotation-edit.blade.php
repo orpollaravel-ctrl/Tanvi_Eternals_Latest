@@ -187,11 +187,11 @@
         </div>
     </div>
 
-    @push('vendors')
-        @vite('resources/js/vendor/tom-select/index.js')
-    @endpush
+@push('vendors')
+    @vite('resources/js/vendor/tom-select/index.js')
+@endpush
 
-    @push('scripts')
+@push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const customerSelect = document.getElementById('customer-select');
@@ -269,7 +269,6 @@
                 });
             });
         });
-    </script>
-   
-    @endpush
+    </script>   
+@endpush
 @endsection     

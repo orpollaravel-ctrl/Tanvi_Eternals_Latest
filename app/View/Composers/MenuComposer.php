@@ -106,13 +106,59 @@ class MenuComposer
             }
         } else {
             foreach (SideMenu::menu() as $menuKey => $menu) {
-                if ($menu !== 'divider' && isset($menu['route_name']) && $menu['route_name'] == $pageName && empty($firstPageName)) {
+                $isFirstLevelActive = false;
+                
+                // Check exact route match for first level
+                if ($menu !== 'divider' && isset($menu['route_name']) && $menu['route_name'] == $pageName) {
+                    $isFirstLevelActive = true;
+                }
+                
+                // Check active_routes patterns for first level
+                if (!$isFirstLevelActive && $menu !== 'divider' && isset($menu['active_routes'])) {
+                    foreach ($menu['active_routes'] as $pattern) {
+                        if (str_contains($pattern, '*')) {
+                            $pattern = str_replace('*', '', $pattern);
+                            if (str_starts_with($pageName, $pattern)) {
+                                $isFirstLevelActive = true;
+                                break;
+                            }
+                        } else if ($pattern == $pageName) {
+                            $isFirstLevelActive = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if ($isFirstLevelActive && empty($firstPageName)) {
                     $firstLevelActiveIndex = $menuKey;
                 }
 
                 if (isset($menu['sub_menu'])) {
                     foreach ($menu['sub_menu'] as $subMenuKey => $subMenu) {
-                        if (isset($subMenu['route_name']) && $subMenu['route_name'] == $pageName && $menuKey != 'menu-layout' && empty($secondPageName)) {
+                        $isActive = false;
+                        
+                        // Check exact route match
+                        if (isset($subMenu['route_name']) && $subMenu['route_name'] == $pageName) {
+                            $isActive = true;
+                        }
+                        
+                        // Check active_routes patterns
+                        if (!$isActive && isset($subMenu['active_routes'])) {
+                            foreach ($subMenu['active_routes'] as $pattern) {
+                                if (str_contains($pattern, '*')) {
+                                    $pattern = str_replace('*', '', $pattern);
+                                    if (str_starts_with($pageName, $pattern)) {
+                                        $isActive = true;
+                                        break;
+                                    }
+                                } else if ($pattern == $pageName) {
+                                    $isActive = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if ($isActive && $menuKey != 'menu-layout' && empty($secondPageName)) {
                             $firstLevelActiveIndex = $menuKey;
                             $secondLevelActiveIndex = $subMenuKey;
                         }

@@ -13,15 +13,26 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() : View
+    public function index(Request $request) : View
     {
         if (!auth()->check() || !auth()->user()->hasPermission('view-users')) {
            abort(403,'Permission Denied');
         }
-        $users = User::all();
+        
+        $query = User::query();
+        
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%')
+                  ->orWhere('contact_number', 'like', '%' . $search . '%');
+            });
+        }
+        
         return view('pages/user', [
             'layout' => 'side-menu',
-            'users' => User::query()->latest()->paginate(10),
+            'users' => $query->latest()->get(),
         ]);
     }
 

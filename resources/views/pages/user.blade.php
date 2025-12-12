@@ -16,10 +16,18 @@
                 </a>
             @endif 
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
-                <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
-                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
-                </div>
+                <form method="GET" action="{{ route('users') }}" class="relative w-56">
+                    <x-base.form-input 
+                        class="!box w-56 pr-10" 
+                        type="text" 
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search by name, email, contact..." 
+                    />
+                    <button type="submit" class="absolute inset-y-0 right-0 flex items-center justify-center w-10 h-full text-slate-500 hover:text-primary">
+                        <x-base.lucide class="h-4 w-4" icon="Search" />
+                    </button>
+                </form>
             </div>
         </div>
         <!-- BEGIN: Data List -->
@@ -45,9 +53,9 @@
                         @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
-                <x-base.table.tbody>
+                <x-base.table.tbody id="users-tbody">
                     @isset($users)
-                        @foreach ($users as $user)
+                        @foreach ($users->take(20) as $user)
                             <x-base.table.tr class="intro-x">
                                 <x-base.table.td
                                     class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -105,21 +113,7 @@
                 </x-base.table.tbody>
             </x-base.table>
         </div>
-        <!-- END: Data List -->
-        <!-- BEGIN: Pagination -->
-        @isset($users)
-            <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-                <div class="w-full sm:mr-auto sm:w-auto">
-                    {{ $users->onEachSide(1)->links() }}
-                </div>
-                <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>35</option>
-                    <option>50</option>
-                </x-base.form-select>
-            </div>
-        @endisset
+        <!-- END: Data List --> 
         <!-- END: Pagination -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
@@ -155,6 +149,52 @@
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-user-form');
                 const deleteUserName = document.getElementById('delete-user-name');
+                const tbody = document.getElementById('users-tbody');
+                let allUsers = @json($users);
+                let displayedCount = 20;
+
+                // Lazy loading
+                function loadMoreUsers() {
+                    if (displayedCount >= allUsers.length) return;
+                    
+                    const nextBatch = allUsers.slice(displayedCount, displayedCount + 20);
+                    nextBatch.forEach(user => {
+                        const row = createUserRow(user);
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                    displayedCount += 20;
+                }
+
+                function createUserRow(user) {
+                    return `<tr class="intro-x">
+                        <td class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <div class="flex justify-center">
+                                <img src="${user.photo ? '{{ url('uploads/user/') }}/' + user.photo : '{{ url('uploads/logo.png') }}'" alt="User Photo" class="h-10 w-10 rounded-full object-cover">
+                            </div>
+                        </td>
+                        <td class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <div class="flex"><div class="whitespace-nowrap font-medium">${user.name}</div></div>
+                        </td>
+                        <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${user.email}</div>
+                        </td>
+                        <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${user.contact_number}</div>
+                        </td>
+                        <td class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <div class="flex items-center justify-center ${user.active ? 'text-success' : 'text-danger'}">
+                                <i class="mr-2 h-4 w-4"></i> ${user.active ? 'Active' : 'Inactive'}
+                            </div>
+                        </td>
+                    </tr>`;
+                }
+
+                // Scroll event for lazy loading
+                window.addEventListener('scroll', function() {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                        loadMoreUsers();
+                    }
+                });
 
                 deleteButtons.forEach(function (button) {
                     button.addEventListener('click', function () {

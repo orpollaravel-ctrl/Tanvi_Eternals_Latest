@@ -48,6 +48,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'User',
                         'permission' => 'view-users',
+                        'active_routes' => ['users', 'users.*'],
                     ],
                     'client' => [
                         'icon' => 'user-plus',
@@ -55,6 +56,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Client',
                         'permission' => 'view-clients',
+                        'active_routes' => ['client', 'client.*'],
                     ],
                     'vendor' => [
                         'icon' => 'user-check',
@@ -62,6 +64,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Vendor',
                         'permission' => 'view-vendors',
+                        'active_routes' => ['vendor', 'vendor.*'],
                     ],
                     'department' => [
                         'icon' => 'building',
@@ -69,6 +72,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Department',
                         'permission' => 'view-departments',
+                        'active_routes' => ['departments', 'departments.*'],
                     ],
                     'employee' => [
                         'icon' => 'briefcase',
@@ -76,6 +80,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Employee',
                         'permission' => 'view-employees',
+                        'active_routes' => ['employees', 'employees.*'],   
                     ],
                 ],
             ],
@@ -101,6 +106,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Dealer Rate Fix',
                                 'permission' => 'view-dealer-rate-fixes',
+                                'active_routes' => ['drfs', 'drfs.*'],
                             ],
                             'bullion-rate-fix' => [
                                 'icon' => 'bar-chart',
@@ -108,6 +114,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Bullion Rate Fix',
                                 'permission' => 'view-bullion-rate-fixes',
+                                'active_routes' => ['brfs', 'brfs.*'],
                             ],
                             'metal-receipt' => [
                                 'icon' => 'download',
@@ -115,6 +122,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Metal Receipt',
                                 'permission' => 'view-metal-receipts',
+                                'active_routes' => ['receipts', 'receipts.*'],
                             ],
                             'payments' => [
                                 'icon' => 'credit-card',
@@ -122,13 +130,14 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Payments',
                                 'permission' => 'view-payments',
+                                'active_routes' => ['payments', 'payments.*'],
                             ],
                             'manual-deal' => [
                                 'icon' => 'file-text',
                                 'route_name' => 'manual_deal.create',
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Manual Deal',
-                                'permission' => 'view-manual-deals',
+                                'permission' => 'view-manual-deals', 
                             ],
                         ],
                     ],
@@ -184,6 +193,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Bullions',
                                 'permission' => 'view-bullions',
+                                'active_routes' => ['bullions', 'bullions.*'],
                             ],
                             'dealers' => [
                                 'icon' => 'users',
@@ -191,6 +201,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Dealers',
                                 'permission' => 'view-dealers',
+                                'active_routes' => ['dealers', 'dealers.*'],
                             ], 
                             'payment-modes' => [
                                 'icon' => 'credit-card',
@@ -198,6 +209,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Payment Modes',
                                 'permission' => 'view-payment-modes',
+                                'active_routes' => ['paymentmodes', 'paymentmodes.*'],
                             ],
                         ],
                     ],
@@ -218,6 +230,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Product',
                         'permission' => 'view-products',
+                        'active_routes' => ['products', 'products.*'],
                     ],
                     'tool-purchase' => [
                         'icon' => 'file-text',
@@ -225,6 +238,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Tool Purchase',
                         'permission' => 'view-tool-purchases',
+                        'active_routes' => ['purchases', 'purchases.*'],
                     ],
                     'tool-issue' => [
                         'icon' => 'list-checks',
@@ -232,6 +246,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Tool Issue',
                         'permission' => 'view-tool-issues',
+                        'active_routes' => ['tool-assigns', 'tool-assigns.*'],
                     ],
                     'tool-inventory' => [
                         'icon' => 'layers',
@@ -239,6 +254,7 @@ class SideMenu
                         'params' => ['layout' => 'side-menu'],
                         'title' => 'Tool Inventory',
                         'permission' => 'view-tool-inventory',
+                        'active_routes' => ['inventory-calculation', 'inventory-calculation.*'],
                     ],
                     'report' => [
                         'icon' => 'bar-chart-2',
@@ -250,6 +266,7 @@ class SideMenu
                                 'params' => ['layout' => 'side-menu'],
                                 'title' => 'Purchase Report',
                                 'permission' => 'view-purchase-reports',
+                                'active_routes' => ['tool-assigns.purchase-report', 'tool-assigns.purchase-report.*'],
                             ],
                             'product-report' => [
                                 'icon' => 'package',
@@ -286,6 +303,7 @@ class SideMenu
                 'params' => ['layout' => 'side-menu'],
                 'title' => 'Quotation',
                 'permission' => 'view-quotations',
+                'active_routes' => ['quotations', 'quotations.*'],
             ],
 
             // ----------------------
@@ -297,6 +315,8 @@ class SideMenu
                 'params' => ['layout' => 'side-menu'],
                 'title' => 'Expense',
                 'permission' => 'view-expenses',
+                'active_routes' => ['expenses', 'expenses.*'],
+
             ],
 
         ];

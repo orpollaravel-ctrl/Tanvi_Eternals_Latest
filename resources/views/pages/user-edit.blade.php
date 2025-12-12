@@ -7,8 +7,8 @@
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">Edit User</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 lg:col-span-6">
-            <div class="box p-5">
+        <div class="intro-y col-span-12">
+            <div class="box p-8">
                 @if ($errors->any())
                     <div class="mb-5 rounded-md border border-danger/20 bg-danger/10 p-4 text-danger dark:border-danger/30">
                         <div class="font-medium">There were some problems with your input.</div>
@@ -108,48 +108,53 @@
                             </label>
                         </div>
                     </div>  
-                    <div class="mt-3">
-                        <x-base.form-label>Permissions</x-base.form-label>
+                    <div class="mt-6">
+                        <x-base.form-label class="text-lg font-semibold mb-4">User Permissions</x-base.form-label>
 
-                        <table class="table border mt-2" style="text-align: center;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 180px;">Name</th>
-                                    <th>Permissions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                              @foreach($permissions->groupBy('group') as $group => $items)
-                                <tr class="border-b border-gray-300" style="border: 1px solid black;"> <!-- Add this -->
-                                    <td class="font-medium">
-                                        {{ ucfirst($group) }}
-                                    </td>
-                                    <td>
-                                        <div class="grid grid-cols-3 gap-y-2">
-                                            @foreach($items as $permission)
-                                                <label class="flex items-center space-x-2">
-                                                    <input 
-                                                        type="checkbox"
-                                                        name="permissions[]"
-                                                        value="{{ $permission->id }}"
-                                                        class="form-check-input"
-                                                        {{ in_array($permission->id, old('permissions', $user->permissions->pluck('id')->toArray())) ? 'checked' : '' }}
-                                                    >
-                                                    <span>{{ $permission->label }}</span>
-                                                </label>
+                        <div class="space-y-6 mt-4">
+                            @foreach($permissions->groupBy('group') as $group => $items)
+                                <div class="border-2 border-gray-800 rounded-lg bg-white">
+                                    <div class="bg-primary text-white px-4 py-3 border-b-2 border-gray-800">
+                                        <h3 class="font-bold text-lg">{{ ucfirst($group) }} Group</h3>
+                                    </div>
+                                    <div class="p-4">
+                                        @php
+                                            $moduleGroups = collect($items)->groupBy(function($permission) {
+                                                $parts = explode('-', $permission->name);
+                                                return count($parts) > 1 ? $parts[1] : 'general';
+                                            });
+                                        @endphp
+                                        
+                                        <div class="flex gap-4 flex-wrap">
+                                            @foreach($moduleGroups as $module => $modulePermissions)
+                                                <div class="border-2 border-gray-600 rounded bg-gray-50 w-48 flex-shrink-0">
+                                                    <div class="bg-gray-200 px-3 py-2 border-b-2 border-gray-600">
+                                                        <h4 class="font-semibold text-gray-800">{{ ucfirst($module) }}</h4>
+                                                    </div>
+                                                    <div class="p-3 space-y-1">
+                                                        @foreach($modulePermissions as $permission)
+                                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                                                <input 
+                                                                    type="checkbox"
+                                                                    name="permissions[]"
+                                                                    value="{{ $permission->id }}"
+                                                                    class="w-4 h-4 text-primary border-gray-400 rounded"
+                                                                    {{ in_array($permission->id, old('permissions', $user->permissions->pluck('id')->toArray())) ? 'checked' : '' }}
+                                                                >
+                                                                <span class="text-sm text-gray-700">{{ $permission->label }}</span>
+                                                            </label>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
                                             @endforeach
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
                             @endforeach
-
-
-                            </tbody>
-                        </table>
+                        </div>
 
                         @error('permissions')
-                            <span class="text-danger"><strong>{{ $message }}</strong></span>
+                            <div class="mt-3 text-danger font-medium">{{ $message }}</div>
                         @enderror
                     </div>                  
                     <div class="mt-5 flex items-center">

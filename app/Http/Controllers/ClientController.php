@@ -17,7 +17,7 @@ class ClientController extends Controller
         if (!auth()->check() || !auth()->user()->hasPermission('view-clients')) {
            abort(403,'Permission Denied');
         }
-        $clients = Client::query()->latest()->paginate(10);
+        $clients = Client::query()->latest()->get();
 
         return view('pages.client', [
             'layout' => 'side-menu',

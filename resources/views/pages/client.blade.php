@@ -40,13 +40,8 @@
                         <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
-            </x-base.menu>
-            <div class="mx-auto hidden text-slate-500 md:block">
-                @isset($clients)
-                    Showing {{ $clients->firstItem() }} to {{ $clients->lastItem() }} of {{ $clients->total() }} entries
-                @endisset
-            </div>
-            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
+            </x-base.menu> 
+            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto">
                 <div class="relative w-56 text-slate-500">
                     <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
@@ -67,9 +62,9 @@
                         @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
-                <x-base.table.tbody>
+                <x-base.table.tbody id="clients-tbody">
                     @isset($clients)
-                        @forelse ($clients as $client)
+                        @forelse ($clients->take(20) as $client)
                             <x-base.table.tr class="intro-x">
                                 <x-base.table.td
                                     class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -117,22 +112,7 @@
                 </x-base.table.tbody>
             </x-base.table>
         </div>
-        <!-- END: Data List -->
-        <!-- BEGIN: Pagination -->
-        @isset($clients)
-            <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-                <div class="w-full sm:mr-auto sm:w-auto">
-                    {{ $clients->onEachSide(1)->links() }}
-                </div>
-                <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>35</option>
-                    <option>50</option>
-                </x-base.form-select>
-            </div>
-        @endisset
-        <!-- END: Pagination -->
+        <!-- END: Data List --> 
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
     <x-base.dialog id="delete-confirmation-modal">
@@ -167,6 +147,33 @@
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-user-form');
                 const deleteUserName = document.getElementById('delete-user-name');
+                const tbody = document.getElementById('clients-tbody');
+                let allClients = @json($clients);
+                let displayedCount = 20;
+
+                function loadMoreClients() {
+                    if (displayedCount >= allClients.length) return;
+                    
+                    const nextBatch = allClients.slice(displayedCount, displayedCount + 20);
+                    nextBatch.forEach(client => {
+                        const row = `<tr class="intro-x">
+                            <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${client.code}</div>
+                            </td>
+                            <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${client.name}</div>
+                            </td>
+                        </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                    displayedCount += 20;
+                }
+
+                window.addEventListener('scroll', function() {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                        loadMoreClients();
+                    }
+                });
 
                 deleteButtons.forEach(function (button) {
                     button.addEventListener('click', function () {

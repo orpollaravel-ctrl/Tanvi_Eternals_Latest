@@ -16,7 +16,7 @@ class DepartmentController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('view-departments')) {
            abort(403,'Permission Denied');
         }
-        $departments = Department::query()->latest()->paginate(10);
+        $departments = Department::query()->latest()->get();
         return view('pages/department/index', [
             'layout' => 'side-menu',
             'departments' => $departments,

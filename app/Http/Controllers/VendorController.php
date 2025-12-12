@@ -13,7 +13,7 @@ class VendorController extends Controller
         if (!auth()->check() || !auth()->user()->hasPermission('view-vendors')) {
            abort(403,'Permission Denied');
         }
-        $vendors = Vendor::latest()->paginate(10);
+        $vendors = Vendor::latest()->get();
 
         return view('pages.vendor', [
             'layout' => 'side-menu',

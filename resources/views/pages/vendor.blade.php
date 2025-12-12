@@ -40,16 +40,11 @@
                         <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
-            </x-base.menu>
-            <div class="mx-auto hidden text-slate-500 md:block">
-                @isset($vendors)
-                    Showing {{ $vendors->firstItem() }} to {{ $vendors->lastItem() }} of {{ $vendors->total() }} entries
-                @endisset
-            </div>
-            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
-                <div class="relative w-56 text-slate-500">
+            </x-base.menu> 
+            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto">
+                <div class="relative w-56">
                     <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
-                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
+                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4 text-slate-500" icon="Search" />
                 </div>
             </div>
         </div>
@@ -69,9 +64,9 @@
                         @endif
                     </x-base.table.tr>
                 </x-base.table.thead>
-                <x-base.table.tbody>
+                <x-base.table.tbody id="vendors-tbody">
                     @isset($vendors)
-                        @forelse ($vendors as $vendor)
+                        @forelse ($vendors->take(20) as $vendor)
                             <x-base.table.tr class="intro-x">
                                 <x-base.table.td
                                     class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -131,21 +126,7 @@
             </x-base.table>
         </div>
         <!-- END: Data List -->
-        <!-- BEGIN: Pagination -->
-        @isset($vendors)
-            <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-                <div class="w-full sm:mr-auto sm:w-auto">
-                    {{ $vendors->onEachSide(1)->links() }}
-                </div>
-                <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>35</option>
-                    <option>50</option>
-                </x-base.form-select>
-            </div>
-        @endisset
-        <!-- END: Pagination -->
+
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
     <x-base.dialog id="delete-confirmation-modal">
@@ -180,6 +161,39 @@
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-user-form');
                 const deleteUserName = document.getElementById('delete-user-name');
+                const tbody = document.getElementById('vendors-tbody');
+                let allVendors = @json($vendors);
+                let displayedCount = 20;
+
+                function loadMoreVendors() {
+                    if (displayedCount >= allVendors.length) return;
+                    
+                    const nextBatch = allVendors.slice(displayedCount, displayedCount + 20);
+                    nextBatch.forEach(vendor => {
+                        const row = `<tr class="intro-x">
+                            <td class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="flex"><div class="whitespace-nowrap font-medium">${vendor.name}</div></div>
+                            </td>
+                            <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${vendor.code || 'N/A'}</div>
+                            </td>
+                            <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${vendor.contact_no || 'N/A'}</div>
+                            </td>
+                            <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${vendor.email || 'N/A'}</div>
+                            </td>
+                        </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                    displayedCount += 20;
+                }
+
+                window.addEventListener('scroll', function() {
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                        loadMoreVendors();
+                    }
+                });
 
                 deleteButtons.forEach(function (button) {
                     button.addEventListener('click', function () {

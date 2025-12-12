@@ -204,21 +204,7 @@
 
             </x-base.table>
         </div>
-        <!-- END: Data Table -->
-
-        <!-- BEGIN: Pagination -->
-        <div class="intro-y col-span-12 mt-3 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-            <div class="w-full sm:mr-auto sm:w-auto">
-                {{ $drfs->appends(request()->query())->links() }}
-            </div>
-
-            <select name="per_page" class="form-control mt-3 w-20 sm:mt-0" onchange="this.form.submit()">
-                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-            </select>
-        </div>
-        <!-- END: Pagination -->
+        <!-- END: Data Table --> 
 
     </div>
 @endsection
