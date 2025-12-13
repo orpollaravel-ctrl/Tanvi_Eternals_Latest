@@ -12,23 +12,22 @@ use Illuminate\Http\Request;
 class InventoryCalculationController extends Controller
 {
     public function index(Request $request)
-    {
+    { 
         if ($request->ajax()) {
-            $page = $request->get('page', 1);
-            $perPage = 25;
             $search = $request->get('search', '');
 
-            $query = Product::with(['category', 'unit'])->orderBy('product_name');
+            $query = Product::with(['category', 'unit'])
+                ->orderBy('product_name');
 
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('product_name', 'like', '%' . $search . '%')
-                        ->orWhere('barcode_number', 'like', '%' . $search . '%')
-                        ->orWhere('tool_code', 'like', '%' . $search . '%');
+                    $q->where('product_name', 'like', "%{$search}%")
+                    ->orWhere('barcode_number', 'like', "%{$search}%")
+                    ->orWhere('tool_code', 'like', "%{$search}%");
                 });
             }
 
-            $products = $query->paginate($perPage, ['*'], 'page', $page);
+            $products = $query->get();
 
             $inventory = [];
             foreach ($products as $product) {
@@ -37,25 +36,27 @@ class InventoryCalculationController extends Controller
 
             return response()->json([
                 'data' => $inventory,
-                'current_page' => $products->currentPage(),
-                'last_page' => $products->lastPage(),
-                'has_more' => $products->hasMorePages(),
+                'total' => count($inventory),
             ]);
         }
 
-        // Initial load with first 25 records
-        $products = Product::with(['category', 'unit'])->orderBy('product_name')->paginate(25);
+        $products = Product::with(['category', 'unit'])
+            ->orderBy('product_name')
+            ->get();
 
         $inventory = [];
         foreach ($products as $product) {
             $inventory[] = $this->calculateInventory($product);
         }
 
+        $totalRemainingValue = collect($inventory)->sum('remaining_value');
+
         return view('pages.inventory-calculation.index', [
             'inventory' => $inventory,
-            'productsPaginator' => $products,
+            'totalRemainingValue' => $totalRemainingValue,
         ]);
     }
+
 
     private function calculateInventory($product)
     {

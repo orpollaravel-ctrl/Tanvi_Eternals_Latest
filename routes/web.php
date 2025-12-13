@@ -191,6 +191,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(ClientRateCutPendingController::class)->group(function () {
+        Route::post('client/import', [ClientController::class, 'import'])->name('client.import');
         Route::get('client-rate-cut-pending', 'index')->name('client-rate-cut-pending');
         Route::get('client-rate-cut-pending/create', 'create')->name('client-rate-cut-pending.create');
         Route::post('client-rate-cut-pending', 'store')->name('client-rate-cut-pending.store');
@@ -276,6 +277,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('tool-assigns', ToolAssignController::class);
 	
 	 // Tool Assign Reports
+    Route::get('tool-assigns/employee-wise-report/export',[ToolAssignController::class, 'exportEmployeeWiseReport'])->name('tool-assigns.employee-wise-report.export');
     Route::get('tool-assigns/reports/purchase-report', [ToolAssignController::class, 'purchaseReport'])->name('tool-assigns.purchase-report');
     Route::get('tool-assigns/reports/product-report', [ToolAssignController::class, 'productReport'])->name('tool-assigns.product-report');
     Route::get('tool-assigns/reports/department-wise-report', [ToolAssignController::class, 'departmentWiseReport'])->name('tool-assigns.department-wise-report');

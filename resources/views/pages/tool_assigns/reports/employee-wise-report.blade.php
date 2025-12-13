@@ -8,7 +8,26 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Employee Wise Tool Assign Report</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Filters -->
-        <div class="intro-y col-span-6">
+        <div class="intro-y col-span-6 justify-betwen flex items-center">
+            <div class="me-3">
+                <x-base.menu>
+                    <x-base.menu.button class="!box px-2" as="x-base.button">
+                        <span class="flex h-5 w-5 items-center justify-center">
+                            <x-base.lucide class="h-4 w-4" icon="Plus" />
+                        </span>
+                    </x-base.menu.button>
+
+                    <x-base.menu.items class="w-40">
+                        <x-base.menu.item
+                            as="a"
+                            href="{{ route('tool-assigns.employee-wise-report.export', request()->query()) }}"
+                        >
+                            <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
+                            Export to Excel
+                        </x-base.menu.item>
+                    </x-base.menu.items>
+                </x-base.menu>
+            </div>
             <form method="GET" action="{{ route('tool-assigns.employee-wise-report') }}" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <!-- Employee Filter -->
                 <div class="w-full sm:w-48">
@@ -28,13 +47,14 @@
                     <x-base.button type="submit" variant="primary">Search</x-base.button>
                     <x-base.button type="button" variant="outline-secondary" id="clear-filters">Clear</x-base.button>
                 </div>
-            </form>
+            </form> 
         </div>
+       
         <!-- END: Filters -->
 
         <!-- Report Table -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <x-base.table class="border-separate border-spacing-y-[10px]">
+        <x-base.table class="border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>

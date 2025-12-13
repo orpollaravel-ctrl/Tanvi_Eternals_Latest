@@ -8,84 +8,52 @@ use App\Models\Employee;
 use App\Models\Department;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Exports\EmployeeWiseToolAssignExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ToolAssignController extends Controller
 {
      public function index(Request $request)
     {
         if (!auth()->check() || !auth()->user()->hasPermission('view-tool-issues')) {
-            abort(403,'Permission Denied');
-        }
-        if ($request->ajax()) {
-            $offset = $request->get('offset', 0);
-            $limit = 25;
-            $search = $request->get('search', '');
-            $employeeId = $request->get('employee_id', '');
-            $productId = $request->get('product_id', '');
-            $startDate = $request->get('start_date', '');
-            $endDate = $request->get('end_date', '');
-            $sortBy = $request->get('sort_by', 'created_at');
-            $sortOrder = $request->get('sort_order', 'desc');
-
-            $query = ToolAssign::with(['department']);
-
-            // Apply filters
-            if (!empty($search)) {
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('department', function ($dept) use ($search) {
-                        $dept->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('items.employee', function ($emp) use ($search) {
-                        $emp->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('items.product', function ($prod) use ($search) {
-                        $prod->where('product_name', 'like', '%' . $search . '%');
-                    });
-                });
-            }
-
-            if (!empty($employeeId)) {
-                $query->whereHas('items', function ($item) use ($employeeId) {
-                    $item->where('emp_id', $employeeId);
-                });
-            }
-
-            if (!empty($productId)) {
-                $query->whereHas('items', function ($item) use ($productId) {
-                    $item->where('product_id', $productId);
-                });
-            }
-
-            if (!empty($startDate)) {
-                $query->where('date', '>=', $startDate);
-            }
-
-            if (!empty($endDate)) {
-                $query->where('date', '<=', $endDate);
-            }
-
-            // Apply sorting
-            $query->orderBy($sortBy, $sortOrder);
-
-            $toolAssigns = $query->skip($offset)->take($limit)->get();
-
-            return response()->json([
-                'data' => $toolAssigns,
-                'has_more' => $toolAssigns->count() === $limit,
-            ]);
+            abort(403, 'Permission Denied');
         }
 
-        // Initial load
-        $toolAssigns = ToolAssign::with(['department'])
-            ->latest()
-            ->take(25)
-            ->get();
-        $employees = Employee::all();
+        $query = ToolAssign::with([
+            'department',
+            'items.employee',
+            'items.product.purchaseItems'
+        ]);
+
+        if ($request->filled('department_id')) {
+            $query->where('d_id', $request->department_id);
+        }
+
+        if ($request->filled('employee_id')) {
+            $query->whereHas('items', fn ($q) =>
+                $q->where('emp_id', $request->employee_id)
+            );
+        }
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('date', '<=', $request->end_date);
+        }
+
+        $toolAssigns = $query->get();  
+        $employees   = Employee::all();
         $departments = Department::all();
-        $products = Product::all();
 
-        return view('pages.tool_assigns.index', compact('toolAssigns', 'employees', 'departments', 'products'));
+        return view('pages.tool_assigns.index', compact(
+            'toolAssigns',
+            'employees',
+            'departments'
+        ));
     }
+
 
     public function create()
     {
@@ -481,5 +449,26 @@ class ToolAssignController extends Controller
             'success' => true,
             'data' => $history
         ]);
+    }
+
+    public function exportEmployeeWiseReport(Request $request)
+    {
+        // 🔹 Reuse SAME logic as report page
+        $employees = Employee::query()->get();
+
+        $toolAssigns = ToolAssign::with(['items.product.purchaseItems', 'department'])
+            ->when($request->employee_id, function ($q) use ($request) {
+                $q->whereHas('items', function ($qq) use ($request) {
+                    $qq->where('emp_id', $request->employee_id);
+                });
+            })
+            ->when($request->start_date, fn($q) => $q->whereDate('date', '>=', $request->start_date))
+            ->when($request->end_date, fn($q) => $q->whereDate('date', '<=', $request->end_date))
+            ->get();
+
+        return Excel::download(
+            new EmployeeWiseToolAssignExport($employees, $toolAssigns),
+            'employee-wise-tool-assign-report.xlsx'
+        );
     }
 }

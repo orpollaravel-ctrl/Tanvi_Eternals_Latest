@@ -26,6 +26,14 @@ class ClientRequest extends FormRequest
         return [
             'code' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
+            'salesman_name' => 'required|string|max:255',
+            'address_1' => 'nullable|string|max:255',
+            'address_2' => 'nullable|string|max:255',
+            'address_3' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'zip_code' => 'nullable|string|max:20',
+            'mobile_number' => 'required|regex:/^[6-9]\d{9}$/',
         ];
     }
 }

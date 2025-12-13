@@ -180,9 +180,18 @@
         <!-- Search Input -->
         <div class="intro-y col-span-12">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                <div class="relative w-full sm:w-64">
-                    <x-base.lucide class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4 text-slate-500" icon="Search" />
-                    <input type="text" id="product-search" class="form-control box pl-10" placeholder="Search products / Tool code / Barcode...">
+               <div class="flex flex-col sm:flex-row sm:items-center gap-3"> 
+                    <div class="relative w-full sm:w-64">
+                        <x-base.lucide class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4 text-slate-500" icon="Search" />
+                        <input type="text" id="product-search" class="form-control box pl-10"
+                            placeholder="Search products / Tool code / Barcode...">
+                    </div>
+                </div>
+                <div style="display: flex; flex: auto; margin-left: 140px;">
+                     <div class="box px-4 py-2 text-sm font-medium">
+                        Total Remaining Value:
+                        <span class="text-primary font-semibold" id="total-remaining-value">  {{ number_format($totalRemainingValue, 2) }}</span>
+                    </div>
                 </div>
                 <div class="mt-3 sm:mt-0">
                     <x-base.menu>
@@ -209,141 +218,134 @@
         </div>
         <!-- BEGIN: Data Table -->
        <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-    <table class="opening-stock-table -mt-2 border-separate border-spacing-y-[10px]">
-        <thead>
-            <tr>
-                <th style="white-space: nowrap; border-bottom: 0;">#</th>
-                <th style="white-space: nowrap; border-bottom: 0;">Tool Code</th>
-				<th style="white-space: nowrap; border-bottom: 0;">Product</th>
-               <!-- <th style="white-space: nowrap; border-bottom: 0;">Opening Stock Details</th>
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Purchased Qty</th>
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Purchased Value</th>
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Assigned Qty</th>-->
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Remaining Qty</th>
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Remaining Value</th>
-                <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Actions</th>
-            </tr>
-        </thead>
+            <table class="opening-stock-table -mt-2 border-separate border-spacing-y-[10px]">
+                <thead>
+                    <tr>
+                        <th style="white-space: nowrap; border-bottom: 0;">#</th>
+                        <th style="white-space: nowrap; border-bottom: 0;">Tool Code</th>
+                        <th style="white-space: nowrap; border-bottom: 0;">Product</th>
+                    <!-- <th style="white-space: nowrap; border-bottom: 0;">Opening Stock Details</th>
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Purchased Qty</th>
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Purchased Value</th>
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Total Assigned Qty</th>-->
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Remaining Qty</th>
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Remaining Value</th>
+                        <th style="white-space: nowrap; border-bottom: 0; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
 
-        <tbody id="inventory-table-body">
-            @forelse ($inventory as $inv)
-                <tr class="intro-x inventory-row">
-                    <!-- ID -->
-                    <td style="width: 6rem; border-bottom: 0; background-color: white; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); 
-                        border-radius: 0.375rem 0 0 0.375rem;">
-                        <div class="whitespace-nowrap font-medium pl-3">
-                            {{ $loop->iteration }}
-                        </div>
-                    </td>
-					
-					
-                    <!-- Product Tool Code -->
-                    <td style="border-bottom: 0; background-color: white; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
-                        <div class="font-medium whitespace-nowrap">
-                            {{ $inv['product']->tool_code}}
-                        </div>
-                    </td>
-                    <!-- Product Name -->
-                    <td style="border-bottom: 0; background-color: white; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
-                        <div class="font-medium whitespace-nowrap">
-                            {{ $inv['product']->product_name }} (   {{ $inv['product']->barcode_number }})
-                        </div>
-                    </td>
+                <tbody id="inventory-table-body">
+                    @forelse ($inventory as $inv)
+                        <tr class="intro-x inventory-row">
+                            <!-- ID -->
+                            <td style="width: 6rem; border-bottom: 0; background-color: white; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); 
+                                border-radius: 0.375rem 0 0 0.375rem;">
+                                <div class="whitespace-nowrap font-medium pl-3">
+                                    {{ $loop->iteration }}
+                                </div>
+                            </td>
+                            
+                            
+                            <!-- Product Tool Code -->
+                            <td style="border-bottom: 0; background-color: white; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
+                                <div class="font-medium whitespace-nowrap">
+                                    {{ $inv['product']->tool_code}}
+                                </div>
+                            </td>
+                            <!-- Product Name -->
+                            <td style="border-bottom: 0; background-color: white; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
+                                <div class="font-medium whitespace-nowrap">
+                                    {{ $inv['product']->product_name }} (   {{ $inv['product']->barcode_number }})
+                                </div>
+                            </td>
 
-					<!-- Barcode
-                    <td style="border-bottom: 0; background-color: white; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
-                        <div class="font-medium whitespace-nowrap">
-                               {{ $inv['product']->barcode_number }}
-                        </div>
-                    </td>	
-                     Opening Stock Details 
-                    <td style="border-bottom: 0; background-color: white; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); font-size: 12px;">
-                        Qty: {{ number_format($inv['opening_stock']['qty'], 2) }}<br>
-                        Sale Rate: {{ number_format($inv['opening_stock']['sale_rate'], 2) }}<br>
-                        MRP: {{ number_format($inv['opening_stock']['mrp'], 2) }}<br>
-                        Purchase Price: {{ number_format($inv['opening_stock']['purchase_price'], 2) }}
-                    </td>-->
+                            <!-- Barcode
+                            <td style="border-bottom: 0; background-color: white; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); text-align: center;" >
+                                <div class="font-medium whitespace-nowrap">
+                                    {{ $inv['product']->barcode_number }}
+                                </div>
+                            </td>	
+                            Opening Stock Details 
+                            <td style="border-bottom: 0; background-color: white; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); font-size: 12px;">
+                                Qty: {{ number_format($inv['opening_stock']['qty'], 2) }}<br>
+                                Sale Rate: {{ number_format($inv['opening_stock']['sale_rate'], 2) }}<br>
+                                MRP: {{ number_format($inv['opening_stock']['mrp'], 2) }}<br>
+                                Purchase Price: {{ number_format($inv['opening_stock']['purchase_price'], 2) }}
+                            </td>-->
 
-                    <!-- Purchased Qty 
-                    <td style="border-bottom: 0; background-color: white; text-align: center;
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
-                        {{ number_format($inv['total_purchased_qty'], 2) }}
-                    </td>-->
+                            <!-- Purchased Qty 
+                            <td style="border-bottom: 0; background-color: white; text-align: center;
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
+                                {{ number_format($inv['total_purchased_qty'], 2) }}
+                            </td>-->
 
-                    <!-- Purchased Value
-                    <td style="border-bottom: 0; background-color: white; text-align: center;
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
-                        {{ number_format($inv['total_purchased_value'], 2) }}
-                    </td> -->
+                            <!-- Purchased Value
+                            <td style="border-bottom: 0; background-color: white; text-align: center;
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
+                                {{ number_format($inv['total_purchased_value'], 2) }}
+                            </td> -->
 
-                    <!-- Assigned Qty 
-                    <td style="border-bottom: 0; background-color: white; text-align: center;
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
-                        {{ number_format($inv['total_assigned_qty'], 2) }}
-                    </td>-->
+                            <!-- Assigned Qty 
+                            <td style="border-bottom: 0; background-color: white; text-align: center;
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
+                                {{ number_format($inv['total_assigned_qty'], 2) }}
+                            </td>--> 
+                            
+                            <td style="border-bottom: 0; background-color: white; text-align: center;
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
+                                {{ number_format($inv['remaining_qty'], 2) }}
+                            </td>
+ 
+                            <td style="border-bottom: 0; background-color: white; text-align: center;
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
+                                {{ number_format($inv['remaining_value'], 2) }}
+                            </td>
+ 
+                            <td style="border-bottom: 0; background-color: white; position: relative;
+                                text-align: center; 
+                                box-shadow: 20px 3px 20px rgba(0,0,0,0.05); 
+                                border-radius: 0 0.375rem 0.375rem 0;">
+                                <div class="flex items-center justify-center py-2">
 
-                    <!-- Remaining Qty -->
-                    <td style="border-bottom: 0; background-color: white; text-align: center;
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
-                        {{ number_format($inv['remaining_qty'], 2) }}
-                    </td>
+                                    <button type="button"
+                                        class="flex items-center mr-3 text-primary purchase-history-btn"
+                                        data-tw-toggle="modal"
+                                        data-tw-target="#purchase-history-modal"
+                                        data-product-id="{{ $inv['product']->id }}"
+                                        data-product-name="{{ $inv['product']->product_name }}">
+                                        <x-base.lucide class="mr-1 h-4 w-4" icon="FileText" /> Purchase History
+                                    </button>
 
-                    <!-- Remaining Value -->
-                    <td style="border-bottom: 0; background-color: white; text-align: center;
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05);">
-                        {{ number_format($inv['remaining_value'], 2) }}
-                    </td>
+                                    <button type="button"
+                                        class="flex items-center text-success assign-history-btn"
+                                        data-tw-toggle="modal"
+                                        data-tw-target="#assign-history-modal"
+                                        data-product-id="{{ $inv['product']->id }}"
+                                        data-product-name="{{ $inv['product']->product_name }}">
+                                        <x-base.lucide class="mr-1 h-4 w-4" icon="List" /> Assign History
+                                    </button>
 
-                    <!-- ACTION BUTTONS -->
-                    <td style="border-bottom: 0; background-color: white; position: relative;
-                        text-align: center; 
-                        box-shadow: 20px 3px 20px rgba(0,0,0,0.05); 
-                        border-radius: 0 0.375rem 0.375rem 0;">
-                        <div class="flex items-center justify-center py-2">
+                                </div>
+                            </td>
 
-                            <button type="button"
-                                class="flex items-center mr-3 text-primary purchase-history-btn"
-                                data-tw-toggle="modal"
-                                data-tw-target="#purchase-history-modal"
-                                data-product-id="{{ $inv['product']->id }}"
-                                data-product-name="{{ $inv['product']->product_name }}">
-                                <x-base.lucide class="mr-1 h-4 w-4" icon="FileText" /> Purchase History
-                            </button>
+                        </tr>
 
-                            <button type="button"
-                                class="flex items-center text-success assign-history-btn"
-                                data-tw-toggle="modal"
-                                data-tw-target="#assign-history-modal"
-                                data-product-id="{{ $inv['product']->id }}"
-                                data-product-name="{{ $inv['product']->product_name }}">
-                                <x-base.lucide class="mr-1 h-4 w-4" icon="List" /> Assign History
-                            </button>
-
-                        </div>
-                    </td>
-
-                </tr>
-
-            @empty
-                <tr>
-                    <td colspan="9"
-                        style="text-align: center; padding: 1rem; color: #64748b;">
-                        No inventory data found.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-        <!-- END: Data Table -->
-
-        <!-- Loading indicator -->
+                    @empty
+                        <tr>
+                            <td colspan="9"
+                                style="text-align: center; padding: 1rem; color: #64748b;">
+                                No inventory data found.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div> 
         <div id="loading-indicator" class="col-span-12 text-center py-4 hidden">
             <div class="inline-flex items-center">
                 <x-base.loading-icon class="animate-spin h-5 w-5 mr-2" />
@@ -351,8 +353,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Purchase History Modal -->
+ 
     <x-base.dialog id="purchase-history-modal">
         <x-base.dialog.panel>
             <x-base.dialog.title>
@@ -370,10 +371,8 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-
-                        <!-- REAL tbody -->
-                        <tbody id="purchase-history-body">
-                            <!-- JS will place rows here -->
+ 
+                        <tbody id="purchase-history-body"> 
                         </tbody>
                     </table>
                 </div>
@@ -393,8 +392,7 @@
 
         </x-base.dialog.panel>
     </x-base.dialog>
-
-    <!-- Assign History Modal -->
+ 
     <x-base.dialog id="assign-history-modal">
         <x-base.dialog.panel>
             <x-base.dialog.title>
@@ -413,10 +411,8 @@
                                 <th>Amount</th>
                             </tr>
                         </thead>
-
-                        <!-- REAL tbody -->
-                        <tbody id="assign-history-body">
-                            <!-- JS will place rows here -->
+ 
+                        <tbody id="assign-history-body"> 
                         </tbody>
                     </table>
                 </div>
@@ -437,16 +433,15 @@
     </x-base.dialog>
 
     <script>
+        let totalRemainingValue = 0;
         document.addEventListener('DOMContentLoaded', function () {
             let currentPage = 1;
-            let isLoading = false;
-            let hasMorePages = {{ $productsPaginator->hasMorePages() ? 'true' : 'false' }};
+            let isLoading = false;  
             let currentSearch = '';
 
             const tableBody = document.getElementById('inventory-table-body');
             const loadingIndicator = document.getElementById('loading-indicator');
-
-            // Search functionality
+ 
             const searchInput = document.getElementById('product-search');
             let searchTimeout;
 
@@ -465,6 +460,9 @@
                     currentSearch = search;
                     tableBody.innerHTML = '';
                     hasMorePages = true;
+
+                    totalRemainingValue = 0;
+                    document.getElementById('total-remaining-value').textContent = '0.00';
                 }
 
                 if (isLoading || !hasMorePages) return;
@@ -560,10 +558,11 @@
                                     </td>
                                 </tr>
                             `;
+                            totalRemainingValue += parseFloat(inv.remaining_value);
                             tableBody.insertAdjacentHTML('beforeend', rowHtml);
                         });
                     }
-
+                    document.getElementById('total-remaining-value').textContent = totalRemainingValue.toFixed(2);
                     hasMorePages = data.has_more;
                     isLoading = false;
                     loadingIndicator.classList.add('hidden');

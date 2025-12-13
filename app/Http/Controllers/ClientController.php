@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClientRequest;
+use App\Http\Requests\ClientRequest; 
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Imports\ClientsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClientController extends Controller
 {
@@ -73,7 +75,7 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      */
     public function update(ClientRequest $request, string $id)
-    {
+    {  
         $client = Client::findOrFail($id);
         $client->update($request->validated());
 
@@ -92,5 +94,31 @@ class ClientController extends Controller
         $client->delete();
 
         return redirect()->route('client.index')->with('success', 'Client deleted successfully.');
+    }
+
+    public function import(Request $request)
+    {
+        if (!auth()->user()->hasPermission('create-clients')) {
+            abort(403, 'Permission Denied');
+        }
+
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv'
+        ]);
+
+        $import = new ClientsImport();
+        Excel::import($import, $request->file('file'));
+
+        $failures = $import->failures();
+
+        if ($failures->isNotEmpty()) {
+            return back()->with([
+                'import_errors' => $failures
+            ]);
+        }
+
+        return redirect()
+            ->route('client.index')
+            ->with('success', 'Clients imported successfully.');
     }
 }
