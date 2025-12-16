@@ -10,8 +10,7 @@ class SideMenu
      */
     public static function menu(): array
     {
-         return [
-		 
+        return [
 			'dashboard' => [
                 'icon' => 'home',
                 'title' => 'Dashboard',
@@ -88,134 +87,133 @@ class SideMenu
             // ----------------------
             // 2. BULLION
             // ----------------------
-            'bullion' => [
-                'icon'  => 'coins',
-                'title' => 'Bullion',
-                'sub_menu' => [
+            // 'bullion' => [
+            //     'icon'  => 'coins',
+            //     'title' => 'Bullion',
+            //     'sub_menu' => [
+            //         // ----------------------
+            //         // TRANSACTION (GROUP)
+            //         // ----------------------
+            //         'transaction' => [
+            //             'icon' => 'shuffle',
+            //             'title' => 'Transaction',
+            //             'sub_menu' => [
+            //                 'dealer-rate-fix' => [
+            //                     'icon' => 'settings',
+            //                     'route_name' => 'drfs.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Client Rate Fix',
+            //                     'permission' => 'view-dealer-rate-fixes',
+            //                     'active_routes' => ['drfs', 'drfs.*'],
+            //                 ],
+            //                 'bullion-rate-fix' => [
+            //                     'icon' => 'bar-chart',
+            //                     'route_name' => 'brfs.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Bullion Rate Fix',
+            //                     'permission' => 'view-bullion-rate-fixes',
+            //                     'active_routes' => ['brfs', 'brfs.*'],
+            //                 ],
+            //                 'metal-receipt' => [
+            //                     'icon' => 'download',
+            //                     'route_name' => 'receipts.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Metal Purchase',
+            //                     'permission' => 'view-metal-receipts',
+            //                     'active_routes' => ['receipts', 'receipts.*'],
+            //                 ],
+            //                 'payments' => [
+            //                     'icon' => 'credit-card',
+            //                     'route_name' => 'payments.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Bank Book',
+            //                     'permission' => 'view-payments',
+            //                     'active_routes' => ['payments', 'payments.*'],
+            //                 ],
+            //                 'manual-deal' => [
+            //                     'icon' => 'file-text',
+            //                     'route_name' => 'manual_deal.create',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Manual Deal',
+            //                     'permission' => 'view-manual-deals', 
+            //                 ],
+            //             ],
+            //         ],
 
-                    // ----------------------
-                    // TRANSACTION (GROUP)
-                    // ----------------------
-                    'transaction' => [
-                        'icon' => 'shuffle',
-                        'title' => 'Transaction',
-                        'sub_menu' => [
-                            'dealer-rate-fix' => [
-                                'icon' => 'settings',
-                                'route_name' => 'drfs.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Dealer Rate Fix',
-                                'permission' => 'view-dealer-rate-fixes',
-                                'active_routes' => ['drfs', 'drfs.*'],
-                            ],
-                            'bullion-rate-fix' => [
-                                'icon' => 'bar-chart',
-                                'route_name' => 'brfs.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Bullion Rate Fix',
-                                'permission' => 'view-bullion-rate-fixes',
-                                'active_routes' => ['brfs', 'brfs.*'],
-                            ],
-                            'metal-receipt' => [
-                                'icon' => 'download',
-                                'route_name' => 'receipts.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Metal Purchase',
-                                'permission' => 'view-metal-receipts',
-                                'active_routes' => ['receipts', 'receipts.*'],
-                            ],
-                            'payments' => [
-                                'icon' => 'credit-card',
-                                'route_name' => 'payments.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Bank Book',
-                                'permission' => 'view-payments',
-                                'active_routes' => ['payments', 'payments.*'],
-                            ],
-                            'manual-deal' => [
-                                'icon' => 'file-text',
-                                'route_name' => 'manual_deal.create',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Manual Deal',
-                                'permission' => 'view-manual-deals', 
-                            ],
-                        ],
-                    ],
+            //         // ----------------------
+            //         // REPORT (GROUP)
+            //         // ----------------------
+            //         'report' => [
+            //             'icon' => 'bar-chart-2',
+            //             'title' => 'Report',
+            //             'sub_menu' => [
+            //                 'bullion-ledger' => [
+            //                     'icon' => 'book',
+            //                     'route_name' => 'bullion_ledger',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Bullion Ledger Account',
+            //                     'permission' => 'view-bullion-ledger',
+            //                 ],
+            //                 'booking-comparison' => [
+            //                     'icon' => 'activity',
+            //                     'route_name' => 'booking_comparision',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Booking Comparison',
+            //                     'permission' => 'view-booking-comparison',
+            //                 ],
+            //                 'dealer-pending-deals' => [
+            //                     'icon' => 'clock',
+            //                     'route_name' => 'pending_deals',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Client Pending Deals',
+            //                     'permission' => 'view-dealer-pending-deals',
+            //                 ],
+            //                 'bullion-pending-deals' => [
+            //                     'icon' => 'clock',
+            //                     'route_name' => 'bullion_pending_deals',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Bullion Pending Deals',
+            //                     'permission' => 'view-bullion-pending-deals',
+            //                 ],
+            //             ],
+            //         ],
 
-                    // ----------------------
-                    // REPORT (GROUP)
-                    // ----------------------
-                    'report' => [
-                        'icon' => 'bar-chart-2',
-                        'title' => 'Report',
-                        'sub_menu' => [
-                            'bullion-ledger' => [
-                                'icon' => 'book',
-                                'route_name' => 'bullion_ledger',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Bullion Ledger Account',
-                                'permission' => 'view-bullion-ledger',
-                            ],
-                            'booking-comparison' => [
-                                'icon' => 'activity',
-                                'route_name' => 'booking_comparision',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Booking Comparison',
-                                'permission' => 'view-booking-comparison',
-                            ],
-                            'dealer-pending-deals' => [
-                                'icon' => 'clock',
-                                'route_name' => 'pending_deals',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Client Pending Deals',
-                                'permission' => 'view-dealer-pending-deals',
-                            ],
-                            'bullion-pending-deals' => [
-                                'icon' => 'clock',
-                                'route_name' => 'bullion_pending_deals',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Bullion Pending Deals',
-                                'permission' => 'view-bullion-pending-deals',
-                            ],
-                        ],
-                    ],
+            //         // ----------------------
+            //         // MASTERS (GROUP)
+            //         // ----------------------
+            //         'masters' => [
+            //             'icon' => 'grid',
+            //             'title' => 'Masters',
+            //             'sub_menu' => [
+            //                 'bullions' => [
+            //                     'icon' => 'database',
+            //                     'route_name' => 'bullions.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Bullions',
+            //                     'permission' => 'view-bullions',
+            //                     'active_routes' => ['bullions', 'bullions.*'],
+            //                 ],
+            //                 // 'dealers' => [
+            //                 //     'icon' => 'users',
+            //                 //     'route_name' => 'dealers.index',
+            //                 //     'params' => ['layout' => 'side-menu'],
+            //                 //     'title' => 'Dealers',
+            //                 //     'permission' => 'view-dealers',
+            //                 //     'active_routes' => ['dealers', 'dealers.*'],
+            //                 // ], 
+            //                 'payment-modes' => [
+            //                     'icon' => 'credit-card',
+            //                     'route_name' => 'paymentmodes.index',
+            //                     'params' => ['layout' => 'side-menu'],
+            //                     'title' => 'Payment Modes',
+            //                     'permission' => 'view-payment-modes',
+            //                     'active_routes' => ['paymentmodes', 'paymentmodes.*'],
+            //                 ],
+            //             ],
+            //         ],
 
-                    // ----------------------
-                    // MASTERS (GROUP)
-                    // ----------------------
-                    'masters' => [
-                        'icon' => 'grid',
-                        'title' => 'Masters',
-                        'sub_menu' => [
-                            'bullions' => [
-                                'icon' => 'database',
-                                'route_name' => 'bullions.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Bullions',
-                                'permission' => 'view-bullions',
-                                'active_routes' => ['bullions', 'bullions.*'],
-                            ],
-                            'dealers' => [
-                                'icon' => 'users',
-                                'route_name' => 'dealers.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Dealers',
-                                'permission' => 'view-dealers',
-                                'active_routes' => ['dealers', 'dealers.*'],
-                            ], 
-                            'payment-modes' => [
-                                'icon' => 'credit-card',
-                                'route_name' => 'paymentmodes.index',
-                                'params' => ['layout' => 'side-menu'],
-                                'title' => 'Payment Modes',
-                                'permission' => 'view-payment-modes',
-                                'active_routes' => ['paymentmodes', 'paymentmodes.*'],
-                            ],
-                        ],
-                    ],
-
-                ],
-            ],
+            //     ],
+            // ],
 
             // ----------------------
             // 3. TOOLS MANAGEMENT
@@ -316,7 +314,15 @@ class SideMenu
                 'title' => 'Expense',
                 'permission' => 'view-expenses',
                 'active_routes' => ['expenses', 'expenses.*'],
+            ],
 
+            'dsr' => [
+                'icon' => 'clipboard',
+                'route_name' => 'dsr.index',
+                'params' => ['layout' => 'side-menu'],
+                'title' => 'DSR',
+                'permission' => 'view-dsr',
+                'active_routes' => ['dsr', 'dsr.*'],
             ],
 
         ];

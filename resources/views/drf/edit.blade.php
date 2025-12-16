@@ -1,11 +1,11 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Edit Dealer Rate Fix - Jewelry ERP</title>
+    <title>Edit Client Rate Fix - Jewelry ERP</title>
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">Edit Dealer Rate Fix</h2>
+    <h2 class="intro-y mt-10 text-lg font-medium">Edit Client Rate Fix</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 lg:col-span-8">
@@ -58,7 +58,7 @@
                         {{-- Fixed By --}}
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label for="fixed_by">Fixed By *</x-base.form-label>
-                            <x-base.form-select name="fixed_by">
+                            <x-base.tom-select name="fixed_by">
                                 <option value="">Select Any..</option>
                                 @if (!empty($users))
                                     @foreach ($users as $user)
@@ -67,22 +67,20 @@
                                         </option>
                                     @endforeach
                                 @endif
-                            </x-base.form-select>
+                            </x-base.tom-select>
                         </div>
 
-                        {{-- Dealer --}}
+                        {{-- Client --}}
                         <div class="col-span-12">
-                            <x-base.form-label for="dealer">Dealer Name *</x-base.form-label>
-                            <x-base.form-select name="dealer">
-                                <option value="">Select Dealer</option>
-                                @if (!empty($dealers))
-                                    @foreach ($dealers as $dealer)
-                                        <option value="{{ $dealer->id }}" @if (!empty(old('dealer', $drf->dealer_id)) && $dealer->id == old('dealer', $drf->dealer_id)) selected @endif>
-                                            {{ $dealer->name }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </x-base.form-select>
+                            <x-base.form-label for="Client">Client Name *</x-base.form-label>
+                            <x-base.tom-select name="client" required>
+                                @foreach ($clients as $client)
+                                    <option value="{{ $client->id }}"
+                                        @selected(old('client', $drf->client_id) == $client->id)>
+                                        {{ $client->name }}
+                                    </option>
+                                @endforeach
+                            </x-base.tom-select>
                         </div>
 
                         {{-- Quantity --}}
@@ -141,7 +139,7 @@
                         </a>
 
                         <x-base.button type="submit" variant="primary">
-                            Update Dealer Rate Fix
+                            Update Client Rate Fix
                         </x-base.button>
                     </div>
 

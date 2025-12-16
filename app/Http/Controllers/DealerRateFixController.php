@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BullionRateFix;
+use App\Models\Client;
 use App\Models\Deal;
 use App\Models\Dealer;
 use App\Models\DealerRateFix;
@@ -32,28 +33,44 @@ class DealerRateFixController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+   public function index(Request $request)
     {
         if (!auth()->check() || !auth()->user()->hasPermission('view-dealer-rate-fixes')) {
-           abort(403,'Permission Denied');
+            abort(403, 'Permission Denied');
         }
-        $dealers = Dealer::where('status', 1)->get();
+    
+        $clients = Client::get();
         $perPage = $request->get('per_page', 10);
-        $query = DealerRateFix::with('dealer', 'fixedBy', 'createdBy', 'updatedBy')->withCount('deals')
-            ->when($request->get('dealer'), function ($q) use ($request) {
-                return $q->where('dealer_id', $request->get('dealer'));
-            })->when($request->get('from_date') && $request->get('from_date'), function ($q) use ($request) {
-                return $q->whereBetween('drf_date', [$request->get('from_date'), $request->get('to_date')]);
-            })->latest();
-        $drfs = $query->get();
-        $totalsQuery = DealerRateFix::query()
-            ->when($request->get('dealer'), function ($q) use ($request) {
-                return $q->where('dealer_id', $request->get('dealer'));
-            })->when($request->get('from_date') && $request->get('from_date'), function ($q) use ($request) {
-                return $q->whereBetween('drf_date', [$request->get('from_date'), $request->get('to_date')]);
-            });
-        $totals = $totalsQuery->selectRaw('SUM(quantity) as total_quantity, SUM(amount) as total_amount, COUNT(*) as total_count')->first();
-        return view('drf.index', compact('drfs', 'dealers', 'totals'));
+    
+        $query = DealerRateFix::with('client', 'fixedBy', 'createdBy', 'updatedBy')
+            ->withCount('deals')
+            ->when($request->get('client'), function ($q) use ($request) {
+                $q->where('client_id', $request->get('client'));
+            })
+            ->when($request->get('from_date') && $request->get('to_date'), function ($q) use ($request) {
+                $q->whereBetween('drf_date', [
+                    $request->get('from_date'),
+                    $request->get('to_date')
+                ]);
+            })
+            ->latest();
+    
+        $drfs = $query->paginate($perPage)->withQueryString();
+    
+        $totals = DealerRateFix::query()
+            ->when($request->get('client'), function ($q) use ($request) {
+                $q->where('client_id', $request->get('client'));
+            })
+            ->when($request->get('from_date') && $request->get('to_date'), function ($q) use ($request) {
+                $q->whereBetween('drf_date', [
+                    $request->get('from_date'),
+                    $request->get('to_date')
+                ]);
+            })
+            ->selectRaw('SUM(quantity) as total_quantity, SUM(amount) as total_amount, COUNT(*) as total_count')
+            ->first();
+    
+        return view('drf.index', compact('drfs', 'clients', 'totals'));
     }
 
     /**
@@ -66,10 +83,10 @@ class DealerRateFixController extends Controller
         if (!auth()->check() || !auth()->user()->hasPermission('create-dealer-rate-fixes')) {
            abort(403,'Permission Denied');
         }
-        $dealers = Dealer::where('status', 1)->get();
+        $clients = Client::get();
         // $users = User::where('status', 1)->get();
         $users = User::all();
-        return view('drf.create', compact('dealers', 'users'));
+        return view('drf.create', compact('clients', 'users'));
     }
 
     /**
@@ -83,17 +100,17 @@ class DealerRateFixController extends Controller
         $rules = [
             'drf_date' => 'required|date',
             'fixed_by' => 'required|exists:users,id',
-            'dealer' => 'required|exists:dealers,id',
+            'client' => 'required|exists:clients,id',
             'quantity' => 'required|numeric|gt:0',
             'rate' => 'required|numeric|gt:9999',
             'remark' => 'nullable|string|max:255'
         ];
         $this->validate($request, $rules);
-        $input = $request->except(['dealer']);
+        $input = $request->except(['client']);
         // if ($request->user()->role == 0) {
         //     $input['drf_date'] = now();
         // }
-        $input['dealer_id'] = $request->get('dealer');
+        $input['client_id'] = $request->get('client');
         $drf = DealerRateFix::create($input);
         $this->makeDeal($drf);
         $msg = "Thank you for deal Fixing. Your Deal Id-{#var#},Booking Qty-{#var#},Booking Rate-{#var#}.Remarks:{#var#} Note: If any correction please know us with in one hour.Tanvi Gold Cast LLP";
@@ -103,7 +120,7 @@ class DealerRateFixController extends Controller
         // dd(DB::getQueryLog());
 
 
-        Session::flash('success_message', "Dealer Rate Fixed successfully.");
+        Session::flash('success_message', "Client Rate Fixed successfully.");
         return redirect()->route('drfs.index');
     }
 
@@ -131,10 +148,10 @@ class DealerRateFixController extends Controller
         // if (auth()->user()->role == 0) {
         //     return abort(403);
         // }
-        $dealers = Dealer::where('status', 1)->get();
+        $clients = Client::get();
         // $users = User::where('status', 1)->get();
         $users = User::all();
-        return view('drf.edit', compact('dealers', 'users', 'drf'));
+        return view('drf.edit', compact('clients', 'users', 'drf'));
     }
 
     /**
@@ -152,14 +169,14 @@ class DealerRateFixController extends Controller
         $rules = [
             'drf_date' => 'required|date',
             'fixed_by' => 'required|exists:users,id',
-            'dealer' => 'required|exists:dealers,id',
+            'client' => 'required|exists:clients,id',
             'quantity' => 'required|numeric|gt:0',
             'rate' => 'required|numeric|gt:9999',
             'remark' => 'nullable|string|max:255'
         ];
         $this->validate($request, $rules);
-        $input = $request->except(['dealer']);
-        $input['dealer_id'] = $request->get('dealer');
+        $input = $request->except(['client']);
+        $input['client_id'] = $request->get('client');
         DB::beginTransaction();
         try {
             $isDirty = ($drf->quantity != $input['quantity'] || $drf->rate != $input['rate']);
@@ -176,7 +193,7 @@ class DealerRateFixController extends Controller
             return redirect()->back()->withInput();
         }
         DB::commit();
-        Session::flash('success_message', "Dealer Rate Fix updated successfully.");
+        Session::flash('success_message', "Client Rate Fix updated successfully.");
         return redirect()->route('drfs.index');
     }
 
@@ -198,7 +215,7 @@ class DealerRateFixController extends Controller
         $this->sendSMS($msg, $drf);
         Deal::where('dealer_rate_fix_id', $drf->id)->delete();
         $drf->delete();
-        Session::flash('success_message', "Dealer Rate Fix deleted successfully.");
+        Session::flash('success_message', "Client Rate Fix deleted successfully.");
         return redirect()->route('drfs.index');
     }
 
@@ -254,7 +271,7 @@ class DealerRateFixController extends Controller
         $msg=Str::replaceFirst("{#var#}", $drf->quantity, $msg);
         $msg=Str::replaceFirst("{#var#}", $drf->rate, $msg);
         $msg=Str::replaceFirst("{#var#}", $drf->remark, $msg);
-        $dphone = $drf->dealer->phone;
+        $dphone = $drf->client->mobile_number;
         // dd($msg);
         $xml_data = '<?xml version="1.0"?>
         <parent>

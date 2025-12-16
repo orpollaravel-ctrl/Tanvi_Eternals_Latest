@@ -10,7 +10,6 @@
 <div class="mt-5 grid grid-cols-12 gap-6">
     <div class="intro-y col-span-12 lg:col-span-8">
         <div class="box p-5">
-
             @if ($errors->any())
                 <div class="mb-5 rounded-md border border-danger/20 bg-danger/10 p-4 text-danger">
                     <ul class="list-disc pl-5">
@@ -41,7 +40,16 @@
                             value="{{ old('name') }}"
                             placeholder="Jhon Deo" />
                     </div>
-
+                    <div>
+                        <x-base.form-label>Client Type *</x-base.form-label>
+                        <x-base.form-select name="client_type" required>
+                            <option value="">Select Type</option>
+                            <option value="Corporate" @selected(old('client_type')=='Corporate')>Corporate</option>
+                            <option value="Job Work" @selected(old('client_type')=='Job Work')>Job Work</option>
+                            <option value="B2B" @selected(old('client_type')=='B2B')>B2B</option>
+                            <option value="SIS" @selected(old('client_type')=='SIS')>SIS</option>
+                        </x-base.form-select>
+                    </div>
                     <div>
                         <x-base.form-label>Salesman Name*</x-base.form-label>
                         <x-base.form-input

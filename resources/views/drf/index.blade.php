@@ -1,12 +1,14 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Dealer Rate Fixes - Jewelry ERP</title>
+    <title>Client Rate Fixes - Jewelry ERP</title>
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">Dealer Rate Fixes</h2>
-
+    <div class="flex mt-10 mb-5 items-center justify-start">
+        <a href="{{route('bullion.dashboard')}}"><x-base.button class="mr-2 shadow-md" variant="primary"> <x-base.lucide class="mr-1 h-4 w-4" icon="arrow-left" />Back</x-base.button></a>
+    </div>
+    <h2 class="intro-y text-lg font-medium">Client Rate Fixes</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Filters -->
         <div class="intro-y col-span-12">
@@ -14,14 +16,14 @@
                 <form action="">
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-4">
-                            <x-base.form-label>Dealer Name</x-base.form-label>
+                            <x-base.form-label>Client Name</x-base.form-label>
                             <x-base.form-select name="dealer" class="form-control">
                                 <option value="0">ALL</option>
-                                @if (!empty($dealers))
-                                    @foreach ($dealers as $dealer)
-                                        <option value="{{ $dealer->id }}"
-                                            @if ($dealer->id == request()->input('dealer')) selected @endif>
-                                            {{ $dealer->name }}
+                                @if (!empty($clients))
+                                    @foreach ($clients as $client)
+                                        <option value="{{ $client->id }}"
+                                            @if ($client->id == request()->input('client')) selected @endif>
+                                            {{ $client->name }}
                                         </option>
                                     @endforeach
                                 @endif
@@ -60,7 +62,7 @@
             <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
                 <a href="{{ route('drfs.create') }}">
                     <x-base.button class="mr-2 shadow-md" variant="primary">
-                        Add Dealer Rate Fix
+                        Add Client Rate Fix
                     </x-base.button>
                 </a>
             </div>
@@ -86,7 +88,7 @@
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">Dealer Name</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Client Name</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Date</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Quantity</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Rate</x-base.table.th>
@@ -107,9 +109,9 @@
                                 {{ $drfs->firstItem() + $index }}
                             </x-base.table.td>
 
-                            {{-- Dealer Name --}}
+                            {{-- Client Name --}}
                             <x-base.table.td class="border-b-0 bg-white font-medium shadow-[20px_3px_20px_#0000000b]">
-                                {{ $drf->dealer->name }}
+                                {{ $drf->client->name ?? '-'}}
                             </x-base.table.td>
 
                             {{-- Date --}}

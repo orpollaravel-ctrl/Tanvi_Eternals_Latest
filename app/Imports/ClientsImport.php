@@ -23,12 +23,13 @@ class ClientsImport implements
     use SkipsFailures;
 
     public function model(array $row)
-    {
+    { 
         return new Client([
             'code'           => $row['code'],
             'name'           => $row['name'],
-            'salesman_name'  => $row['salesman_name'],
-            'mobile_number'  => $row['mobile_number'],
+            'client_type'           => $row['client_type'] ?? null,
+            'salesman_name' => $row['salesman_name'] ?? null,
+            'mobile_number' => preg_replace('/\D/', '', $row['mobile_number'] ?? null),
             'address_1'      => $row['address_1'] ?? null,
             'address_2'      => $row['address_2'] ?? null,
             'address_3'      => $row['address_3'] ?? null,
@@ -41,13 +42,10 @@ class ClientsImport implements
     public function rules(): array
     {
         return [
-            '*.code' => [
-                'required',
-                Rule::unique('clients', 'code')
-            ],
+            '*.code' => ['required', Rule::unique('clients', 'code')],
             '*.name' => 'required|string|max:255',
-            '*.salesman_name' => 'required|string|max:255',
-            '*.mobile_number' => 'required|digits:10',
+            '*.salesman_name' => 'nullable|string|max:255',
+            '*.mobile_number' => 'nullable|string|max:20',
         ];
     }
 

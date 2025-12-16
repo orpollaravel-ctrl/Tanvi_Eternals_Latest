@@ -5,7 +5,10 @@
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">Payments</h2>
+    <div class="flex mt-10 mb-5 items-center justify-start">
+        <a href="{{route('bullion.dashboard')}}"><x-base.button class="mr-2 shadow-md" variant="primary"> <x-base.lucide class="mr-1 h-4 w-4" icon="arrow-left" />Back</x-base.button></a>
+    </div>
+    <h2 class="intro-y text-lg font-medium">Payments</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
 

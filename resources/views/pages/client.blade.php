@@ -62,6 +62,7 @@
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Client Code </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Client Name </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0"> Client Type </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Salesman </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Mobile </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> City </x-base.table.th>
@@ -76,7 +77,7 @@
                 </x-base.table.thead>
                 <x-base.table.tbody id="clients-tbody">
                     @isset($clients)
-                        @forelse ($clients->take(20) as $client)
+                        @forelse ($clients as $client)
                             <x-base.table.tr class="intro-x">
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">{{ $client->code }}</div>
@@ -85,6 +86,10 @@
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">{{ $client->name }}</div>
                                 </x-base.table.td>
+                                <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                                    <div class="text-xs text-slate-500">{{ $client->client_type }}</div>
+                                </x-base.table.td>
+
 
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">
@@ -139,14 +144,14 @@
 
                         @empty
                             <x-base.table.tr>
-                                <x-base.table.td colspan="7" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                                <x-base.table.td colspan="8" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="py-8 text-slate-500">No Client records found.</div>
                                 </x-base.table.td>
                             </x-base.table.tr>
                         @endforelse
                     @else
                         <x-base.table.tr>
-                            <x-base.table.td colspan="7" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                            <x-base.table.td colspan="8" class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                 <div class="py-8 text-slate-500">No Client records found.</div>
                             </x-base.table.td>
                         </x-base.table.tr>
@@ -201,7 +206,7 @@
                         </a>
                     </div>
                 </div>
-
+                
                 <div class="px-5 pb-5 text-right">
                     <x-base.button type="button" variant="outline-secondary" data-tw-dismiss="modal">
                         Cancel

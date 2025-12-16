@@ -65,6 +65,12 @@ class PermissionSeeder extends Seeder
             ['label' => 'Create Expenses', 'name' => 'create-expenses', 'group' => 'expense'],
             ['label' => 'Edit Expenses', 'name' => 'edit-expenses', 'group' => 'expense'],
             ['label' => 'Delete Expenses', 'name' => 'delete-expenses', 'group' => 'expense'],
+            ['label' => 'View DSR', 'name' => 'view-dsr', 'group' => 'dsr'],
+            ['label' => 'Create DSR', 'name' => 'create-dsr', 'group' => 'dsr'],
+            ['label' => 'Edit DSR', 'name' => 'edit-dsr', 'group' => 'dsr'],
+            ['label' => 'Delete DSR', 'name' => 'delete-dsr', 'group' => 'dsr'],
+
+
             
         ];
 

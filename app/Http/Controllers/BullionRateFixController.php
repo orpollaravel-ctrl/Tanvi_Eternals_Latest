@@ -72,7 +72,7 @@ class BullionRateFixController extends Controller
         }*/
         $columns = [
 			'dealer_rate_fixes.id',
-			'dealer_rate_fixes.dealer_id',
+			'dealer_rate_fixes.client_id',
 			'dealer_rate_fixes.fixed_by',
 			'dealer_rate_fixes.created_by',
 			'dealer_rate_fixes.updated_by',
@@ -91,7 +91,7 @@ class BullionRateFixController extends Controller
 			->selectRaw('ROUND(dealer_rate_fixes.quantity*0.95,3) - sum(IFNULL(deals.quantity,0)) as pending')
 			->groupBy($columns)
 			->havingRaw('pending > 0')
-			->with('dealer')
+			->with('client')
 			->get();
 
        $columns = [

@@ -73,11 +73,18 @@ class PageController extends Controller
 	
 	public function Bulliondashboard(): View
     {
-        $drf = DealerRateFix::query()->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
-            ->select(DB::raw('(dealer_rate_fixes.quantity*0.95) - sum(IFNULL(deals.quantity,0)) as pending,((dealer_rate_fixes.quantity*0.95) - sum(IFNULL(deals.quantity,0)))*0.10*dealer_rate_fixes.rate as pending_amt'))
+       $drf = DealerRateFix::query()
+            ->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
+            ->select(DB::raw('
+                dealer_rate_fixes.quantity 
+                - sum(IFNULL(deals.quantity,0)) as pending,
+                (dealer_rate_fixes.quantity 
+                - sum(IFNULL(deals.quantity,0))) * 0.10 * dealer_rate_fixes.rate as pending_amt
+            '))
             ->havingRaw('pending > 0')
-            ->groupby('dealer_rate_fixes.id')
+            ->groupBy('dealer_rate_fixes.id')
             ->get();
+
         // $brf=DB::table('bullion_rate_fixes')
         // $brf_deals = DB::table('deals')->select('bullion_rate_fix_id', DB::raw('sum(IFNULL(quantity,0)) as qty'))->groupBy('bullion_rate_fix_id');
         // $brf = DB::table('bullion_rate_fixes')->select(DB::raw('SUM(bullion_rate_fixes.quantity-qty) as pending,SUM((bullion_rate_fixes.quantity-qty)*bullion_rate_fixes.rate) as amt'))

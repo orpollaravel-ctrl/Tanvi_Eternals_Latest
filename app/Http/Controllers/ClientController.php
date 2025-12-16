@@ -97,7 +97,7 @@ class ClientController extends Controller
     }
 
     public function import(Request $request)
-    {
+    { 
         if (!auth()->user()->hasPermission('create-clients')) {
             abort(403, 'Permission Denied');
         }
@@ -106,7 +106,7 @@ class ClientController extends Controller
             'file' => 'required|mimes:xlsx,csv'
         ]);
 
-        $import = new ClientsImport();
+        $import = new ClientsImport(); 
         Excel::import($import, $request->file('file'));
 
         $failures = $import->failures();

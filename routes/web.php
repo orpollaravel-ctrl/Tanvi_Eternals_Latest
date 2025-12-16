@@ -25,6 +25,7 @@ use App\Http\Controllers\BullionController;
 use App\Http\Controllers\BullionRateFixController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\DealerRateFixController;
+use App\Http\Controllers\DsrController;
 use App\Http\Controllers\NewPaymentController;
 use App\Http\Controllers\PaymentModeController;
 use App\Http\Controllers\QuotationController;
@@ -268,6 +269,9 @@ Route::middleware('auth')->group(function () {
         Route::put('expenses/{id}', 'update')->name('expenses.update');
         Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
     });
+
+    Route::resource('dsr', DsrController::class);
+
 	
 	// Departments CRUD
     Route::resource('departments', DepartmentController::class);

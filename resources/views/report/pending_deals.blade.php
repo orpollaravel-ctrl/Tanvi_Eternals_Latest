@@ -1,11 +1,14 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>Dealer Pending Deals - Jewelry ERP</title>
+    <title>Client Pending Deals - Jewelry ERP</title>
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">Dealer Pending Deals</h2>
+    <div class="flex mt-10 mb-5 items-center justify-start">
+        <a href="{{route('bullion.dashboard')}}"><x-base.button class="mr-2 shadow-md" variant="primary"> <x-base.lucide class="mr-1 h-4 w-4" icon="arrow-left" />Back</x-base.button></a>
+    </div>
+    <h2 class="intro-y text-lg font-medium">Client Pending Deals</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- Data Table -->
@@ -17,7 +20,7 @@
                             <x-base.table.tr>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Date</x-base.table.th>
-                                <x-base.table.th class="whitespace-nowrap border-b-0">Dealer Name</x-base.table.th>
+                                <x-base.table.th class="whitespace-nowrap border-b-0">Client Name</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Fixed By</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Req. Quantity</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Req. Rate</x-base.table.th>
@@ -36,7 +39,7 @@
                                         {{ \Carbon\Carbon::parse($deal->drf_date)->format('d/m/Y') }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
-                                        {{ $deal->dealer->name }}
+                                        {{ $deal->client->name }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
                                         {{ $deal->fixedBy->name }}
@@ -72,7 +75,7 @@
                         </tfoot>
                     </x-base.table>
                 @else
-                    <p class="text-center text-slate-500">Dealer Pending deals not found.</p>
+                    <p class="text-center text-slate-500">Client Pending deals not found.</p>
                 @endif
             </div>
         </div>

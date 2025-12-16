@@ -19,7 +19,7 @@
 
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
+            <x-base.table class="mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Type</x-base.table.th>

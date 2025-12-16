@@ -9,8 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 class Deal extends Model
 {
     use HasFactory;
-	protected $fillable = ['bullion_rate_fix_id', 'dealer_rate_fix_id', 'quantity'];
-
+    protected $fillable = [
+        'bullion_rate_fix_id',
+        'dealer_rate_fix_id',
+        'quantity',
+        'fixed_by',
+        'created_by',   
+    ];
 
     public function brf(){
         return $this->belongsTo(BullionRateFix::class,'bullion_rate_fix_id');

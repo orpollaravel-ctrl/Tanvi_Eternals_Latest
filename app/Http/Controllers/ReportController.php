@@ -56,7 +56,7 @@ class ReportController extends Controller
             ->havingRaw('pending > 0')
             ->groupby('dealer_rate_fixes.id')
             ->orderBy('rate', 'asc')
-            ->with(['dealer', 'fixedBy'])->get();
+            ->with(['client', 'fixedBy'])->get();
         // dd(DB::getQueryLog());
         // dd($deals);
         return view('report.pending_deals', compact('deals'));

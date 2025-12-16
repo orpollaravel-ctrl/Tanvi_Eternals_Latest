@@ -10,6 +10,9 @@ class ExpenseController extends Controller
 {
     public function index(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
+           abort(403,'Permission Denied');
+        }
         $expenses = Expense::latest()->get();
         return view('expenses/expense', [
             'layout' => 'side-menu',
@@ -19,6 +22,9 @@ class ExpenseController extends Controller
 
     public function create(): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('create-expenses')) {
+           abort(403,'Permission Denied');
+        }
         return view('expenses/expense-create', [
             'layout' => 'side-menu',
         ]);
@@ -48,6 +54,9 @@ class ExpenseController extends Controller
 
     public function show(string $id): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
+           abort(403,'Permission Denied');
+        }
         $expense = Expense::findOrFail($id);
         return view('expenses/expense-show', [
             'layout' => 'side-menu',
@@ -57,6 +66,9 @@ class ExpenseController extends Controller
 
     public function edit(string $id): View
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('edit-expenses')) {
+           abort(403,'Permission Denied');
+        }
         $expense = Expense::findOrFail($id);
         return view('expenses/expense-edit', [
             'layout' => 'side-menu',
@@ -93,6 +105,9 @@ class ExpenseController extends Controller
 
     public function destroy(string $id)
     {
+         if (!auth()->check() || !auth()->user()->hasPermission('delete-expenses')) {
+           abort(403,'Permission Denied');
+        }
         $expense = Expense::findOrFail($id);
         
         if ($expense->bill_upload && file_exists(public_path('uploads/expenses/' . $expense->bill_upload))) {
