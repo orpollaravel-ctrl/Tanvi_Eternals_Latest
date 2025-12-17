@@ -26,48 +26,60 @@
                         <!-- Employee Name -->
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Employee Name *</x-base.form-label>
-                            <x-base.form-input
-                                type="text"
-                                name="name"
-                                value="{{ old('name') }}"
-                                placeholder="Enter employee name"
-                                required
-                            />
+                            <x-base.form-input type="text" name="name" value="{{ old('name') }}"
+                                placeholder="Enter employee name" required />
                         </div>
 
                         <!-- Employee Code -->
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Employee Code</x-base.form-label>
-                            <x-base.form-input
-                                type="text"
-                                name="code"
-                                value="{{ old('code') }}"
-                                placeholder="Enter employee code"
-                            />
+                            <x-base.form-input type="text" name="code" value="{{ old('code') }}"
+                                placeholder="Enter employee code" />
                         </div>
 
                         <!-- Employee Barcode -->
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Employee Barcode</x-base.form-label>
-                            <x-base.form-input
-                                type="text"
-                                name="barcode"
-                                value="{{ $barcode }}"
-                                placeholder="Enter employee barcode"
-								readonly
-                            />
+                            <x-base.form-input type="text" name="barcode" value="{{ $barcode }}"
+                                placeholder="Enter employee barcode" readonly />
                         </div>
-						
-						 <!-- Employee Image -->
+                        <!-- Department -->
+                        <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Department *</x-base.form-label>
+                            <x-base.tom-select name="department_id" class="w-full" required>
+                                <option value="">Select Department</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->id }}" @selected(old('department_id') == $dept->id)>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </x-base.tom-select>
+                        </div>
+
+                        <!-- Monthly Target Hours -->
+                        <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Monthly Target (Hours) *</x-base.form-label>
+                            <x-base.form-input type="number" name="monthly_target_hours"
+                                value="{{ old('monthly_target_hours', 260) }}" min="1" required />
+                        </div>
+
+                        <!-- Monthly Salary -->
+                        <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Monthly Salary</x-base.form-label>
+                            <x-base.form-input type="number" step="0.01" name="monthly_salary"
+                                value="{{ old('monthly_salary') }}" placeholder="Enter monthly salary" />
+                        </div>
+                        <!-- Employee Image -->
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Employee Image</x-base.form-label>
                             <input type="file" name="images" class="form-control" accept="image/*">
                         </div>
-						 <!-- Active Status -->
+                        <!-- Active Status -->
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Active Status</x-base.form-label>
                             <div class="flex items-center">
-                               <input type="checkbox" id="active" name="active" value="1" class="form-check-input" checked>
+                                <input type="checkbox" id="active" name="active" value="1" class="form-check-input"
+                                    checked>
                                 <label for="active" class="ml-2 text-slate-700 dark:text-slate-300">Active</label>
                             </div>
                         </div>

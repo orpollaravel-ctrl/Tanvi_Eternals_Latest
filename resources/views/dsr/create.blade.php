@@ -12,14 +12,13 @@
         <div class="box p-5">
             <form method="POST" action="{{ route('dsr.store') }}" enctype="multipart/form-data">
                 @csrf
-
                 <div class="grid grid-cols-12 gap-4">
                     <div class="col-span-12">
                         <x-base.form-label>Customer *</x-base.form-label>
-                        <x-base.tom-select name="client_id" required>
-                            <option value="">Select Client</option>
+                        <x-base.tom-select name="client_id" id="client_id" required>
+                            <option value="">Select Client</option> 
                             @foreach($clients as $client)
-                                <option value="{{ $client->id }}">
+                                <option value="{{ $client->id }}" data-client-type="{{ $client->client_type }}">
                                     {{ $client->name }} ({{ $client->mobile_number }})
                                 </option>
                             @endforeach
@@ -27,12 +26,8 @@
                     </div>
  
                     <div class="col-span-12 sm:col-span-6">
-                        <x-base.form-label>Client Type *</x-base.form-label>
-                        <x-base.tom-select name="client_type" required>
-                            <option value="SIS">SIS</option>
-                            <option value="Wholesale">Wholesale</option>
-                            <option value="Job Work">Job Work</option> 
-                        </x-base.tom-select>
+                        <x-base.form-label>Client Type *</x-base.form-label> 
+                        <x-base.form-input type="text" name="client_type" id="client_type" readonly/>
                     </div>
  
                     <div class="col-span-12 sm:col-span-6">
@@ -62,3 +57,30 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const clientSelect = document.getElementById('client_id');
+        const clientTypeInput = document.getElementById('client_type');
+
+        clientSelect.addEventListener('change', function () {
+            const selectedOption = clientSelect.options[clientSelect.selectedIndex];
+            const clientType = selectedOption.getAttribute('data-client-type');
+
+            if (clientType) {
+                clientTypeInput.value = clientType;
+            } else {
+                clientTypeInput.value = '';
+            }
+        });
+    
+        const selectedOption = clientSelect.options[clientSelect.selectedIndex];
+        if (selectedOption) {
+            const clientType = selectedOption.getAttribute('data-client-type');
+            if (clientType) {
+                clientTypeInput.value = clientType;
+            }
+        }
+    });
+</script>
+@endpush

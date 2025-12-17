@@ -16,12 +16,7 @@ return new class extends Migration
 
             $table->integer('client_id');
 
-            $table->enum('client_type', [
-                'SIS',
-                'Wholesale',
-                'Job Work',
-                'Counter Sale Customer'
-            ]);
+            $table->text('client_type');
 
             $table->integer('no_of_shops')->nullable();
             $table->string('visiting_card_photo')->nullable();

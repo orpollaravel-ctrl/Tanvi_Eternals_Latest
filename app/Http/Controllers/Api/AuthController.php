@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Expense;
 use App\Models\Quotation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -200,4 +201,59 @@ class AuthController extends Controller
             'data' => $quotation
         ], 200);
     }
+
+    public function expenses()
+    {
+        $expenses = Expense::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $expenses
+        ], 200);
+    }
+
+    public function createExpense(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'in:travel expense,food expense,hotel expense,other expense'],
+            'date' => ['required', 'date'],
+            'amount' => ['required', 'numeric', 'min:0'],
+            'remark' => ['nullable', 'string'],
+            'bill_upload' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+        ]);
+
+        if ($request->hasFile('bill_upload')) {
+            $file = $request->file('bill_upload');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/expenses'), $fileName);
+            $validated['bill_upload'] = $fileName;
+        }
+
+        $expense = Expense::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Expense created successfully',
+            'data' => $expense
+        ], 201);
+    }
+
+    public function expenseDetails($id)
+    {
+        $expense = Expense::find($id);
+
+        if (!$expense) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Expense not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $expense
+        ], 200);
+    }
+
+
 }

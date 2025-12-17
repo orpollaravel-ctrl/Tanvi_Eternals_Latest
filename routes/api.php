@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\OpeningStockController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,6 +26,9 @@ Route::post('/update-profile', [AuthController::class, 'updateProfile']);
 Route::get('/quotations', [AuthController::class, 'quotations']);
 Route::post('/quotations', [AuthController::class, 'createQuotation']);
 Route::get('/quotations/{id}', [AuthController::class, 'quotationDetails']);
+Route::get('/expenses', [AuthController::class, 'expenses']);
+Route::post('/expenses', [AuthController::class, 'createExpense']);
+Route::get('/expenses/{id}', [AuthController::class, 'expenseDetails']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -35,4 +40,4 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/employees/search', [EmployeeController::class, 'search']);
 Route::get('/departments/search', [DepartmentController::class, 'search']);
-Route::put('/opening-stock/{productId}', [App\Http\Controllers\OpeningStockController::class, 'updateAjax']);
+Route::put('/opening-stock/{productId}', [OpeningStockController::class, 'updateAjax']);

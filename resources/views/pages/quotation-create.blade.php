@@ -228,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Handle regular radio buttons
             const radioLabels = document.querySelectorAll('label:has(input[type="radio"]):not(:has(.metal-option))');
             
             radioLabels.forEach(label => {
@@ -251,14 +250,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             
-            // Handle metal image selection
             const metalLabels = document.querySelectorAll('label:has(.metal-option)');
             metalLabels.forEach(label => {
                 const radio = label.querySelector('input[type="radio"]');
                 const metalOption = label.querySelector('.metal-option');
                 
                 label.addEventListener('click', function() {
-                    // Remove selected class from all metal options
                     document.querySelectorAll('.metal-option').forEach(option => {
                         option.classList.remove('selected');
                     });

@@ -39,6 +39,40 @@
             <label class="form-label">Barcode</label>
             <div class="form-control-plaintext">{{ $employee->barcode ?? 'N/A' }}</div>
         </div>
+        <div class="col-span-12 sm:col-span-6">
+            <label class="form-label">Department</label>
+            <div class="form-control-plaintext">
+                {{ $employee->department?->name ?? 'N/A' }}
+            </div>
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+            <label class="form-label">Monthly Target (Hours)</label>
+            <div class="form-control-plaintext">
+                {{ $employee->monthly_target_hours ?? 260 }}
+            </div>
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+            <label class="form-label">Monthly Salary</label>
+            <div class="form-control-plaintext">
+                @if($employee->monthly_salary)
+                    ₹ {{ number_format($employee->monthly_salary, 2) }}
+                @else
+                    N/A
+                @endif
+            </div>
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+            <label class="form-label">Hourly Rate</label>
+            <div class="form-control-plaintext">
+                @if($employee->monthly_salary && $employee->monthly_target_hours)
+                    ₹ {{ number_format($employee->monthly_salary / $employee->monthly_target_hours, 2) }} / hr
+                @else
+                    N/A
+                @endif
+            </div>
+        </div>
+
+
 		 <div class="col-span-12 sm:col-span-6">
     <label class="form-label">Active</label>
 

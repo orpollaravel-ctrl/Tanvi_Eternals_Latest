@@ -15,5 +15,13 @@ class Employee extends Model
         'barcode',
 		'images',
         'active',
+        'department_id',
+        'monthly_target_hours',
+        'monthly_salary',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Department::class);
+    }
 }

@@ -29,7 +29,7 @@ class DsrController extends Controller
             abort(403, 'Permission Denied');
         }
 
-        $clients = Client::select('id', 'name', 'mobile_number')->get();
+        $clients = Client::select('id', 'name', 'mobile_number','client_type')->get();
 
         return view('dsr.create', [
             'layout' => 'side-menu',
@@ -41,7 +41,7 @@ class DsrController extends Controller
     {
         $validated = $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
-            'client_type' => ['required', 'in:SIS,Wholesale,Job Work'],
+            'client_type' => ['required'],
             'no_of_shops' => ['nullable', 'integer'],
             'visiting_card_photo' => ['nullable', 'image', 'max:2048'],
             'shop_photo' => ['nullable', 'image', 'max:2048'],
@@ -74,7 +74,7 @@ class DsrController extends Controller
         }
 
         $dsr = Dsr::findOrFail($id);
-        $clients = Client::select('id', 'name', 'mobile_number')->get();
+        $clients = Client::select('id', 'name', 'mobile_number','client_type')->get();
 
         return view('dsr.edit', [
             'layout' => 'side-menu',
@@ -89,7 +89,7 @@ class DsrController extends Controller
 
         $validated = $request->validate([
             'client_id' => ['required', 'exists:clients,id'],
-            'client_type' => ['required', 'in:SIS,Wholesale,Job Work'],
+            'client_type' => ['required'],
             'no_of_shops' => ['nullable', 'integer'],
             'visiting_card_photo' => ['nullable', 'image', 'max:2048'],
             'shop_photo' => ['nullable', 'image', 'max:2048'],

@@ -35,6 +35,7 @@
                         <th style="white-space: nowrap; border-bottom: 0;">#</th>
                         <th style="white-space: nowrap; border-bottom: 0;">Image</th>
                         <th style="white-space: nowrap; border-bottom: 0;">Name</th>
+                        <th style="white-space: nowrap; border-bottom: 0;">Department</th>
                         <th style="white-space: nowrap; border-bottom: 0;">Code</th>
                         <th style="white-space: nowrap; border-bottom: 0;">Barcode</th>
                         <th style="white-space: nowrap; border-bottom: 0;">Active</th>
@@ -224,6 +225,9 @@
                 </td>
                 <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium">
                     ${employee.name}
+                </td>
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow">
+                    ${employee.department  ?? '-'}
                 </td>
                 <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                     ${employee.code || '-'}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,7 +22,7 @@ class EmployeeController extends Controller
             $perPage = 25;
             $search = $request->get('search', '');
 
-            $query = Employee::query()->latest();
+        $query = Employee::with('department')->latest();
 
             if (!empty($search)) {
                 $query->where(function ($q) use ($search) {
@@ -34,15 +35,26 @@ class EmployeeController extends Controller
             $employees = $query->paginate($perPage, ['*'], 'page', $page);
 
             return response()->json([
-                'data' => $employees->items(),
+                'data' => $employees->map(function ($employee) {
+                    return [
+                        'id' => $employee->id,
+                        'name' => $employee->name,
+                        'code' => $employee->code,
+                        'barcode' => $employee->barcode,
+                        'images' => $employee->images,
+                        'active' => $employee->active,
+                        'department' => optional($employee->department)->name,
+                        'salary' => $employee->salary,
+                        'target' => $employee->target,
+                    ];
+                }),
                 'current_page' => $employees->currentPage(),
                 'last_page' => $employees->lastPage(),
                 'has_more' => $employees->hasMorePages(),
             ]);
         }
 
-        // Initial load with first 25 records
-        $employees = Employee::query()->latest()->paginate(25);
+            $employees = Employee::with('department')->latest()->paginate(25);
 
         return view('pages.employee.index', [
             'layout' => 'side-menu',
@@ -62,55 +74,62 @@ class EmployeeController extends Controller
 			do {
         $barcode = rand(10000000, 99999999);
 		} while (\App\Models\Employee::where('barcode', $barcode)->exists());
+            $departments = Department::orderBy('name')->get();
+
         return view('pages/employee/create', [
             'layout' => 'side-menu',
 			'barcode' => $barcode,
+            'departments' => $departments,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'name' => ['nullable', 'string', 'max:255'],
-        'code' => ['nullable', 'string', 'max:255'],
-        'barcode' => ['nullable', 'string', 'max:255','unique:employees,barcode'],
-        'images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-        'active' => ['nullable', 'boolean'],
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['nullable', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:255'],
+            'barcode' => ['nullable', 'string', 'max:255', 'unique:employees,barcode'],
+            'images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'active' => ['nullable', 'boolean'],
 
-    $imagePath = null;
+            // ✅ NEW FIELDS
+            'department_id' => ['required', 'exists:departments,id'],
+            'monthly_target_hours' => ['required', 'integer', 'min:1'],
+            'monthly_salary' => ['nullable', 'numeric', 'min:0'],
+        ]);
 
-    if ($request->hasFile('images')) {
+        $imagePath = null;
 
-        // Create folder if not exists
-        $folderPath = public_path('storage/employees');
-        if (!file_exists($folderPath)) {
-            mkdir($folderPath, 0755, true);
+        if ($request->hasFile('images')) {
+            $folderPath = public_path('storage/employees');
+            if (!file_exists($folderPath)) {
+                mkdir($folderPath, 0755, true);
+            }
+
+            $filename = time() . '_' . uniqid() . '.' . $request->file('images')->getClientOriginalExtension();
+            $request->file('images')->move($folderPath, $filename);
+            $imagePath = 'employees/' . $filename;
         }
 
-        // Generate unique filename
-        $filename = time() . '_' . uniqid() . '.' . $request->file('images')->getClientOriginalExtension();
+        Employee::create([
+            'name' => $validated['name'] ?? null,
+            'code' => $validated['code'] ?? null,
+            'barcode' => $validated['barcode'] ?? null,
+            'images' => $imagePath,
+            'active' => $validated['active'] ?? 0,
 
-        // Move file directly
-        $request->file('images')->move($folderPath, $filename);
+            // ✅ NEW FIELDS
+            'department_id' => $validated['department_id'],
+            'monthly_target_hours' => $validated['monthly_target_hours'] ?? 260,
+            'monthly_salary' => $validated['monthly_salary'] ?? null,
+        ]);
 
-        // Save path to DB
-        $imagePath = 'employees/' . $filename;
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee created successfully.');
     }
-
-    Employee::create([
-        'name' => $validated['name'] ?? null,
-        'code' => $validated['code'] ?? null,
-        'barcode' => $validated['barcode'] ?? null,
-        'images' => $imagePath,
-        'active' => $validated['active'] ?? 0,
-    ]);
-
-    return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
-}
 
     /**
      * Display the specified resource.
@@ -137,9 +156,12 @@ class EmployeeController extends Controller
         }
         $employee = Employee::findOrFail($id);
 		$employees = Employee::get();
+        $departments = Department::orderBy('name')->get();
+
         return view('pages/employee/edit', [
             'layout' => 'side-menu',
             'employee' => $employee,
+            'departments' => $departments,
         ]);
     }
 
@@ -153,33 +175,30 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
             'code' => ['nullable', 'string', 'max:255'],
-            'barcode' => ['nullable', 'string', 'max:255','unique:employees,barcode,'.$id],
+            'barcode' => ['nullable', 'string', 'max:255', 'unique:employees,barcode,' . $id],
             'images' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'active' => ['nullable', 'boolean'],
+
+            // ✅ NEW FIELDS
+            'department_id' => ['required', 'exists:departments,id'],
+            'monthly_target_hours' => ['required', 'integer', 'min:1'],
+            'monthly_salary' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $imagePath = $employee->images;
 
         if ($request->hasFile('images')) {
-
-            // Delete old image
             if ($employee->images && file_exists(public_path('storage/' . $employee->images))) {
                 unlink(public_path('storage/' . $employee->images));
             }
 
-            // Create folder if not exists
             $folderPath = public_path('storage/employees');
             if (!file_exists($folderPath)) {
                 mkdir($folderPath, 0755, true);
             }
 
-            // Generate new filename
             $filename = time() . '_' . uniqid() . '.' . $request->file('images')->getClientOriginalExtension();
-
-            // Move new file
             $request->file('images')->move($folderPath, $filename);
-
-            // Save new path
             $imagePath = 'employees/' . $filename;
         }
 
@@ -189,10 +208,17 @@ class EmployeeController extends Controller
             'barcode' => $validated['barcode'] ?? $employee->barcode,
             'images' => $imagePath,
             'active' => $validated['active'] ?? $employee->active,
+
+            // ✅ NEW FIELDS
+            'department_id' => $validated['department_id'],
+            'monthly_target_hours' => $validated['monthly_target_hours'],
+            'monthly_salary' => $validated['monthly_salary'],
         ]);
 
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee updated successfully.');
     }
+
 
 
     /**
