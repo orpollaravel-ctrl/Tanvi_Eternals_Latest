@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->string('serial_no');    
-            $table->date('date');    
-            $table->string('client_code');
-            $table->string('client_name');
-            $table->string('transaction_no');   
-            $table->decimal('amount', 12, 2);
-            $table->string('bank_cash');
-            $table->timestamps();
-        });
+        // Schema::create('payments', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('serial_no');    
+        //     $table->date('date');    
+        //     $table->string('client_code');
+        //     $table->string('client_name');
+        //     $table->string('transaction_no');   
+        //     $table->decimal('amount', 12, 2);
+        //     $table->string('bank_cash');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        // Schema::dropIfExists('payments');
     }
 };

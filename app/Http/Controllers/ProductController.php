@@ -63,7 +63,7 @@ class ProductController extends Controller
         $barcode = rand(10000000, 99999999);
 		} while (\App\Models\Product::where('barcode_number', $barcode)->exists());
         $lastProduct = Product::latest('id')->first(); 
-		$nextToolCode = $lastProduct->tool_code + 1; 
+	    $nextToolCode = $lastProduct ? $lastProduct->tool_code + 1 : 1;
         return view('pages/product-create', [
             'layout' => 'side-menu',
             'categories' => $categories,

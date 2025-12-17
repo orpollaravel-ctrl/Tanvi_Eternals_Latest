@@ -5,8 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Collection;
+use App\Models\Dsr;
 use App\Models\Expense;
+use App\Models\Order;
 use App\Models\Quotation;
+use App\Models\Target;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -54,7 +58,7 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request)
-    { 
+    {
         $user = $request->user();
         if ($user && $user->currentAccessToken()) {
             $user->currentAccessToken()->delete();
@@ -143,7 +147,6 @@ class AuthController extends Controller
     public function customers(Request $request)
     {
         $clients = Client::latest()->get();
-
         return response()->json([
             'success' => true,
             'data' => $clients
@@ -254,6 +257,167 @@ class AuthController extends Controller
             'data' => $expense
         ], 200);
     }
+    public function createDsr(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => ['required', 'exists:clients,id'],
+            'client_type' => ['required'],
+            'no_of_shops' => ['nullable', 'integer'],
+            'visiting_card_photo' => ['nullable', 'image', 'max:2048'],
+            'shop_photo' => ['nullable', 'image', 'max:2048'],
+        ]);
 
+        if ($request->hasFile('visiting_card_photo')) {
+            $file = $request->file('visiting_card_photo');
+            $fileName = time() . '_vc_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/dsr/visiting_cards'), $fileName);
+            $validated['visiting_card_photo'] = $fileName;
+        }
 
+        if ($request->hasFile('shop_photo')) {
+            $file = $request->file('shop_photo');
+            $fileName = time() . '_shop_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/dsr/shop_photos'), $fileName);
+            $validated['shop_photo'] = $fileName;
+        }
+
+        $dsr = Dsr::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'DSR created successfully',
+            'data' => $dsr
+        ], 201);
+    }
+
+    public function dsrList(Request $request)
+    {
+        $dsrs = Dsr::with('client')
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $dsrs
+        ], 200);
+    }
+
+    public function dsrDetail($id)
+    {
+        $dsr = Dsr::with('client')->find($id);
+
+        if (!$dsr) {
+            return response()->json([
+                'success' => false,
+                'message' => 'DSR not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $dsr
+        ], 200);
+    }
+
+    public function collectionsByDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date'
+        ]);
+
+        $data = Collection::with('client')
+            ->whereDate('collection_date', $request->date)
+            ->where('user_id', $request->user()->id)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function createCollection(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'collection_date' => 'required|date',
+            'amount' => 'required|numeric'
+        ]); 
+
+      $collection = Collection::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Collection added successfully',
+            'data' => $collection
+        ]);
+    }
+
+    public function ordersByDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date'
+        ]);
+
+        $data = Order::with('client')
+            ->whereDate('order_date', $request->date)
+            ->where('user_id', $request->user()->id)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function createOrder(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'order_date' => 'required|date',
+            'order_qty' => 'required|integer'
+        ]);
+
+      $order = Order::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order added successfully',
+            'data' => $order
+        ]);
+    }
+
+    public function targetsByDate(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date'
+        ]);
+
+        $data = Target::with('client')
+            ->whereDate('target_date', $request->date)
+            ->where('user_id', $request->user()->id)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function createTarget(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'target_date' => 'required|date',
+            'target_qty' => 'required|integer'
+        ]);
+
+      $target =  Target::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Target added successfully',
+            'data' => $target
+        ]);
+    }
 }
