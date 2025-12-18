@@ -30,7 +30,7 @@ class PermissionSeeder extends Seeder
             ['label' => 'Delete Dealer Rate Fixes', 'name' => 'delete-dealer-rate-fixes', 'group' => 'bullion'],
             ['label' => 'Create Bullion Rate Fixes', 'name' => 'create-bullion-rate-fixes', 'group' => 'bullion'],
             ['label' => 'Edit Bullion Rate Fixes', 'name' => 'edit-bullion-rate-fixes', 'group' => 'bullion'],
-            ['label' => 'Delete Bullion Rate Fixes', 'name' => 'create-dealer-rate-fixes', 'group' => 'bullion'],
+            ['label' => 'Delete Bullion Rate Fixes', 'name' => 'delete-bullion-rate-fixes', 'group' => 'bullion'],
             ['label' => 'Create Metal Receipts', 'name' => 'create-metal-receipts', 'group' => 'bullion'],
             ['label' => 'Edit Metal Receipts', 'name' => 'edit-metal-receipts', 'group' => 'bullion'],
             ['label' => 'Delete Metal Receipts', 'name' => 'delete-metal-receipts', 'group' => 'bullion'],

@@ -88,7 +88,7 @@ class BullionRateFixController extends Controller
 		$drfs = DealerRateFix::query()
 			->leftJoin('deals', 'dealer_rate_fixes.id', '=', 'deals.dealer_rate_fix_id')
 			->select($columns)
-			->selectRaw('ROUND(dealer_rate_fixes.quantity*0.95,3) - sum(IFNULL(deals.quantity,0)) as pending')
+			->selectRaw('ROUND(dealer_rate_fixes.quantity,3) - sum(IFNULL(deals.quantity,0)) as pending')
 			->groupBy($columns)
 			->havingRaw('pending > 0')
 			->with('client')
@@ -138,13 +138,14 @@ class BullionRateFixController extends Controller
             ->groupby('bullion_rate_fixes.id')
             ->where('bullion_rate_fixes.id', $request->get('brf'))->first();
         $drf = DealerRateFix::query()->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
-            ->select('dealer_rate_fixes.*')->selectRaw('ROUND(dealer_rate_fixes.quantity*0.95,3) - sum(IFNULL(deals.quantity,0)) as pending')
+            ->select('dealer_rate_fixes.*')->selectRaw('ROUND(dealer_rate_fixes.quantity,3) - sum(IFNULL(deals.quantity,0)) as pending')
             ->havingRaw('pending > 0')->groupby('dealer_rate_fixes.id')->where('dealer_rate_fixes.id', $request->get('drf'))->first();
         if ($brf && $drf) {
             $deal = new Deal();
-            $deal->dealer_rate_fix_id = $drf->id;
-            $deal->quantity = ($brf->pending > $drf->pending) ? $drf->pending : $brf->pending;
-            $brf->deals()->save($deal);
+            $deal->bullion_rate_fix_id = $brf->id;  
+            $deal->dealer_rate_fix_id  = $drf->id;
+            $deal->quantity = min($brf->pending, $drf->pending);
+            $deal->save();
         } else {
             Session::flash('error_message', "Selected deals not found,please try again.");
             return redirect()->back();
@@ -309,7 +310,7 @@ class BullionRateFixController extends Controller
             return;
         }
         $drfs = DealerRateFix::query()->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
-            ->select('dealer_rate_fixes.*')->selectRaw('ROUND(dealer_rate_fixes.quantity*0.95,3) - sum(IFNULL(deals.quantity,0)) as pending')
+            ->select('dealer_rate_fixes.*')->selectRaw('ROUND(dealer_rate_fixes.quantity,3) - sum(IFNULL(deals.quantity,0)) as pending')
             ->havingRaw('pending > 0')->groupby('dealer_rate_fixes.id')->orderBy('rate', 'asc')->where('rate', '>', $brf->rate)->get();
         if ($drfs->count()) {
             $booking_qty = $brf->quantity;

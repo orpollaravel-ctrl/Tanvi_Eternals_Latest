@@ -82,7 +82,7 @@
                             <x-base.table.tr>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Date</x-base.table.th>
-                                <x-base.table.th class="whitespace-nowrap border-b-0">Dealer Name</x-base.table.th>
+                                <x-base.table.th class="whitespace-nowrap border-b-0">Client Name</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Req. Quantity</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Req. Rate</x-base.table.th>
                                 <x-base.table.th class="whitespace-nowrap border-b-0">Booked Date</x-base.table.th>
@@ -102,7 +102,7 @@
                                         {{ \Carbon\Carbon::parse($deal->drf->drf_date)->format('d/m/Y') }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
-                                        {{ $deal->drf->dealer->name }}
+                                        {{ $deal->drf->client->name }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
                                         {{ $deal->drf->quantity }}

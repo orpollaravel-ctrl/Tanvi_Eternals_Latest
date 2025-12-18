@@ -77,7 +77,7 @@
                                 @foreach ($clients as $client)
                                     <option value="{{ $client->id }}"
                                         @selected(old('client', $drf->client_id) == $client->id)>
-                                        {{ $client->name }}
+                                        {{ $client->name .'('. $client->code .')' }}
                                     </option>
                                 @endforeach
                             </x-base.tom-select>

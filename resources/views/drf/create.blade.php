@@ -68,7 +68,7 @@
                             <x-base.tom-select name="client" required>
                                 <option value="">Select Client</option>
                                 @foreach ($clients as $client)
-                                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                    <option value="{{ $client->id }}">{{ $client->name .'('. $client->code .')' }}</option>
                                 @endforeach
                             </x-base.tom-select>
                         </div>

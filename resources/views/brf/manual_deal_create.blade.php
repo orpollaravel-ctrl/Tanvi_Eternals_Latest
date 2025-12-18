@@ -65,11 +65,11 @@
                             </x-base.form-select>
                         </div>
 
-                        <!-- Dealer Pending Deals -->
+                        <!-- Client Pending Deals -->
                         <div class="col-span-12">
-                            <x-base.form-label>Dealer Pending Deals *</x-base.form-label>
+                            <x-base.form-label>Client Pending Deals *</x-base.form-label>
                             <x-base.form-select id="drf" name="drf" required>
-                                <option value="0">Select Dealer Deal</option>
+                                <option value="0">Select Client Deal</option>
                                 @if (!empty($drfs))
                                     @foreach ($drfs as $drf)
                                         <option

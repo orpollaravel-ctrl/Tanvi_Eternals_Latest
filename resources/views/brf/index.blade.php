@@ -161,7 +161,6 @@
                             @if (auth()->check() && (auth()->user()->hasPermission('edit-bullion-rate-fixes') || auth()->user()->hasPermission('delete-bullion-rate-fixes')))
                                 <x-base.table.td
                                     class="relative border-b-0 bg-white py-0 text-center shadow-[20px_3px_20px_#0000000b]">
-
                                     <div class="flex items-center justify-center gap-2">
                                         @if (auth()->check() && auth()->user()->hasPermission('edit-bullion-rate-fixes'))
                                             <a href="{{ route('brfs.edit', $brf->id) }}"
@@ -180,7 +179,6 @@
                                             </form>
                                         @endif
                                     </div>
-
                                 </x-base.table.td>
                             @endif
 

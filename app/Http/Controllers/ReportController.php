@@ -29,7 +29,7 @@ class ReportController extends Controller
             $dates[1]=$request->get('to_date');
         }
         $bullions = Bullion::where('status',1)->get();
-        $deals = Deal::with(['drf.dealer', 'brf.bullion'])
+        $deals = Deal::with(['drf.client', 'brf.bullion'])
             ->whereHas('drf', function($q) use($dates){
                 $q->whereBetween('drf_date', $dates);
             })
@@ -52,7 +52,7 @@ class ReportController extends Controller
         // DB::enableQueryLog();        
         $deals = DealerRateFix::query()->leftJoin('deals', 'dealer_rate_fixes.id', 'deals.dealer_rate_fix_id')
             ->select('dealer_rate_fixes.*')
-            ->selectRaw('round(dealer_rate_fixes.quantity*0.95,3) - sum(IFNULL(deals.quantity,0)) as pending')
+            ->selectRaw('round(dealer_rate_fixes.quantity,3) - sum(IFNULL(deals.quantity,0)) as pending')
             ->havingRaw('pending > 0')
             ->groupby('dealer_rate_fixes.id')
             ->orderBy('rate', 'asc')

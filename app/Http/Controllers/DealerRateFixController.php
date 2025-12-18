@@ -247,7 +247,7 @@ class DealerRateFixController extends Controller
 			->get();
 
         if ($brfs->count()) {
-            $booking_qty = round($drf->quantity * 0.95, 3);
+            $booking_qty = round($drf->quantity, 3);
             foreach ($brfs as $key => $brf) {
                 $deal = new Deal();
                 $deal->bullion_rate_fix_id = $brf->id;

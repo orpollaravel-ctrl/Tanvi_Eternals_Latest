@@ -51,7 +51,7 @@
                                         {{ $deal->rate }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
-                                        @money($deal->amount)
+                                        {{ $deal->amount }}
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b]">
                                         {{ number_format($deal->pending, 3) }}
@@ -69,7 +69,7 @@
                                 <td class="border-b-0 bg-slate-100 font-semibold">{{ $deals->sum('quantity') }}</td>
                                 @php $avg = round(10 * ($deals->sum('amount') / $deals->sum('quantity')), 3); @endphp
                                 <td class="border-b-0 bg-slate-100 font-semibold">{{ $avg }}</td>
-                                <td class="border-b-0 bg-slate-100 font-semibold">@money($deals->sum('amount'))</td>
+                                <td class="border-b-0 bg-slate-100 font-semibold">{{ $deals->sum('amount') }}</td>
                                 <td class="border-b-0 bg-slate-100 font-semibold">{{ $deals->sum('pending') }}</td>
                                 <td class="border-b-0 bg-slate-100"></td>
                             </tr>
