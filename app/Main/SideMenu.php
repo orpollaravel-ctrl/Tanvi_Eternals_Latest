@@ -18,6 +18,7 @@ class SideMenu
                     'dashboard-overview-1' => [
                         'icon' => 'gauge',
                         'route_name' => 'dashboard-overview-1',
+                         'permission' => 'view-admin-dashboard',
                         'params' => [
                             'layout' => 'side-menu',
                         ],
@@ -26,10 +27,20 @@ class SideMenu
                     'dashboard-overview-2' => [
                         'icon' => 'bar-chart-2',
                         'route_name' => 'bullion.dashboard',
+                        'permission' => 'view-bullion-dashboard',
                         'params' => [
                             'layout' => 'side-menu',
                         ],
                         'title' => 'Bullion Dashboard',
+                    ],
+                    'dashboard-customer' => [
+                        'icon' => 'bar-chart-2',
+                        'route_name' => 'customer.dashboard',
+                        'permission' => 'view-dashboard',    
+                        'params' => [
+                            'layout' => 'side-menu',
+                        ],
+                        'title' => 'Customer Dashboard',
                     ],
                 ],
             ],
@@ -348,10 +359,11 @@ class SideMenu
      * Recursively filter menu items based on user permissions
      */
     private static function filterMenuByPermissions(array $menu, $user): array
-    {
-            $filteredMenu = [];
+    { 
+        $filteredMenu = [];
 
         foreach ($menu as $key => $item) {
+            // dd($item);
             if (isset($item['permission'])) {
                 if (!$user->hasPermission($item['permission'])) {
                     continue; 

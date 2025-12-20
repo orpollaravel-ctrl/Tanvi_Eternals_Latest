@@ -10,6 +10,8 @@ class PermissionSeeder extends Seeder
     public function run()
     {
         $permissions = [
+            ['label' => 'View Admin Dashboard', 'name' => 'view-admin-dashboard', 'group' => 'dashboard'],
+            ['label' => 'View Bullion Dashboard', 'name' => 'view-bullion-dashboard', 'group' => 'dashboard'],
             ['label' => 'Create Users', 'name' => 'create-users', 'group' => 'master'],
             ['label' => 'Edit Users', 'name' => 'edit-users', 'group' => 'master'],
             ['label' => 'Delete Users', 'name' => 'delete-users', 'group' => 'master'],
@@ -69,10 +71,28 @@ class PermissionSeeder extends Seeder
             ['label' => 'Create DSR', 'name' => 'create-dsr', 'group' => 'dsr'],
             ['label' => 'Edit DSR', 'name' => 'edit-dsr', 'group' => 'dsr'],
             ['label' => 'Delete DSR', 'name' => 'delete-dsr', 'group' => 'dsr'],
-
+             ['label' => 'View Dashboard', 'name' => 'view-dashboard', 'group' => 'customer-dashboard'],
 
             
         ];
+
+        $clients = DB::table('clients')->pluck('id');
+        $clientPermissionNames = ['view-dashboard'];
+        
+        $clientPermissionIds = DB::table('permissions')
+        ->whereIn('name', $clientPermissionNames)
+        ->pluck('id'); 
+
+        foreach ($clients as $clientId) {
+            foreach ($clientPermissionIds as $permissionId) {
+                $a = DB::table('permission_client')->insertOrIgnore([
+                    'client_id' => $clientId,
+                    'permission' => $permissionId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]); 
+            }
+        }
 
         foreach ($permissions as $permission) {
             DB::table('permissions')->insertOrIgnore([

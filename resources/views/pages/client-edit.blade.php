@@ -41,6 +41,13 @@
                             placeholder="Tanvi Jewellers" />
                     </div>
                     <div>
+                        <x-base.form-label>Email*</x-base.form-label>
+                        <x-base.form-input
+                            name="email"
+                            value="{{ old('email', $client->email) }}"
+                            placeholder="jhon.deo@example.com" />
+                    </div>
+                    <div>
                         <x-base.form-label>Client Type *</x-base.form-label>
                         <x-base.form-select name="client_type" required>
                             <option value="Corporate" @selected(old('client_type', $client->client_type)=='Corporate')>
@@ -65,14 +72,30 @@
                             value="{{ old('salesman_name', $client->salesman_name) }}"
                             placeholder="Ramesh Kumar" />
                     </div>
-
-                    <div>
+                      <div>
                         <x-base.form-label>Mobile Number*</x-base.form-label>
                         <x-base.form-input
                             name="mobile_number"
                             value="{{ old('mobile_number', $client->mobile_number) }}"
                             placeholder="9876543210" />
                     </div>
+                     <div>
+                        <x-base.form-label>Password*</x-base.form-label>
+                        <x-base.form-input
+                          type="password"
+                            name="password"
+                            value=""
+                            placeholder="*********" />
+                    </div>
+                    <div>
+                        <x-base.form-label>Confirm Password*</x-base.form-label>
+                        <x-base.form-input
+                          type="password"
+                            name="password_confirmation"
+                            value=""
+                            placeholder="*********" />
+                    </div>
+                  
 
                     <div class="col-span-2">
                         <x-base.form-label>Address 1</x-base.form-label>

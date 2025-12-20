@@ -51,10 +51,10 @@
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Name *</x-base.form-label>
-                            <select id="customer-select" name="customer_name" class="tom-select w-full" required>
+                            <select id="customer-select" name="customer_id" class="tom-select w-full" required>
                                 <option value="">Select Customer</option>
                                 @foreach($clients as $client)
-                                    <option value="{{ $client->name }}" data-code="{{ $client->client_code }}" @selected(old('customer_name', $quotation->customer_name) == $client->name)>
+                                    <option value="{{ $client->name }}" data-code="{{ $client->client_code }}" @selected(old('customer_id', $quotation->customer_id) == $client->name)>
                                         {{ $client->name }}
                                     </option>
                                 @endforeach

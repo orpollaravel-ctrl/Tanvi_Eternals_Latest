@@ -84,7 +84,7 @@
                     </form>
                 </x-base.menu.item>
                 <x-base.menu.item class="hover:bg-white/5">
-                    <form action="{{ route('logout') }}" method="POST">
+                    <form   action="{{ auth('client')->check() ? route('customer.logout') : route('logout') }}"  method="POST">
                         @csrf
                         <button type="submit" class="flex items-center w-full text-left">
                             <x-base.lucide class="mr-2 h-4 w-4" icon="ToggleRight" /> Logout

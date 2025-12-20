@@ -71,7 +71,7 @@ class AuthController extends Controller
     }
 
     public function me(Request $request)
-    {
+    { 
         $user = $request->user();
 
         if (!$user) {
@@ -155,18 +155,36 @@ class AuthController extends Controller
 
     public function quotations()
     {
-        $quotations = Quotation::latest()->get();
+        $quotations = Quotation::with('client:id,name')->latest()->get();
 
         return response()->json([
             'success' => true,
-            'data' => $quotations
+            'data' => $quotations->map(function ($quotation) {
+                return [
+                    'id' => $quotation->id,
+                    'customer_id' => $quotation->customer_id,
+                    'customer_name' => $quotation->client->name ?? null,
+                    'contact' => $quotation->contact,
+                    'customer_code' => $quotation->customer_code,
+                    'metal' => $quotation->metal,
+                    'purity' => $quotation->purity,
+                    'diamond' => $quotation->diamond,
+                    'women_ring_size_from' => $quotation->women_ring_size_from,
+                    'women_ring_size_to' => $quotation->women_ring_size_to,
+                    'men_ring_size_from' => $quotation->men_ring_size_from,
+                    'men_ring_size_to' => $quotation->men_ring_size_to,
+                    'remarks' => $quotation->remarks,
+                    'created_at' => $quotation->created_at,
+                    'updated_at' => $quotation->updated_at,
+                ];
+            })
         ], 200);
     }
 
     public function createQuotation(Request $request)
     {
         $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_id' => ['required', 'integer','exists:clients,id'],
             'contact' => ['required', 'string', 'max:255'],
             'customer_code' => ['required', 'string', 'max:255'],
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
@@ -188,9 +206,9 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function quotationDetails($id)
+   public function quotationDetails($id)
     {
-        $quotation = Quotation::find($id);
+        $quotation = Quotation::with('client:id,name')->find($id);
 
         if (!$quotation) {
             return response()->json([
@@ -201,9 +219,26 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $quotation
+            'data' => [
+                'id' => $quotation->id,
+                'customer_id' => $quotation->customer_id,
+                'customer_name' => $quotation->client->name ?? null,
+                'contact' => $quotation->contact,
+                'customer_code' => $quotation->customer_code,
+                'metal' => $quotation->metal,
+                'purity' => $quotation->purity,
+                'diamond' => $quotation->diamond,
+                'women_ring_size_from' => $quotation->women_ring_size_from,
+                'women_ring_size_to' => $quotation->women_ring_size_to,
+                'men_ring_size_from' => $quotation->men_ring_size_from,
+                'men_ring_size_to' => $quotation->men_ring_size_to,
+                'remarks' => $quotation->remarks,
+                'created_at' => $quotation->created_at,
+                'updated_at' => $quotation->updated_at,
+            ]
         ], 200);
     }
+
 
     public function expenses()
     {

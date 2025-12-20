@@ -56,7 +56,7 @@
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <div class="whitespace-nowrap font-medium">{{ $quotation->customer_name }}</div>
+                                <div class="whitespace-nowrap font-medium">{{ $quotation->client->name ?? '-'}}</div>
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -93,7 +93,7 @@
                                             <a class="flex items-center text-danger" data-tw-toggle="modal"
                                                 data-tw-target="#delete-confirmation-modal" href="#"
                                                 data-delete-route="{{ route('quotations.destroy', $quotation->id) }}"
-                                                data-delete-name="{{ $quotation->customer_name }}">
+                                                data-delete-name="{{ $quotation->client->name ?? '' }}">
                                                 <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
                                             </a>
                                         @endif

@@ -32,13 +32,19 @@
                             value="{{ old('code') }}"
                             placeholder="CLT-001" />
                     </div>
-
                     <div>
                         <x-base.form-label>Client Name*</x-base.form-label>
                         <x-base.form-input
                             name="name"
                             value="{{ old('name') }}"
                             placeholder="Jhon Deo" />
+                    </div>
+                    <div>
+                        <x-base.form-label>Email*</x-base.form-label>
+                        <x-base.form-input
+                            name="email"
+                            value="{{ old('email') }}"
+                            placeholder="jhon.deo@example.com" />
                     </div>
                     <div>
                         <x-base.form-label>Client Type *</x-base.form-label>
@@ -57,14 +63,30 @@
                             value="{{ old('salesman_name') }}"
                             placeholder="Sarah Taylor" />
                     </div>
-
-                    <div>
+                     <div>
                         <x-base.form-label>Mobile Number*</x-base.form-label>
                         <x-base.form-input
                             name="mobile_number"
                             value="{{ old('mobile_number') }}"
                             placeholder="9876543210" />
                     </div>
+                    <div>
+                        <x-base.form-label>Password*</x-base.form-label>
+                        <x-base.form-input
+                          type="password"
+                            name="password"
+                            value=""
+                            placeholder="*********" />
+                    </div>
+                    <div>
+                        <x-base.form-label>Confirm Password*</x-base.form-label>
+                        <x-base.form-input
+                          type="password"
+                            name="password_confirmation"
+                            value=""
+                            placeholder="*********" />
+                    </div>
+                   
 
                     <div class="col-span-2">
                         <x-base.form-label>Address 1</x-base.form-label>

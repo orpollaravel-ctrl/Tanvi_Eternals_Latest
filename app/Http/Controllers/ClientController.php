@@ -7,6 +7,7 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Imports\ClientsImport;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ClientController extends Controller
@@ -43,9 +44,14 @@ class ClientController extends Controller
      */
     public function store(ClientRequest $request)
     {
-        Client::create($request->validated());
+        $data = $request->validated();
 
-        return redirect()->route('client.index')->with('success', 'Client created successfully.');
+        unset($data['password_confirmation']);
+        $data['password'] = Hash::make($data['password']);
+        Client::create($data);
+
+        return redirect()->route('client.index')
+            ->with('success', 'Client created successfully.');
     }
 
     /**
@@ -77,9 +83,22 @@ class ClientController extends Controller
     public function update(ClientRequest $request, string $id)
     {  
         $client = Client::findOrFail($id);
-        $client->update($request->validated());
 
-        return redirect()->route('client.index')->with('success', 'Client updated successfully.');
+        $validated = $request->validated();
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+            unset($validated['password_confirmation']);
+
+        $client->update($validated);
+
+        return redirect()
+            ->route('client.index')
+            ->with('success', 'Client updated successfully.');
     }
 
     /**

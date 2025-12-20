@@ -19,6 +19,13 @@ class AuthController extends Controller
             'layout' => 'base'
         ]);
     }
+    
+    public function customerLoginView(): View
+    {
+        return view('login.customer', [
+            'layout' => 'base'
+        ]);
+    }
 
     /**
      * Authenticate login user.
@@ -33,9 +40,25 @@ class AuthController extends Controller
         return back()->withErrors(['password' => 'Invalid credentials']);
     }
 
-    /**
-     * Logout user.
-     */
+    public function customerLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (auth()->guard('client')->attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ])) {
+            return redirect()->route('customer.dashboard');
+        }
+
+        return back()->withErrors([
+            'password' => 'Invalid credentials',
+        ]);
+    }
+  
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -43,6 +66,20 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Logged out successfully.');
+        return redirect()->route('login.index')->with('success', 'Logged out successfully.');
+    }
+
+    public function customerLogout(Request $request)
+    {
+        if (auth()->guard('client')->check()) {
+            auth()->guard('client')->logout();
+        } else {
+            auth()->logout();
+        }
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('customer.login.index');
     }
 }

@@ -22,8 +22,7 @@ class ClientRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('client') ?? $this->id;
-         $clientId = $this->route('client');  
+        $clientId = $this->route('client'); 
 
         return [
             'code' => [
@@ -33,6 +32,13 @@ class ClientRequest extends FormRequest
                 Rule::unique('clients', 'code')->ignore($clientId),
             ],
             'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('clients', 'email')->ignore($clientId),
+            ],
             'salesman_name' => 'nullable|string|max:255',
             'client_type' => 'required|in:Corporate,Job Work,B2B,SIS',
             'address_1' => 'nullable|string|max:255',
@@ -42,6 +48,10 @@ class ClientRequest extends FormRequest
             'state' => 'nullable|string|max:100',
             'zip_code' => 'nullable|string|max:20',
             'mobile_number' => 'nullable|regex:/^[6-9]\d{9}$/',
+ 
+            'password' => $this->isMethod('post')
+                ? ['required', 'string', 'min:8', 'confirmed']
+                : ['nullable', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

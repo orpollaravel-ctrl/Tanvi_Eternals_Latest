@@ -2,21 +2,14 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class Authenticate
+class Authenticate extends Middleware
 {
-    public function handle(Request $request, Closure $next): Response|JsonResponse|RedirectResponse|BinaryFileResponse
+    protected function redirectTo(Request $request)
     {
-        if (!is_null($request->user())) {
-            return $next($request);
-        }
-
-        return redirect('login');
+        // Force JSON response for API, no redirect
+        return null;
     }
 }

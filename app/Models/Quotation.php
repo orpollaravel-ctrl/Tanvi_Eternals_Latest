@@ -10,7 +10,7 @@ class Quotation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_name',
+        'customer_id',
         'contact',
         'customer_code',
         'metal',
@@ -22,4 +22,9 @@ class Quotation extends Model
         'men_ring_size_to',
         'remarks',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'customer_id');
+    }
 }

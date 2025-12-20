@@ -36,7 +36,7 @@ class QuotationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_id' => ['required', 'integer','exists:clients,id'],
             'contact' => ['required', 'string', 'max:255'],
             'customer_code' => ['required', 'string', 'max:255'],
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
@@ -73,7 +73,7 @@ class QuotationController extends Controller
         $quotation = Quotation::findOrFail($id);
 
         $validated = $request->validate([
-            'customer_name' => ['required', 'string', 'max:255'],
+            'customer_id' => ['required', 'integer','exists:clients,id'],
             'contact' => ['required', 'string', 'max:255'],
             'customer_code' => ['required', 'string', 'max:255'],
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
@@ -127,7 +127,7 @@ class QuotationController extends Controller
             
             foreach ($quotations as $quotation) {
                 fputcsv($file, [
-                    $quotation->customer_name,
+                    $quotation->customer_id,
                     $quotation->contact,
                     $quotation->customer_code,
                     ucfirst($quotation->metal),

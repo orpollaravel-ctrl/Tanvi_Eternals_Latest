@@ -17,58 +17,57 @@ class PageController extends Controller
      * Show specified view.
      *
      */
-    public function dashboardOverview1(): View
-{
-    $today = now()->format('Y-m-d');
-
-    $departments = Department::all();
-    $summary = [];
-
-    foreach ($departments as $dept) {
-        
-        // --- TODAY TOTAL ---
-        $todayTotal = ToolAssign::where('d_id', $dept->id)
-            ->whereDate('date', $today)
-            ->with('items.product.purchaseItems')
-            ->get()
-            ->sum(function ($assign) {
-                return $assign->items->sum(function ($item) {
-                    $product = $item->product;
-                    if (!$product) return 0;
-
-                    $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
-
-                    return $item->quantity * $avgRate;
-                });
-            });
-
-        // --- TOTAL AMOUNT ---
-        $monthTotal = ToolAssign::where('d_id', $dept->id)
-            ->with('items.product.purchaseItems')
-            ->get()
-            ->sum(function ($assign) {
-                return $assign->items->sum(function ($item) {
-                    $product = $item->product;
-                    if (!$product) return 0;
-
-                    $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
-
-                    return $item->quantity * $avgRate;
-                });
-            });
-
-        $summary[] = [
-            'department_name' => $dept->name,
-            'today_amount'    => $todayTotal,
-            'month_amount'    => $monthTotal,
-        ];
+    public function CustomerDashboard(): View
+    { 
+        return view('dashboard/customer-dashboard');
     }
 
-    return view('dashboard/dashboard-overview-1', [
-        'summary' => $summary,
-        'departments' => $departments
-    ]);
-}
+    public function dashboardOverview1(): View
+    {
+        $today = now()->format('Y-m-d');
+
+        $departments = Department::all();
+        $summary = [];
+
+        foreach ($departments as $dept) { 
+            $todayTotal = ToolAssign::where('d_id', $dept->id)
+                ->whereDate('date', $today)
+                ->with('items.product.purchaseItems')
+                ->get()
+                ->sum(function ($assign) {
+                    return $assign->items->sum(function ($item) {
+                        $product = $item->product;
+                        if (!$product) return 0;
+                        $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
+                        return $item->quantity * $avgRate;
+                    });
+                });
+            $monthTotal = ToolAssign::where('d_id', $dept->id)
+                ->with('items.product.purchaseItems')
+                ->get()
+                ->sum(function ($assign) {
+                    return $assign->items->sum(function ($item) {
+                        $product = $item->product;
+                        if (!$product) return 0;
+
+                        $avgRate = optional($product->purchaseItems)->avg('rate') ?? 0;
+
+                        return $item->quantity * $avgRate;
+                    });
+                });
+
+            $summary[] = [
+                'department_name' => $dept->name,
+                'today_amount'    => $todayTotal,
+                'month_amount'    => $monthTotal,
+            ];
+        }
+
+        return view('dashboard/dashboard-overview-1', [
+            'summary' => $summary,
+            'departments' => $departments
+        ]);
+    }
 
 	
 	public function Bulliondashboard(): View
@@ -494,7 +493,9 @@ class PageController extends Controller
      */
     public function login(): View
     {
-        return view('pages/login');
+        return view('login/main', [
+            'layout' => 'base'
+        ]);
     }
 
     /**

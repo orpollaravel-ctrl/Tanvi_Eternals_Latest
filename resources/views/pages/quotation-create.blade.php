@@ -74,16 +74,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     @csrf
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 sm:col-span-6">
-                            <x-base.form-label>Customer Name *</x-base.form-label>
-                            <select id="customer-select" name="customer_name" class="tom-select w-full" required>
-                                <option value="">Select Customer</option>
-                                @foreach($clients as $client)
-                                    <option value="{{ $client->name }}" data-code="{{ $client->client_code }}" @selected(old('customer_name') == $client->name)>
-                                        {{ $client->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                                <x-base.form-label>Customer Name *</x-base.form-label>
+
+                                <select id="customer-select" name="client_id" class="tom-select w-full" required>
+                                    <option value="">Select Customer</option>
+                                    @foreach($clients as $client)
+                                        <option
+                                            value="{{ $client->id }}"
+                                            data-code="{{ $client->client_code }}"
+                                            @selected(old('client_id') == $client->id)
+                                        >
+                                            {{ $client->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
                             <x-base.form-input type="text" name="contact" value="{{ old('contact') }}" placeholder="Contact Number" required />

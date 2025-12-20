@@ -140,6 +140,7 @@ class UserController extends Controller
         if (array_key_exists('gender', $validated)) {
             $user->gender = $validated['gender'];
         }
+        
         if (array_key_exists('contact_number', $validated)) {
             $user->contact_number = $validated['contact_number'];
         }
@@ -165,7 +166,7 @@ class UserController extends Controller
 
         $user->permissions()->sync($validated['permissions']);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('users')->with('success', 'User updated successfully.');
     }
 
     /**

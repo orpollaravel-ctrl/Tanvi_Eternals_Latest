@@ -69,9 +69,15 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
     Route::get('login', 'loginView')->name('login.index');
     Route::post('login', 'login')->name('login.check');
 });
-
+Route::controller(AuthController::class)->middleware('customerloggedin')->group(function () {
+    Route::post('customer/login', 'customerLogin')->name('customer.login.check');
+    Route::get('customer/login', 'customerLoginView')->name('customer.login.index');
+});
+Route::middleware('auth:client')->group(function () {
+    Route::get('/customer/dashboard', [PageController::class, 'CustomerDashboard'])->name('customer.dashboard');
+    Route::post('customer/logout', [AuthController::class, 'customerLogout'])->name('customer.logout');
+}); 
 Route::middleware('auth')->group(function () { 
-
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
 	Route::get('/bullion-dashboard', [PageController::class, 'Bulliondashboard'])->name('bullion.dashboard');
@@ -117,7 +123,7 @@ Route::middleware('auth')->group(function () {
         Route::get('faq-layout-1-page', 'faqLayout1')->name('faq-layout-1');
         Route::get('faq-layout-2-page', 'faqLayout2')->name('faq-layout-2');
         Route::get('faq-layout-3-page', 'faqLayout3')->name('faq-layout-3');
-        Route::get('login-page', 'login')->name('login');
+        // Route::get('login-page', 'login')->name('login');
         Route::get('register-page', 'register')->name('register');
         Route::get('error-page-page', 'errorPage')->name('error-page');
         Route::get('update-profile-page', 'updateProfile')->name('update-profile');
@@ -150,8 +156,7 @@ Route::middleware('auth')->group(function () {
         Route::get('validation-page', 'validation')->name('validation');
         Route::get('chart-page', 'chart')->name('chart');
         Route::get('slider-page', 'slider')->name('slider');
-        Route::get('image-zoom-page', 'imageZoom')->name('image-zoom');
-        
+        Route::get('image-zoom-page', 'imageZoom')->name('image-zoom'); 
     });
 
     // Users CRUD

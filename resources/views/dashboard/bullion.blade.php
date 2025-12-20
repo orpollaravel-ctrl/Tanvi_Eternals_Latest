@@ -62,29 +62,24 @@
                         <div class="tx-icon"><i data-lucide="settings"></i></div>
                         <span>Client Rate Fix</span>
                     </a>
-
                     <a href="{{ route('brfs.index', ['layout' => 'side-menu']) }}" class="tx-item">
                         <div class="tx-icon"><i data-lucide="bar-chart"></i></div>
                         <span>Bullion Rate Fix</span>
                     </a>
-
                     <a href="{{ route('receipts.index', ['layout' => 'side-menu']) }}" class="tx-item">
                         <div class="tx-icon"><i data-lucide="download"></i></div>
                         <span>Metal Purchase</span>
                     </a>
-
                     <a href="{{ route('payments.index', ['layout' => 'side-menu']) }}" class="tx-item">
                         <div class="tx-icon"><i data-lucide="credit-card"></i></div>
                         <span>Bank Book</span>
                     </a>
-
                     <a href="{{ route('manual_deal.create', ['layout' => 'side-menu']) }}" class="tx-item">
                         <div class="tx-icon"><i data-lucide="file-text"></i></div>
                         <span>Manual Deal</span>
                     </a>
                 </div>
             </div>
-
             {{-- REPORTS --}}
             <div class="mb-5 mr-10" style="margin-left: 40px;">
                 <h3 class="text-base font-semibold mb-4">Reports</h3>
@@ -200,7 +195,7 @@
                 <div style="margin: 2rem auto 0; width: 208px;">
                     <div style="display: flex; align-items: center; margin-bottom: 1rem;">
                         <div
-                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem; background-color: #3b82f6;">
+                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem; background-color: #2D5F72;">
                         </div>
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Client Amount</span>
                         <span style="margin-left: auto; font-weight: 500;">{{ $dealerAmt }}</span>
@@ -208,11 +203,11 @@
 
                     <div style="display: flex; align-items: center; margin-bottom: 1rem;">
                         <div
-                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.75rem; background-color: #22c55e;">
+                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.75rem; background-color: #259E94;">
                         </div>
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Client Average</span>
                         <span style="margin-left: auto; font-weight: 500;">{{ $dealerAvrg }}</span>
-                    </div>
+                    </div>  
 
                     <div style="display: flex; align-items: center;">
                         <div
@@ -247,7 +242,7 @@
 
                     <div style="display: flex; align-items: center; margin-bottom: 1rem;">
                         <div
-                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem; background-color: #ef4444;">
+                            style="width: 12px; height: 12px; border-radius: 50%; margin-right: 0.5rem; background-color: #2D5F72;">
                         </div>
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Bullion
                             Average</span>
