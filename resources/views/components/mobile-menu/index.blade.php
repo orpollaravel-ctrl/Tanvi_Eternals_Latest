@@ -10,11 +10,7 @@
             class="mr-auto flex"
             href=""
         >
-            <img
-                class="w-6"
-                src="{{ Vite::asset('resources/images/logo.svg') }}"
-                alt="Midone Tailwind HTML Admin Template"
-            />
+            <img class="w-6" src="{{ Vite::asset('resources/images/logo.svg') }}" alt="Midone Tailwind HTML Admin Template" />
         </a>
         <a
             class="mobile-menu-toggler"

@@ -13,6 +13,7 @@ class Quotation extends Model
         'customer_id',
         'contact',
         'customer_code',
+        'barcode',
         'metal',
         'purity',
         'diamond',

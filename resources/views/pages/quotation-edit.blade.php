@@ -54,15 +54,15 @@
                             <select id="customer-select" name="customer_id" class="tom-select w-full" required>
                                 <option value="">Select Customer</option>
                                 @foreach($clients as $client)
-                                    <option value="{{ $client->name }}" data-code="{{ $client->client_code }}" @selected(old('customer_id', $quotation->customer_id) == $client->name)>
+                                    <option value="{{ $client->id }}" data-code="{{ $client->code }}" @selected(old('customer_id', $quotation->customer_id) == $client->id)>
                                         {{ $client->name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-span-12 sm:col-span-6">
+                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
-                            <x-base.form-input type="text" name="contact" value="{{ old('contact', $quotation->contact) }}" placeholder="Contact Number" required />
+                            <x-base.form-input type="text" id="customer-contact" name="contact" value="{{ old('contact', $quotation->contact) }}" placeholder="Contact Number" required readonly/>
                         </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Code *</x-base.form-label>
@@ -196,13 +196,28 @@
         document.addEventListener('DOMContentLoaded', function() {
             const customerSelect = document.getElementById('customer-select');
             const customerCodeInput = document.getElementById('customer-code');
-            
-            new TomSelect(customerSelect, {
-                onChange: function(value) {
-                    const option = customerSelect.querySelector(`option[value="${value}"]`);
-                    if (option) {
-                        customerCodeInput.value = option.dataset.code || '';
-                    }
+            const customerContactInput = document.getElementById('customer-contact');
+
+            const ts = customerSelect.tomselect;
+
+            if (!ts) {
+                console.error('TomSelect instance not found');
+                return;
+            }
+
+            if (ts.getValue() && ts.options[ts.getValue()]) {
+                customerCodeInput.value = ts.options[ts.getValue()].code || '';
+                customerContactInput.value = ts.options[ts.getValue()].contact || '';                
+            }
+
+            ts.on('change', function (value) {
+                if (value && ts.options[value]) {
+                    customerCodeInput.value = ts.options[value].code || '';
+                    customerContactInput.value = ts.options[value].contact || ''; 
+
+                } else {
+                    customerCodeInput.value = '';
+                    customerContactInput.value = '';
                 }
             });
  

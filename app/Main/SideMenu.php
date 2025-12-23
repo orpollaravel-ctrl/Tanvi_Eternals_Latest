@@ -24,15 +24,6 @@ class SideMenu
                         ],
                         'title' => 'Dashboard 1',
                     ],
-                    'dashboard-overview-2' => [
-                        'icon' => 'bar-chart-2',
-                        'route_name' => 'bullion.dashboard',
-                        'permission' => 'view-bullion-dashboard',
-                        'params' => [
-                            'layout' => 'side-menu',
-                        ],
-                        'title' => 'Bullion Dashboard',
-                    ],
                     'dashboard-customer' => [
                         'icon' => 'bar-chart-2',
                         'route_name' => 'customer.dashboard',
@@ -40,11 +31,19 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu',
                         ],
-                        'title' => 'Customer Dashboard',
+                        'title' => 'Dashboard',
                     ],
                 ],
             ],
-
+            'dashboard-overview-2' => [
+                'icon' => 'bar-chart-2',
+                'route_name' => 'bullion.dashboard',
+                'permission' => 'view-bullion-dashboard',
+                'params' => [
+                    'layout' => 'side-menu',
+                ],
+                'title' => 'Bullion Dashboard',
+            ],
             // ----------------------
             // 1. MASTER
             // ----------------------
@@ -306,34 +305,50 @@ class SideMenu
             // ----------------------
             // QUOTATION
             // ----------------------
-            'quotation' => [
+           
+
+            'customer-quotation' => [
                 'icon' => 'file-text',
-                'route_name' => 'quotations.index',
+                'route_name' => 'customer.quotations.index',
                 'params' => ['layout' => 'side-menu'],
                 'title' => 'Quotation',
-                'permission' => 'view-quotations',
-                'active_routes' => ['quotations', 'quotations.*'],
+                'permission' => 'view-customer-quotations',
+                'active_routes' => ['customer/quotations', 'customer/quotations.*'],
             ],
 
             // ----------------------
             // EXPENSE
             // ----------------------
-            'expense' => [
-                'icon' => 'dollar-sign',
-                'route_name' => 'expenses.index',
-                'params' => ['layout' => 'side-menu'],
-                'title' => 'Expense',
-                'permission' => 'view-expenses',
-                'active_routes' => ['expenses', 'expenses.*'],
-            ],
+            'Sales' => [
+                'icon' => 'shopping-cart',
+                'title' => 'Sales',
+                'sub_menu' => [
+                    'quotation' => [
+                        'icon' => 'file-text',
+                        'route_name' => 'quotations.index',
+                        'params' => ['layout' => 'side-menu'],
+                        'title' => 'Quotation',
+                        'permission' => 'view-quotations',
+                        'active_routes' => ['quotations', 'quotations.*'],
+                    ],
+                    'expense' => [
+                        'icon' => 'dollar-sign',
+                        'route_name' => 'expenses.index',
+                        'params' => ['layout' => 'side-menu'],
+                        'title' => 'Expense',
+                        'permission' => 'view-expenses',
+                        'active_routes' => ['expenses', 'expenses.*'],
+                    ],
 
-            'dsr' => [
-                'icon' => 'clipboard',
-                'route_name' => 'dsr.index',
-                'params' => ['layout' => 'side-menu'],
-                'title' => 'DSR',
-                'permission' => 'view-dsr',
-                'active_routes' => ['dsr', 'dsr.*'],
+                    'dsr' => [
+                        'icon' => 'clipboard',
+                        'route_name' => 'dsr.index',
+                        'params' => ['layout' => 'side-menu'],
+                        'title' => 'DSR',
+                        'permission' => 'view-dsr',
+                        'active_routes' => ['dsr', 'dsr.*'],
+                    ],
+                ],
             ],
 
         ];
@@ -363,7 +378,6 @@ class SideMenu
         $filteredMenu = [];
 
         foreach ($menu as $key => $item) {
-            // dd($item);
             if (isset($item['permission'])) {
                 if (!$user->hasPermission($item['permission'])) {
                     continue; 

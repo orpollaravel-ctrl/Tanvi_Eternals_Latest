@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quotation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Smalot\PdfParser\Parser;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class QuotationController extends Controller
@@ -146,4 +147,60 @@ class QuotationController extends Controller
         
         return response()->stream($callback, 200, $headers);
     }
+
+    public function importPdf(Request $request)
+    {   
+        $request->validate([
+            'customer_id' => 'required|exists:clients,id',
+            'customer_code' => 'required',
+            'pdf' => 'required|mimes:pdf|max:5120',
+        ]);
+
+        $parser = new Parser();
+        $pdf = $parser->parseFile($request->file('pdf')->getPathname());
+        $text = trim($pdf->getText());
+ 
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
+ 
+        $headers = array_map('trim', preg_split('/\s{2,}/', strtolower($lines[1])));
+ 
+        for ($i = 2; $i < count($lines); $i++) {
+
+            $row = array_map('trim', preg_split('/\s{2,}/', $lines[$i]));
+
+            if (count($row) !== count($headers)) {
+                continue;
+            }
+
+            $data = array_combine($headers, $row);
+ 
+            if (count($data) === 1) {
+                $headerLine = array_key_first($data);
+                $valueLine  = $data[$headerLine];
+
+                $headersFix = array_map('trim', explode("\t", strtolower($headerLine)));
+                $valuesFix  = array_map('trim', explode("\t", $valueLine));
+
+                if (count($headersFix) === count($valuesFix)) {
+                    $data = array_combine($headersFix, $valuesFix);
+                }
+            }  
+
+            Quotation::create([
+                'customer_id' => $request->customer_id,
+                'customer_code' => $request->customer_code,
+                'contact' => $request->contact,
+                'metal' => $data['metal'] ?? null,
+                'purity' => $data['purity'] ?? null,
+                'diamond' => $data['diamond'] ?? null,
+                'women_ring_size_from' => $data['women_ring_size_from'] ?? null,
+                'women_ring_size_to' => $data['women_ring_size_to'] ?? null,
+                'men_ring_size_from' => $data['men_ring_size_from'] ?? null,
+                'men_ring_size_to' => $data['men_ring_size_to'] ?? null,
+                'remarks' => $data['remarks'] ?? null,
+            ]);
+        }
+
+        return back()->with('success', 'Quotation imported successfully.');
+    } 
 }

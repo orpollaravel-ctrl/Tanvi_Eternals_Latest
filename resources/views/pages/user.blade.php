@@ -57,8 +57,7 @@
                     @isset($users)
                         @foreach ($users->take(20) as $user)
                             <x-base.table.tr class="intro-x">
-                                <x-base.table.td
-                                    class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <x-base.table.td class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     <div class="flex justify-center">
                                         @if($user->photo)
                                             <img src="{{ url('uploads/user/' . $user->photo) }}" alt="User Photo" class="h-10 w-10 rounded-full object-cover">

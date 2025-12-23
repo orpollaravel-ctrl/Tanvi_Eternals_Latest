@@ -55,9 +55,7 @@
         <!-- END: Breadcrumb -->  
         <!-- BEGIN: Account Menu -->
         <x-base.menu>
-            <x-base.menu.button
-                class="image-fit zoom-in intro-x block h-8 w-8 scale-110 overflow-hidden rounded-full shadow-lg"
-            >
+            <x-base.menu.button class="image-fit zoom-in intro-x block h-8 w-8 scale-110 overflow-hidden rounded-full shadow-lg">
                 @if(auth()->user() && auth()->user()->photo)
                     <img
                         src="{{ url('uploads/user/' . auth()->user()->photo) }}"
@@ -76,13 +74,15 @@
                     <div class="font-medium">{{ auth()->user()->name ?? '' }}</div>
                 </x-base.menu.header>
                 <x-base.menu.divider class="bg-white/[0.08]" />
-                <x-base.menu.item class="hover:bg-white/5">
-                    <form action="{{ route('update-profile') }}" method="GET">
-                        <button type="submit" class="flex items-center w-full text-left">
-                            <x-base.lucide class="mr-2 h-4 w-4" icon="User" /> Profile
-                        </button>
-                    </form>
-                </x-base.menu.item>
+                @if(auth()->guard('web')->check())
+                    <x-base.menu.item class="hover:bg-white/5">
+                        <form action="{{ route('update-profile') }}" method="GET">
+                            <button type="submit" class="flex items-center w-full text-left">
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="User" /> Profile
+                            </button>
+                        </form>
+                    </x-base.menu.item>
+                @endif
                 <x-base.menu.item class="hover:bg-white/5">
                     <form   action="{{ auth('client')->check() ? route('customer.logout') : route('logout') }}"  method="POST">
                         @csrf

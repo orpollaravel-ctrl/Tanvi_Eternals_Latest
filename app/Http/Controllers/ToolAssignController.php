@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ToolAssignController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         if (!auth()->check() || !auth()->user()->hasPermission('view-tool-issues')) {
             abort(403, 'Permission Denied');
@@ -22,19 +22,32 @@ class ToolAssignController extends Controller
         $query = ToolAssign::with([
             'department',
             'items.employee',
-            'items.product.purchaseItems'
+            'items.product'
         ]);
-
-        if ($request->filled('department_id')) {
-            $query->where('d_id', $request->department_id);
+ 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('department', fn ($q) =>
+                $q->where('name', 'like', "%{$search}%")
+            )->orWhereHas('items.employee', fn ($q) =>
+                $q->where('name', 'like', "%{$search}%")
+            )->orWhereHas('items.product', fn ($q) =>
+                $q->where('product_name', 'like', "%{$search}%")
+            );
         }
-
+ 
         if ($request->filled('employee_id')) {
             $query->whereHas('items', fn ($q) =>
                 $q->where('emp_id', $request->employee_id)
             );
         }
-
+ 
+        if ($request->filled('product_id')) {
+            $query->whereHas('items', fn ($q) =>
+                $q->where('product_id', $request->product_id)
+            );
+        }
+ 
         if ($request->filled('start_date')) {
             $query->whereDate('date', '>=', $request->start_date);
         }
@@ -42,19 +55,30 @@ class ToolAssignController extends Controller
         if ($request->filled('end_date')) {
             $query->whereDate('date', '<=', $request->end_date);
         }
+ 
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+ 
+        if ($request->ajax()) {
+            $offset = (int) $request->get('offset', 0);
+            $limit  = 25;
 
-        $toolAssigns = $query->get();  
-        $employees   = Employee::all();
-        $departments = Department::all();
+            $data = $query->skip($offset)->take($limit + 1)->get();
 
-        return view('pages.tool_assigns.index', compact(
-            'toolAssigns',
-            'employees',
-            'departments'
-        ));
+            return response()->json([
+                'data' => $data->take($limit),
+                'has_more' => $data->count() > $limit,
+            ]);
+        }
+ 
+        return view('pages.tool_assigns.index', [
+            'toolAssigns' => $query->take(25)->get(),
+            'employees'   => Employee::all(),
+            'departments' => Department::all(),
+        ]);
     }
-
-
+    
     public function create()
     {
         if (!auth()->check() || !auth()->user()->hasPermission('create-tool-issues')) {

@@ -21,12 +21,14 @@ use App\Http\Controllers\OpeningStockController;
 
 Route::post('/login', [AuthController::class, 'login']); 
 
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/quotation/filter', [AuthController::class, 'quotationFilter']);
+    Route::get('/customer/filter', [AuthController::class, 'customerFilter']);
+    Route::get('/expense/filter', [AuthController::class, 'expenseFilter']);
     Route::get('/customers', [AuthController::class, 'customers']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);

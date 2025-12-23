@@ -48,12 +48,23 @@
                     </x-base.menu.item>
                 </x-base.menu.items>  
             </x-base.menu>  --}} 
-            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto">
-                <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
-                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
+            <form method="GET" action="{{ route('client.index') }}">
+                <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto">
+                    <div class="relative w-56 text-slate-500">
+                        <x-base.form-input
+                            name="search"
+                            value="{{ request('search') }}"
+                            class="!box w-56 pr-10"
+                            type="text"
+                            placeholder="Search by name or code..."
+                        />
+                        <x-base.lucide
+                            class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4"
+                            icon="Search"
+                        />
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">

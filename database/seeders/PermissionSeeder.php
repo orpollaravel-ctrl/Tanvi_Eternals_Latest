@@ -72,28 +72,15 @@ class PermissionSeeder extends Seeder
             ['label' => 'Edit DSR', 'name' => 'edit-dsr', 'group' => 'dsr'],
             ['label' => 'Delete DSR', 'name' => 'delete-dsr', 'group' => 'dsr'],
              ['label' => 'View Dashboard', 'name' => 'view-dashboard', 'group' => 'customer-dashboard'],
-
+            ['label' => 'View Customer Quotations', 'name' => 'view-customer-quotations', 'group' => 'customer-quotation'],
             
         ];
 
-        $clients = DB::table('clients')->pluck('id');
-        $clientPermissionNames = ['view-dashboard'];
-        
-        $clientPermissionIds = DB::table('permissions')
-        ->whereIn('name', $clientPermissionNames)
-        ->pluck('id'); 
-
-        foreach ($clients as $clientId) {
-            foreach ($clientPermissionIds as $permissionId) {
-                $a = DB::table('permission_client')->insertOrIgnore([
-                    'client_id' => $clientId,
-                    'permission' => $permissionId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]); 
-            }
-        }
-
+          /**
+         * ------------------------------------------------------
+         * INSERT PERMISSIONS
+         * ------------------------------------------------------
+         */
         foreach ($permissions as $permission) {
             DB::table('permissions')->insertOrIgnore([
                 'label' => $permission['label'],
@@ -103,14 +90,52 @@ class PermissionSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-   
-        $permissionNames = array_column($permissions, 'name');
-        $permissionIds = DB::table('permissions')->whereIn('name', $permissionNames)->pluck('id');
-        
-        foreach ($permissionIds as $permissionId) {
+
+        /**
+         * ------------------------------------------------------
+         * CUSTOMER PERMISSIONS → CLIENTS
+         * ------------------------------------------------------
+         */
+        $customerPermissionNames = [
+            'view-dashboard',
+            'view-customer-quotations',
+        ];
+
+        $customerPermissionIds = DB::table('permissions')
+            ->whereIn('name', $customerPermissionNames)
+            ->pluck('id');
+
+        $clients = DB::table('clients')->pluck('id');
+
+        foreach ($clients as $clientId) {
+            foreach ($customerPermissionIds as $permissionId) {
+                DB::table('permission_client')->insertOrIgnore([
+                    'client_id' => $clientId,
+                    'permission' => $permissionId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        /**
+         * ------------------------------------------------------
+         * ADMIN PERMISSIONS → USERS
+         * ------------------------------------------------------
+         */
+        $userPermissionNames = array_filter(
+            array_column($permissions, 'name'),
+            fn ($name) => !in_array($name, $customerPermissionNames)
+        );
+
+        $userPermissionIds = DB::table('permissions')
+            ->whereIn('name', $userPermissionNames)
+            ->pluck('id');
+
+        foreach ($userPermissionIds as $permissionId) {
             DB::table('permission_user')->insertOrIgnore([
-                'user_id' => 1,
-                'permission_id' => $permissionId
+                'user_id' => 1, // Super Admin
+                'permission_id' => $permissionId,
             ]);
         }
     }

@@ -174,6 +174,7 @@ class AuthController extends Controller
                     'men_ring_size_from' => $quotation->men_ring_size_from,
                     'men_ring_size_to' => $quotation->men_ring_size_to,
                     'remarks' => $quotation->remarks,
+                    'barcode' => $quotation->barcode,
                     'created_at' => $quotation->created_at,
                     'updated_at' => $quotation->updated_at,
                 ];
@@ -195,8 +196,11 @@ class AuthController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
+             'barcode' => ['nullable', 'array'], 
         ]);
-
+         if (!empty($validated['barcode'])) {
+            $validated['barcode'] = implode(',', $validated['barcode']);
+        }
         $quotation = Quotation::create($validated);
 
         return response()->json([
@@ -233,6 +237,7 @@ class AuthController extends Controller
                 'men_ring_size_from' => $quotation->men_ring_size_from,
                 'men_ring_size_to' => $quotation->men_ring_size_to,
                 'remarks' => $quotation->remarks,
+                'barcode' => $quotation->barcode,
                 'created_at' => $quotation->created_at,
                 'updated_at' => $quotation->updated_at,
             ]
@@ -453,6 +458,73 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Target added successfully',
             'data' => $target
+        ]);
+    }
+
+    public function quotationFilter(Request $request)
+    {
+        $query = Quotation::with('client');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+               $a =  $q->where('customer_code', 'like', "%{$search}%")
+                ->orWhereHas('client', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('code', 'like', "%{$search}%");
+                });  
+            });
+        }
+
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        $quotations = $query->latest()->get(); 
+        return response()->json([
+            'status' => true,
+            'data' => $quotations
+        ]);     
+    }
+
+    public function customerFilter(Request $request)
+    {
+         $query = Client::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        $clients = $query->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $clients
+        ]);
+    }
+
+    public function expenseFilter(Request $request)
+    {
+         $query = Expense::query();
+ 
+        if ($request->filled('from_date')) {
+            $query->whereDate('date', '>=', $request->from_date);
+        }
+ 
+        if ($request->filled('to_date')) {
+            $query->whereDate('date', '<=', $request->to_date);
+        }
+
+        $expenses = $query->orderByDesc('date')->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $expenses
         ]);
     }
 }

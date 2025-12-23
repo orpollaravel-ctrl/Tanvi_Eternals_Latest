@@ -23,6 +23,7 @@ use App\Http\Controllers\InventoryCalculationController;
 use App\Http\Controllers\OpeningStockController;
 use App\Http\Controllers\BullionController;
 use App\Http\Controllers\BullionRateFixController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DealerController;
 use App\Http\Controllers\DealerRateFixController;
 use App\Http\Controllers\DsrController;
@@ -75,6 +76,8 @@ Route::controller(AuthController::class)->middleware('customerloggedin')->group(
 });
 Route::middleware('auth:client')->group(function () {
     Route::get('/customer/dashboard', [PageController::class, 'CustomerDashboard'])->name('customer.dashboard');
+    Route::get('/customer/quotations', [CustomerController::class, 'index'])->name('customer.quotations.index');
+    Route::get('customer/quotations/{quotation}', [CustomerController::class, 'show'])->name('customer.quotations.show');
     Route::post('customer/logout', [AuthController::class, 'customerLogout'])->name('customer.logout');
 }); 
 Route::middleware('auth')->group(function () { 
@@ -262,6 +265,8 @@ Route::middleware('auth')->group(function () {
         Route::get('quotations/{id}/edit', 'edit')->name('quotations.edit');
         Route::put('quotations/{id}', 'update')->name('quotations.update');
         Route::delete('quotations/{id}', 'destroy')->name('quotations.destroy');
+        Route::post('/quotations/import-pdf', [QuotationController::class, 'importPdf'])
+        ->name('quotations.import.pdf');
     });
 
     // Expenses CRUD

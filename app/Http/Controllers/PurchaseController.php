@@ -18,7 +18,7 @@ class PurchaseController extends Controller
         if (!auth()->check() || !auth()->user()->hasPermission('view-tool-purchases')) {
             abort(403,'Permission Denied');
         }
-        $purchases = Purchase::with('vendor')->get();
+        $purchases = Purchase::with('vendor')->orderByDesc('created_at')->get();
         return view('pages/purchase', [
             'layout' => 'side-menu',
             'purchases' => $purchases,

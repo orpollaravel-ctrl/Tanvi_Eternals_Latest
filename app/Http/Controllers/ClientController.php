@@ -15,22 +15,31 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        if (!auth()->check() || !auth()->user()->hasPermission('view-clients')) {
-           abort(403,'Permission Denied');
+        if(!auth()->check() || !auth()->user()->hasPermission('view-clients')) {
+            abort(403, 'Permission Denied');
         }
-        $clients = Client::query()->latest()->get();
+
+        $clients = Client::query()
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->get();
 
         return view('pages.client', [
             'layout' => 'side-menu',
             'clients' => $clients,
+            'search' => $request->search,  
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
+ 
     public function create(): View
     {
         if (!auth()->check() || !auth()->user()->hasPermission('create-clients')) {

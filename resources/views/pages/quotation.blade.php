@@ -74,14 +74,18 @@
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->purity }}</div>
                             </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->diamond }}</div>
                             </x-base.table.td>
                             @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
                                 <x-base.table.td
                                     class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
+                                        <a class="mr-3 flex items-center text-warning" data-tw-toggle="modal" data-tw-target="#import-pdf-modal" data-client-id="{{ $quotation->customer_id }}" data-client-code="{{ $quotation->customer_code }}" data-client-contact="{{ $quotation->contact }}" href="#">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Upload" />
+                                            Import PDF
+                                        </a> 
+
                                         @if (auth()->check() && auth()->user()->hasPermission('edit-quotations'))
                                             <a class="mr-3 flex items-center"
                                                 href="{{ route('quotations.edit', $quotation->id) }}">
@@ -108,7 +112,7 @@
         <!-- END: Data List -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
-    <x-base.dialog id="delete-confirmation-modal">
+     <x-base.dialog id="delete-confirmation-modal">
         <x-base.dialog.panel>
             <div class="p-5 text-center">
                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
@@ -132,9 +136,62 @@
             </div>
         </x-base.dialog.panel>
     </x-base.dialog>
+    <x-base.dialog id="import-pdf-modal">
+        <x-base.dialog.panel>
+            <form method="POST"
+                action="{{ route('quotations.import.pdf') }}"
+                enctype="multipart/form-data">
+                @csrf
+
+                <input type="hidden" name="customer_id" id="import-client-id">
+                <input type="hidden" name="customer_code" id="import-client-code">
+                <input type="hidden" name="contact" id="import-client-contact">
+
+
+                <div class="p-5">
+                    <h3 class="text-lg font-medium mb-4">Import Quotation PDF</h3>
+
+                    <input type="file"
+                        name="pdf"
+                        accept="application/pdf"
+                        required
+                        class="w-full border p-2 rounded">
+
+                    <div class="mt-4 text-right">
+                        <x-base.button type="submit" variant="primary">
+                            Import
+                        </x-base.button>
+                    </div>
+                </div>
+            </form>
+        </x-base.dialog.panel>
+    </x-base.dialog>
+
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.addEventListener('click', function (e) {
+                    const btn = e.target.closest('[data-client-id]');
+                    if (!btn) return;
+                        const clientId = btn.getAttribute('data-client-id'); 
+                        const clientCode = btn.getAttribute('data-client-code');
+                        const clientContact = btn.getAttribute('data-client-contact');
+
+                        const input = document.getElementById('import-client-id'); 
+                        const codeInput = document.getElementById('import-client-code');
+                        const contactInput = document.getElementById('import-client-contact');
+                    if (contactInput) {
+                        contactInput.value = clientContact; 
+                    }
+                    if (codeInput) {
+                        codeInput.value = clientCode; 
+                    }
+                    if (input) {
+                        input.value = clientId; 
+                    }
+                });
+            });
             document.addEventListener('DOMContentLoaded', function() {
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-quotation-form');
@@ -155,13 +212,11 @@
                     });
                 });
             });
-
-            // Print function
+ 
             function printQuotations() {
                 window.open('{{ route('quotations.print') }}', '_blank');
             }
-
-            // Export to Excel function
+ 
             function exportQuotationsToExcel() {
                 window.location.href = '{{ route('quotations.export.excel') }}';
             }

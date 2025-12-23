@@ -32,7 +32,7 @@
                                 <img class="mx-auto w-1/2" src="{{ Vite::asset('resources/images/logo.svg') }}" alt="Sign In">
                             </div>
                         </div>
-                        <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl">
+                        <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl mt-3">
                             Sign In
                         </h2>
                         <div class="intro-x mt-2 text-center text-slate-400 xl:hidden">
@@ -54,17 +54,35 @@
                                     <div class="text-danger mt-2">{{ $message }}</div>
                                 @enderror
 
-                                <x-base.form-input
-                                    class="intro-x login__input mt-4 block min-w-full px-4 py-3 xl:min-w-[350px]"
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="Password"
-                                    autocomplete="current-password"
-                                />
+                                <div class="intro-x mt-4 relative">
+                                    <x-base.form-input
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        class="intro-x login__input block min-w-full px-4 py-3 pr-12 xl:min-w-[350px]"
+                                        placeholder="Password"
+                                        autocomplete="current-password"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onclick="togglePassword()"
+                                        class="absolute right-3 top-1/2 z-20 -translate-y-1/2 text-slate-500 hover:text-primary" style="
+                                            top: 13px;
+                                            z-index: 111;
+                                            right: 5px;
+                                        ">
+                                        <span id="eye-open">
+                                            <x-base.lucide class="h-5 w-5" icon="Eye" />
+                                        </span>
+                                        <span id="eye-closed" class="hidden">
+                                            <x-base.lucide class="h-5 w-5" icon="EyeOff" />
+                                        </span>
+                                    </button>
+                                </div>
                                 @error('password')
                                     <div class="text-danger mt-2">{{ $message }}</div>
-                                @enderror 
+                                @enderror
 
                                 <div class="intro-x mt-5 text-center xl:mt-8">
                                     <x-base.button class="w-full px-4 py-3 align-top xl:mr-3 xl:w-32" type="submit" variant="primary">
@@ -79,3 +97,22 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+<script>
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const eyeOpen = document.getElementById('eye-open');
+        const eyeClosed = document.getElementById('eye-closed');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            eyeOpen.classList.add('hidden');
+            eyeClosed.classList.remove('hidden');
+        } else {
+            input.type = 'password';
+            eyeOpen.classList.remove('hidden');
+            eyeClosed.classList.add('hidden');
+        }
+    }
+</script>    
+@endpush
