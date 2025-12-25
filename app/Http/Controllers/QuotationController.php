@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Quotation;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -28,9 +29,11 @@ class QuotationController extends Controller
             abort(403,'Permission Denied');
         }
         $clients = \App\Models\Client::orderBy('name')->get();
+        $products = Product::orderBy('product_name')->get(); 
         return view('pages/quotation-create', [
             'layout' => 'side-menu',
             'clients' => $clients,
+            'products' => $products,
         ]);
     }
 
@@ -48,6 +51,8 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
+            'salesman' => ['required', 'string', 'max:255'],
+            'product_id' => ['required', 'integer','exists:products,id'],
         ]);
 
         Quotation::create($validated);
@@ -62,10 +67,12 @@ class QuotationController extends Controller
         }
         $quotation = Quotation::findOrFail($id);
         $clients = \App\Models\Client::orderBy('name')->get();
+           $products = \App\Models\Product::orderBy('product_name')->get();
         return view('pages/quotation-edit', [
             'layout' => 'side-menu',
             'quotation' => $quotation,
             'clients' => $clients,
+            'products' => $products,
         ]);
     }
 
@@ -85,6 +92,8 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
+            'salesman' => ['required', 'string', 'max:255'],
+            'product_id' => ['required', 'integer','exists:products,id'],
         ]);
 
         $quotation->update($validated);
@@ -203,4 +212,9 @@ class QuotationController extends Controller
 
         return back()->with('success', 'Quotation imported successfully.');
     } 
+
+    public function show(Quotation $quotation)
+    {
+        return view('pages/quotation-show', compact('quotation'));
+    }
 }

@@ -54,11 +54,21 @@
                             <select id="customer-select" name="customer_id" class="tom-select w-full" required>
                                 <option value="">Select Customer</option>
                                 @foreach($clients as $client)
-                                    <option value="{{ $client->id }}" data-code="{{ $client->code }}" @selected(old('customer_id', $quotation->customer_id) == $client->id)>
+                                    <option value="{{ $client->id }}" data-salesman="{{$client->salesman_name}}" data-code="{{ $client->code }}" data-contact="{{ $client->mobile_number }}" @selected(old('customer_id', $quotation->customer_id) == $client->id)>
                                         {{ $client->name }}
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Salesman *</x-base.form-label>
+                            <x-base.form-input
+                                type="text"
+                                id="salesman"
+                                name="salesman"
+                                value="{{ old('salesman', $quotation->salesman) }}"
+                                placeholder="Salesman"
+                                readonly />
                         </div>
                          <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
@@ -67,6 +77,17 @@
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Code *</x-base.form-label>
                             <x-base.form-input type="text" id="customer-code" name="customer_code" value="{{ old('customer_code', $quotation->customer_code) }}" placeholder="Customer Code" readonly required />
+                        </div>
+                        <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Product *</x-base.form-label>
+                            <select name="product_id" class="tom-select w-full" required>
+                                <option value="">Select Product</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}" @selected(old('product_id', $quotation->product_id) == $product->id)>
+                                        {{ $product->product_name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-span-12 sm:col-span-6"></div>
                         <div class="col-span-12 sm:col-span-6">
@@ -193,11 +214,12 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() { 
             const customerSelect = document.getElementById('customer-select');
             const customerCodeInput = document.getElementById('customer-code');
             const customerContactInput = document.getElementById('customer-contact');
-
+            const salesmanInput = document.getElementById('salesman');
+            
             const ts = customerSelect.tomselect;
 
             if (!ts) {
@@ -207,17 +229,19 @@
 
             if (ts.getValue() && ts.options[ts.getValue()]) {
                 customerCodeInput.value = ts.options[ts.getValue()].code || '';
-                customerContactInput.value = ts.options[ts.getValue()].contact || '';                
+                customerContactInput.value = ts.options[ts.getValue()].contact || '';    
+                salesmanInput.value = ts.options[ts.getValue()].salesman || '';            
             }
 
             ts.on('change', function (value) {
                 if (value && ts.options[value]) {
                     customerCodeInput.value = ts.options[value].code || '';
                     customerContactInput.value = ts.options[value].contact || ''; 
-
+                    salesmanInput.value = ts.options[value].salesman || '';
                 } else {
                     customerCodeInput.value = '';
                     customerContactInput.value = '';
+                    salesmanInput.value = '';
                 }
             });
  

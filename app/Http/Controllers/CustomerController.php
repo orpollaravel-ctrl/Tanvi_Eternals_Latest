@@ -15,6 +15,10 @@ class CustomerController extends Controller
             abort(403, 'Permission Denied');
         }
         $quotations = Quotation::where('customer_id', $customer->id)
+            ->where(function ($q) {
+                $q->whereNull('barcode')
+                ->orWhere('barcode', '');
+            })
             ->latest()
             ->get();
 

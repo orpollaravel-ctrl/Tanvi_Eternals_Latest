@@ -30,17 +30,13 @@
 
                 <!-- BEGIN: Login Form -->
                 <div class="my-10 flex h-screen py-5 xl:my-0 xl:h-auto xl:py-0">
-                    <div
-                        class="mx-auto my-auto w-full rounded-md bg-white text-center border p-8 shadow-xl sm:w-3/4 lg:w-2/4 xl:ml-20 xl:w-auto">
+                    <div class="mx-auto my-auto w-full rounded-md bg-white text-center border p-8 shadow-xl sm:w-3/4 lg:w-2/4 xl:ml-20 xl:w-auto">
                         <div class="flex items-center justify-center bg-gray-50">
                             <div class="w-full max-w-md">
-                                <img class="mx-auto w-1/2" src="{{ Vite::asset('resources/images/logo.svg') }}"
-                                    alt="Sign In">
+                                <img class="mx-auto w-1/2" src="{{ Vite::asset('resources/images/logo.svg') }}" alt="Sign In">
                             </div>
                         </div>
-                        <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl mt-3">
-                            Sign In
-                        </h2>
+                        <h2 class="intro-x text-center text-2xl font-bold xl:text-3xl mt-3"> Sign In </h2>
                         <div class="intro-x mt-2 text-center text-slate-400 xl:hidden">
                             Smart ERP for Smarter Jewellery Manufacturing.
                         </div>
@@ -62,14 +58,13 @@
                                         placeholder="Password"
                                         autocomplete="current-password"
                                     />
-
                                     <button
                                         type="button"
                                         onclick="togglePassword()"
                                         class="absolute right-3 top-1/2 z-20 -translate-y-1/2 text-slate-500 hover:text-primary" style="
-                                            top: 13px;
+                                            top: 25px;
                                             z-index: 111;
-                                            right: 5px;
+                                            right: 12px;
                                         ">
                                         <span id="eye-open">
                                             <x-base.lucide class="h-5 w-5" icon="Eye" />

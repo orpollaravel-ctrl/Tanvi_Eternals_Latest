@@ -41,6 +41,7 @@
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Customer Name</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Salesman</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Contact</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Customer Code</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Metal</x-base.table.th>
@@ -58,6 +59,11 @@
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap font-medium">{{ $quotation->client->name ?? '-'}}</div>
                             </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="whitespace-nowrap text-xs text-slate-500">{{ empty($quotation->salesman) ? '-' : $quotation->salesman }}</div>
+                            </x-base.table.td>
+
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->contact }}</div>
@@ -82,10 +88,14 @@
                                     class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
                                         <a class="mr-3 flex items-center text-warning" data-tw-toggle="modal" data-tw-target="#import-pdf-modal" data-client-id="{{ $quotation->customer_id }}" data-client-code="{{ $quotation->customer_code }}" data-client-contact="{{ $quotation->contact }}" href="#">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Upload" />
-                                            Import PDF
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
+                                             PDF
                                         </a> 
-
+                                         <a class="mr-3 flex items-center text-primary"
+                                        href="{{ route('quotations.show', $quotation->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
+                                            View
+                                        </a> 
                                         @if (auth()->check() && auth()->user()->hasPermission('edit-quotations'))
                                             <a class="mr-3 flex items-center"
                                                 href="{{ route('quotations.edit', $quotation->id) }}">

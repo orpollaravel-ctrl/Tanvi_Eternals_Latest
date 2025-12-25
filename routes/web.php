@@ -78,6 +78,12 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/customer/dashboard', [PageController::class, 'CustomerDashboard'])->name('customer.dashboard');
     Route::get('/customer/quotations', [CustomerController::class, 'index'])->name('customer.quotations.index');
     Route::get('customer/quotations/{quotation}', [CustomerController::class, 'show'])->name('customer.quotations.show');
+    Route::middleware('auth:client')->group(function () {
+    Route::get('customer/profile', [PageController::class, 'profile'])
+        ->name('customer.profile');
+    Route::put('customer/profile', [PageController::class, 'profileUpdate'])
+        ->name('customer.profile.update');
+});
     Route::post('customer/logout', [AuthController::class, 'customerLogout'])->name('customer.logout');
 }); 
 Route::middleware('auth')->group(function () { 
@@ -267,6 +273,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('quotations/{id}', 'destroy')->name('quotations.destroy');
         Route::post('/quotations/import-pdf', [QuotationController::class, 'importPdf'])
         ->name('quotations.import.pdf');
+        Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])
+        ->name('quotations.show');
     });
 
     // Expenses CRUD
@@ -281,21 +289,18 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::resource('dsr', DsrController::class);
-
-	
 	// Departments CRUD
     Route::resource('departments', DepartmentController::class);
 	// Employees CRUD
     Route::resource('employees', EmployeeController::class);
 	Route::post('employees/{id}/toggle-active', [EmployeeController::class, 'toggleActive'])->name('employees.toggle-active');
     Route::resource('tool-assigns', ToolAssignController::class);
-	
-	 // Tool Assign Reports
+	 
     Route::get('tool-assigns/employee-wise-report/export',[ToolAssignController::class, 'exportEmployeeWiseReport'])->name('tool-assigns.employee-wise-report.export');
     Route::get('tool-assigns/reports/purchase-report', [ToolAssignController::class, 'purchaseReport'])->name('tool-assigns.purchase-report');
     Route::get('tool-assigns/reports/product-report', [ToolAssignController::class, 'productReport'])->name('tool-assigns.product-report');
     Route::get('tool-assigns/reports/department-wise-report', [ToolAssignController::class, 'departmentWiseReport'])->name('tool-assigns.department-wise-report');
-    Route::get('tool-assigns/reports/employee-wise-report', [ToolAssignController::class, 'employeeWiseReport'])->name('tool-assigns.employee-wise-report');
+        Route::get('tool-assigns/reports/employee-wise-report', [ToolAssignController::class, 'employeeWiseReport'])->name('tool-assigns.employee-wise-report');
 	
 	 // Inventory Calculation
     Route::controller(InventoryCalculationController::class)->group(function () {

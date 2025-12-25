@@ -68,9 +68,9 @@
                                         type="button"
                                         onclick="togglePassword()"
                                         class="absolute right-3 top-1/2 z-20 -translate-y-1/2 text-slate-500 hover:text-primary" style="
-                                            top: 13px;
+                                            top: 25px;
                                             z-index: 111;
-                                            right: 5px;
+                                            right: 12px;
                                         ">
                                         <span id="eye-open">
                                             <x-base.lucide class="h-5 w-5" icon="Eye" />

@@ -20,7 +20,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('customer.profile.update') }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="mt-3">
@@ -28,7 +28,7 @@
                         <x-base.form-input
                             type="text"
                             name="name"
-                            value="{{ old('name', $user->name) }}"
+                            value="{{ old('name', $client->name) }}"
                             placeholder="John Doe"
                             required
                         />
@@ -39,7 +39,7 @@
                         <x-base.form-input
                             type="email"
                             name="email"
-                            value="{{ old('email', $user->email) }}"
+                            value="{{ old('email', $client->email) }}"
                             placeholder="john@example.com"
                             required
                         />
@@ -49,8 +49,8 @@
                         <x-base.form-label>Contact Number*</x-base.form-label>
                         <x-base.form-input
                             type="text"
-                            name="contact_number"
-                            value="{{ old('contact_number', $user->contact_number) }}"
+                            name="mobile_number"
+                            value="{{ old('mobile_number', $client->mobile_number) }}"
                             placeholder="09123456789"
                             required
                         />
@@ -58,9 +58,9 @@
                     
                     <div class="mt-3">
                         <x-base.form-label>Photo</x-base.form-label>
-                        @if($user->photo)
+                        @if($client->photo)
                             <div class="mb-2">
-                                <img src="{{ url('uploads/user/' . $user->photo) }}" alt="Current Photo" class="h-20 w-20 rounded-full object-cover">
+                                <img src="{{ url('uploads/client/' . $client->photo) }}" alt="Current Photo" class="h-20 w-20 rounded-full object-cover">
                             </div>
                         @else
                             <div class="mb-2">

@@ -863,4 +863,46 @@ class PageController extends Controller
     {
         return view('pages/image-zoom');
     }
+
+    public function profile()
+    {
+        return view('customer.profile', [
+            'client' => auth('client')->user()
+        ]);
+    }
+
+    public function profileUpdate(Request $request)
+    {
+        $client = auth('client')->user();
+
+        $validated = $request->validate([
+            'name'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'email', 'max:255', 'unique:clients,email,' . $client->id],
+            'mobile_number'  => ['nullable', 'string', 'max:20'],
+            'photo'  => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ]);
+
+        $client->name  = $validated['name'];
+        $client->email = $validated['email'];
+        $client->mobile_number = $validated['mobile_number'] ?? null;
+
+        if ($request->hasFile('photo')) {
+            if ($client->photo && file_exists(public_path('uploads/client/' . $client->photo))) {
+                unlink(public_path('uploads/client/' . $client->photo));
+            }
+
+            $file = $request->file('photo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = 'uploads/client';
+
+            $file->move(public_path($filePath), $fileName);
+
+            $client->photo = $fileName;
+        }
+
+        $client->save();
+
+        return back()->with('success', 'Profile updated successfully');
+    }
+
 }

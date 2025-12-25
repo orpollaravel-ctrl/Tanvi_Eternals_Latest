@@ -14,6 +14,8 @@ class Quotation extends Model
         'contact',
         'customer_code',
         'barcode',
+        'salesman',
+        'product_id',
         'metal',
         'purity',
         'diamond',
@@ -27,5 +29,10 @@ class Quotation extends Model
     public function client()
     {
         return $this->belongsTo(Client::class, 'customer_id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

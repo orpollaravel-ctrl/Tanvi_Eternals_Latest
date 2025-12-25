@@ -61,4 +61,9 @@ class Product extends Model
     {
         return $this->hasMany(ToolAssignItem::class);
     }
+
+    public function quotation()
+    {
+        return $this->hasMany(Quotation::class);
+    }
 }

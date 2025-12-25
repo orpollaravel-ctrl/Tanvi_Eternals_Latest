@@ -153,6 +153,23 @@ class AuthController extends Controller
         ], 200);
     }
 
+    public function customerDetails(Request $request, $id)
+    {
+        $client = Client::find($id);
+
+        if (!$client) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $client
+        ], 200);
+    }
+
     public function quotations()
     {
         $quotations = Quotation::with('client:id,name')->latest()->get();

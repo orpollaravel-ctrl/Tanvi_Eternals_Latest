@@ -30,6 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/customer/filter', [AuthController::class, 'customerFilter']);
     Route::get('/expense/filter', [AuthController::class, 'expenseFilter']);
     Route::get('/customers', [AuthController::class, 'customers']);
+    Route::get('/customers/{id}', [AuthController::class, 'customerDetails']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
     Route::get('/quotations', [AuthController::class, 'quotations']);
