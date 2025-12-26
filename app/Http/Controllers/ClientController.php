@@ -7,6 +7,7 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Imports\ClientsImport;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -45,7 +46,11 @@ class ClientController extends Controller
         if (!auth()->check() || !auth()->user()->hasPermission('create-clients')) {
             abort(403,'Permission Denied');
         }
-        return view('pages.client-create');
+        $salesman = Employee::whereHas('department', function ($q) {
+                $q->where('name', 'Sales');
+            })->orderBy('name')->get();
+            
+        return view('pages.client-create',['salesman' => $salesman]);
     }
 
     /**
@@ -53,12 +58,13 @@ class ClientController extends Controller
      */
     public function store(ClientRequest $request)
     {
+        
         $data = $request->validated();
 
         unset($data['password_confirmation']);
         $data['password'] = Hash::make($data['password']);
-        Client::create($data);
-
+        $client =  Client::create($data);
+        $client->assignDefaultPermissions();
         return redirect()->route('client.index')
             ->with('success', 'Client created successfully.');
     }
@@ -80,9 +86,13 @@ class ClientController extends Controller
             abort(403,'Permission Denied');
         }
         $client = Client::findOrFail($id);
+        $salesman = Employee::whereHas('department', function ($q) {
+                $q->where('name', 'Sales');
+            })->orderBy('name')->get();
         return view('pages.client-edit', [
             'layout' => 'side-menu',
             'client' => $client,
+            'salesman' => $salesman,
         ]);
     }
 
@@ -104,7 +114,7 @@ class ClientController extends Controller
             unset($validated['password_confirmation']);
 
         $client->update($validated);
-
+        $client->assignDefaultPermissions();
         return redirect()
             ->route('client.index')
             ->with('success', 'Client updated successfully.');

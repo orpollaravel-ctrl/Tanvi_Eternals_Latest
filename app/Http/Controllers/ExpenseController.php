@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,7 +14,10 @@ class ExpenseController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
            abort(403,'Permission Denied');
         }
-        $expenses = Expense::latest()->get();
+        $expenses = Expense::with('salesman')
+        ->orderByDesc('created_at')
+        ->get()
+        ->groupBy('salesman_id');
         return view('expenses/expense', [
             'layout' => 'side-menu',
             'expenses' => $expenses,
@@ -25,8 +29,12 @@ class ExpenseController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('create-expenses')) {
            abort(403,'Permission Denied');
         }
+        $salesman = Employee::whereHas('department', function ($q) {
+             $q->whereRaw('LOWER(name) = ?', ['sales']);
+            })->orderBy('name')->get();
         return view('expenses/expense-create', [
             'layout' => 'side-menu',
+            'salesman' => $salesman
         ]);
     }
 
@@ -38,6 +46,7 @@ class ExpenseController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'remark' => ['nullable', 'string'],
             'bill_upload' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            'salesman_id' => ['required', 'exists:employees,id'],
         ]);
 
         if ($request->hasFile('bill_upload')) {
@@ -52,13 +61,30 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
     }
 
-    public function show(string $id): View
+    public function show(string $salesman_id): View
     {
          if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
            abort(403,'Permission Denied');
         }
-        $expense = Expense::findOrFail($id);
+        $salesman = Employee::findOrFail($salesman_id);
+
+        $expenses = Expense::where('salesman_id', $salesman_id)
+            ->orderByDesc('date')
+            ->get();    
         return view('expenses/expense-show', [
+            'layout' => 'side-menu',
+             'salesman' => $salesman,
+            'expenses' => $expenses,
+        ]);
+    }
+
+    public function view(string $id): View
+    {
+         if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
+           abort(403, 'Permission Denied');
+        }
+        $expense = Expense::findOrFail($id);
+        return view('expenses/expense-view', [
             'layout' => 'side-menu',
             'expense' => $expense,
         ]);
@@ -70,9 +96,13 @@ class ExpenseController extends Controller
            abort(403,'Permission Denied');
         }
         $expense = Expense::findOrFail($id);
+        $salesman = Employee::whereHas('department', function ($q) {
+        $q->whereRaw('LOWER(name) = ?', ['sales']);
+            })->orderBy('name')->get();
         return view('expenses/expense-edit', [
             'layout' => 'side-menu',
             'expense' => $expense,
+            'salesman' => $salesman
         ]);
     }
 
@@ -86,6 +116,7 @@ class ExpenseController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'remark' => ['nullable', 'string'],
             'bill_upload' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+               'salesman_id' => ['required', 'exists:employees,id'],
         ]);
 
         if ($request->hasFile('bill_upload')) {

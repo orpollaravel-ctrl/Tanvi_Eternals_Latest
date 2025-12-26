@@ -74,7 +74,7 @@
                     </div>
                     
                     <div class="mt-5 flex items-center">
-                        <a href="{{ route('dashboard') }}" class="mr-3">
+                        <a href="{{ route('customer.dashboard') }}" class="mr-3">
                             <x-base.button type="button" variant="outline-secondary">Cancel</x-base.button>
                         </a>
                         <x-base.button type="submit" variant="primary">Update Profile</x-base.button>

@@ -29,13 +29,7 @@
                 <div class="mt-1 font-semibold">
                     {{ empty($quotation->salesman) ? '-' : $quotation->salesman }}
                 </div>  
-            </div>
-            <div class="col-span-12 sm:col-span-6">
-                <label class="text-sm font-medium text-slate-500">Product</label>
-                <div class="mt-1 font-semibold">
-                    {{ $quotation->product->product_name ?? '-' }}
-                </div>
-            </div>
+            </div> 
             {{-- Contact --}}
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Contact</label>
@@ -71,7 +65,7 @@
                     {{ $quotation->diamond }}
                 </div>
             </div>
-            {{-- Barcodes --}}
+            {{-- Barcodes --}} 
             @if ($quotation->barcode != '')
                 <div class="col-span-12">
                     <label class="block mb-3 text-sm font-medium text-slate-500">
@@ -82,7 +76,6 @@
                             @php $code = trim($code); @endphp
                             @if ($code)
                                 <div class="bg-white p-2 rounded shadow text-center">
-                                    <svg id="barcode-{{ $index }}"></svg>
                                     <div class="text-xs font-semibold text-slate-600">
                                         {{ $code }}
                                     </div>
@@ -103,26 +96,4 @@
             </a>
         @endif 
     </div>  
-@endsection
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const barcodeString = "{{ $quotation->barcode }}";
-        const barcodes = barcodeString
-            .split(',')
-            .map(code => code.trim())
-            .filter(code => code.length);
-
-        barcodes.forEach((barcode, index) => {
-            JsBarcode(`#barcode-${index}`, barcode, {
-                format: 'CODE128',
-                width: 1,           
-                height: 40,       
-                margin: 10,
-                displayValue: false
-            });
-        });
-    });
-</script>
-@endpush
+@endsection 

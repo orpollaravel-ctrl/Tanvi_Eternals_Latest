@@ -39,7 +39,7 @@ class ClientRequest extends FormRequest
                 'max:255',
                 Rule::unique('clients', 'email')->ignore($clientId),
             ],
-            'salesman_name' => 'nullable|string|max:255',
+            'salesman_id' => 'nullable',
             'client_type' => 'required|in:Corporate,Job Work,B2B,SIS',
             'address_1' => 'nullable|string|max:255',
             'address_2' => 'nullable|string|max:255',

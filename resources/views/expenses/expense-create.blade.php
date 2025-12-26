@@ -41,6 +41,17 @@
                             <x-base.form-label>Amount *</x-base.form-label>
                             <x-base.form-input type="number" step="0.01" name="amount" value="{{ old('amount') }}" placeholder="0.00" required />
                         </div>
+                         <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Salesman*</x-base.form-label>
+                            <x-base.tom-select name="salesman_id" class="tom-select w-full" required>
+                                <option value="">Select Salesman</option>
+                                @foreach ($salesman as $emp)
+                                    <option value="{{ $emp->id }}">
+                                        {{ $emp->name }}
+                                    </option>
+                                @endforeach
+                            </x-base.tom-select>
+                        </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Upload Bill</x-base.form-label>
                             <x-base.form-input type="file" name="bill_upload" accept=".pdf,.jpg,.jpeg,.png" />

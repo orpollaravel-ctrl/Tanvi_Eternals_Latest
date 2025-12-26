@@ -31,7 +31,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu',
                         ],
-                        'title' => 'Dashboard',
+                        'title' => 'Customer Dashboard',
                     ],
                 ],
             ],

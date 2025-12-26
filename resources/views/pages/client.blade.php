@@ -100,14 +100,11 @@
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">{{ $client->client_type }}</div>
                                 </x-base.table.td>
-
-
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">
-                                        {{ $client->salesman_name ?? '-' }}
+                                        {{ $client->salesman->name ?? '-' }}
                                     </div>
-                                </x-base.table.td>
-
+                                </x-base.table.td>      
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">
                                         {{ $client->mobile_number ?? '-' }}

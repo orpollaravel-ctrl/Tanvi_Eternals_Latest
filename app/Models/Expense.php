@@ -14,11 +14,18 @@ class Expense extends Model
         'date',
         'amount',
         'remark',
-        'bill_upload'
+        'bill_upload',
+        'salesman_id'
     ];
 
     protected $casts = [
         'date' => 'date',
         'amount' => 'decimal:2'
     ];
+
+    
+    public function salesman()
+    {
+        return $this->belongsTo(Employee::class, 'salesman_id');
+    }
 }

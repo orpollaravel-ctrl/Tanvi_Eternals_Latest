@@ -48,21 +48,25 @@
                     </div>
                     <div>
                         <x-base.form-label>Client Type *</x-base.form-label>
-                        <x-base.form-select name="client_type" required>
+                        <x-base.tom-select name="client_type" required>
                             <option value="">Select Type</option>
                             <option value="Corporate" @selected(old('client_type')=='Corporate')>Corporate</option>
                             <option value="Job Work" @selected(old('client_type')=='Job Work')>Job Work</option>
                             <option value="B2B" @selected(old('client_type')=='B2B')>B2B</option>
                             <option value="SIS" @selected(old('client_type')=='SIS')>SIS</option>
-                        </x-base.form-select>
-                    </div>
-                    <div>
-                        <x-base.form-label>Salesman Name*</x-base.form-label>
-                        <x-base.form-input
-                            name="salesman_name"
-                            value="{{ old('salesman_name') }}"
-                            placeholder="Sarah Taylor" />
-                    </div>
+                        </x-base.tom-select>
+                    </div> 
+                     <div>
+                         <x-base.form-label>Salesman*</x-base.form-label>
+                        <x-base.tom-select name="salesman_id" class="tom-select w-full" required>
+                            <option value="">Select Salesman</option>
+                            @foreach ($salesman as $emp)
+                                <option value="{{ $emp->id }}">
+                                    {{ $emp->name }}
+                                </option>
+                            @endforeach
+                        </x-base.tom-select>
+                     </div>
                      <div>
                         <x-base.form-label>Mobile Number*</x-base.form-label>
                         <x-base.form-input

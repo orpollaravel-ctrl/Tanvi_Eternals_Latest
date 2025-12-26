@@ -28,17 +28,15 @@ class QuotationController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('create-quotations')) {
             abort(403,'Permission Denied');
         }
-        $clients = \App\Models\Client::orderBy('name')->get();
-        $products = Product::orderBy('product_name')->get(); 
+        $clients = \App\Models\Client::orderBy('name')->get(); 
         return view('pages/quotation-create', [
             'layout' => 'side-menu',
-            'clients' => $clients,
-            'products' => $products,
+            'clients' => $clients, 
         ]);
     }
 
     public function store(Request $request)
-    {
+    { 
         $validated = $request->validate([
             'customer_id' => ['required', 'integer','exists:clients,id'],
             'contact' => ['required', 'string', 'max:255'],
@@ -51,10 +49,13 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
-            'salesman' => ['required', 'string', 'max:255'],
-            'product_id' => ['required', 'integer','exists:products,id'],
+            'salesman' => ['required', 'string', 'max:255'], 
+            'barcode' => ['nullable', 'array'], 
         ]);
-
+        
+        if (!empty($validated['barcode'])) {
+            $validated['barcode'] = implode(',', $validated['barcode']);
+        } 
         Quotation::create($validated);
 
         return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
@@ -66,13 +67,17 @@ class QuotationController extends Controller
             abort(403,'Permission Denied');
         }
         $quotation = Quotation::findOrFail($id);
-        $clients = \App\Models\Client::orderBy('name')->get();
-           $products = \App\Models\Product::orderBy('product_name')->get();
+        $clients = \App\Models\Client::orderBy('name')->get(); 
+        $barcodes = [];
+
+            if (!empty($quotation->barcode)) {
+                $barcodes = explode(',', $quotation->barcode);
+            }
         return view('pages/quotation-edit', [
             'layout' => 'side-menu',
             'quotation' => $quotation,
-            'clients' => $clients,
-            'products' => $products,
+            'clients' => $clients, 
+            'barcodes' => $barcodes
         ]);
     }
 
@@ -92,10 +97,12 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
-            'salesman' => ['required', 'string', 'max:255'],
-            'product_id' => ['required', 'integer','exists:products,id'],
+            'salesman' => ['required', 'string', 'max:255'], 
+            'barcode' => ['nullable', 'array'], 
         ]);
-
+          if (!empty($validated['barcode'])) {
+            $validated['barcode'] = implode(',', $validated['barcode']);
+        } 
         $quotation->update($validated);
 
         return redirect()->route('quotations.index')->with('success', 'Quotation updated successfully.');

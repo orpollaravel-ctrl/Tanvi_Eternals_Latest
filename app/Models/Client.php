@@ -40,4 +40,28 @@ class Client extends Authenticatable
         return in_array($permissionName, $this->clientPermissions);
     }
 
+    public function assignDefaultPermissions()
+    {
+        $permissionIds = \DB::table('permissions')
+            ->whereIn('name', [
+                'view-dashboard',
+                'view-customer-quotations',
+            ])
+            ->pluck('id');
+
+        foreach ($permissionIds as $permissionId) {
+            \DB::table('permission_client')->insertOrIgnore([
+                'client_id' => $this->id,
+                'permission' => $permissionId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    public function salesman()
+    {
+        return $this->belongsTo(Employee::class, 'salesman_id');
+    }
+
 }
