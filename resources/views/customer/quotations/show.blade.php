@@ -54,6 +54,28 @@
                 {{ $quotation->remarks ?? '—' }}
             </div>
         </div>
+        <div class="col-span-12 mt-6">
+            <label class="text-slate-500 text-sm">Attached PDFs</label>
+
+            @if ($quotation->pdfs->count())
+                <ul class="mt-2 space-y-2">
+                    @foreach ($quotation->pdfs as $pdf)
+                        <li class="flex items-center p-2">
+                            <span class="mr-3">{{ $pdf->original_name }}</span>
+                            <a href="{{ asset($pdf->file_path) }}"
+                                target="_blank"
+                                class="mr-3 flex items-center text-primary">
+                                    <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
+                                View
+                                </a>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+            <div class="text-slate-400 mt-2">No PDFs uploaded</div>
+            @endif
+        </div>
+
 
     </div>
 

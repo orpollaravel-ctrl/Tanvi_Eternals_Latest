@@ -63,5 +63,6 @@ class Client extends Authenticatable
     {
         return $this->belongsTo(Employee::class, 'salesman_id');
     }
+    
 
 }

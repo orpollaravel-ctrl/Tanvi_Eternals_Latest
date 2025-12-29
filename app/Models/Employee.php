@@ -34,4 +34,9 @@ class Employee extends Model
     {
         return $this->hasMany(Expense::class, 'salesman_id');
     }
+
+     public function quotations()
+    {
+        return $this->hasMany(Quotation::class, 'salesman_id');
+    }
 }

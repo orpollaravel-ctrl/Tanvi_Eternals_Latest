@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/user', function (Request $request) {
         return $request->user();
-    });
+    }); 
     Route::get('/quotation/filter', [AuthController::class, 'quotationFilter']);
     Route::get('/customer/filter', [AuthController::class, 'customerFilter']);
     Route::get('/expense/filter', [AuthController::class, 'expenseFilter']);
@@ -38,16 +38,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/quotations/{id}', [AuthController::class, 'quotationDetails']);
     Route::get('/expenses', [AuthController::class, 'expenses']);
     Route::post('/expenses', [AuthController::class, 'createExpense']);
-    Route::get('/expenses/{id}', [AuthController::class, 'expenseDetails']);    
-    Route::post('/dsr', [AuthController::class, 'createDsr']);
-    Route::get('/collections-by-date', [AuthController::class, 'collectionsByDate']);
-    Route::post('/collections', [AuthController::class, 'createCollection']);
-    Route::get('/orders-by-date', [AuthController::class, 'ordersByDate']);
-    Route::post('/orders', [AuthController::class, 'createOrder']);
-    Route::get('/targets-by-date', [AuthController::class, 'targetsByDate']);
-    Route::post('/targets', [AuthController::class, 'createTarget']);
-    Route::get('/dsrs', [AuthController::class, 'dsrList']);
-    Route::get('/dsrs/{id}', [AuthController::class, 'dsrDetail']);
+    Route::get('/expenses/{id}', [AuthController::class, 'expenseDetails']); 
+    Route::post('/visits', [AuthController::class, 'createVisit']); 
+    Route::get('/visits', [AuthController::class, 'visitList']); 
+    Route::get('/visits/filter', [AuthController::class, 'visitsByDate']); 
+    Route::get('/visits/{id}', [AuthController::class, 'visitDetail']); 
+    Route::post('/collections', [AuthController::class, 'createCollection']); 
+    Route::get('/collections', [AuthController::class, 'collectionList']); 
+    Route::get('/collections/filter', [AuthController::class, 'collectionsByDate']); 
+    Route::get('/collections/{id}', [AuthController::class, 'collectionDetail']); 
+    Route::post('/orders', [AuthController::class, 'createOrder']); 
+    Route::get('/orders', [AuthController::class, 'orderList']); 
+    Route::get('/orders/filter', [AuthController::class, 'ordersByDate']); 
+    Route::get('/orders/{id}', [AuthController::class, 'orderDetail']);
 });
 
 Route::get('/products/search', [ProductController::class, 'search']);

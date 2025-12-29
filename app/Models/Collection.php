@@ -10,8 +10,10 @@ class Collection extends Model
     use HasFactory;
     protected $fillable = [
         'client_id',
+        'user_id',
+        'time',
         'collection_date',
         'amount', 
-        'created_by',
+        'remark',
     ];
 }

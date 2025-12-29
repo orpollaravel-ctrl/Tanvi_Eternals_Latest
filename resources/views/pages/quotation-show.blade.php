@@ -27,7 +27,7 @@
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Salesman</label>
                 <div class="mt-1 font-semibold">
-                    {{ empty($quotation->salesman) ? '-' : $quotation->salesman }}
+                   {{ $quotation->salesman->name ?? '-' }}
                 </div>  
             </div> 
             {{-- Contact --}}
@@ -67,7 +67,7 @@
             </div>
             {{-- Barcodes --}} 
             @if ($quotation->barcode != '')
-                <div class="col-span-12">
+                <div class="col-span-12 sm:col-span-6">
                     <label class="block mb-3 text-sm font-medium text-slate-500">
                         Barcodes
                     </label>
@@ -85,6 +85,27 @@
                     </div>
                 </div>
             @endif
+            <div class="col-span-12">
+                <label class="text-slate-500 text-sm">Attached PDFs</label>
+
+                @if ($quotation->pdfs->count())
+                    <ul class="mt-2 space-y-2">
+                        @foreach ($quotation->pdfs as $pdf)
+                            <li class="flex items-center p-2">
+                                <span class="mr-3">{{ $pdf->original_name }}</span>
+                                <a href="{{ asset($pdf->file_path) }}"
+                                    target="_blank"
+                                    class="mr-3 flex items-center text-primary">
+                                     <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
+                                    View
+                                    </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="text-slate-400 mt-2">No PDFs uploaded</div>
+                @endif
+            </div>
         </div>
     </div>
     <div class="intro-y mt-5 flex flex-wrap gap-2">

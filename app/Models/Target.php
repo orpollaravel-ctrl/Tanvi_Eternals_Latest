@@ -11,7 +11,11 @@ class Target extends Model
     protected $fillable = [
         'client_id',
         'target_date',
-        'target_qty', 
-        'created_by',
+        'user_id', 
+        'reason',
+        'phone',
+        'time',
+        'shop_photo',
+        'visit_card'
     ];
 }

@@ -34,8 +34,7 @@
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
-        </div>
-        <!-- BEGIN: Data List -->
+        </div> 
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
@@ -50,7 +49,7 @@
                         @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
                             <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
                         @endif
-                    </x-base.table.tr>
+                    </x-base.table.tr>  
                 </x-base.table.thead>
                 <x-base.table.tbody>
                     @foreach ($quotations as $quotation)
@@ -61,9 +60,8 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <div class="whitespace-nowrap text-xs text-slate-500">{{ empty($quotation->salesman) ? '-' : $quotation->salesman }}</div>
+                                <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->salesman->name ?? '-' }}</div>
                             </x-base.table.td>
-
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->contact }}</div>
@@ -87,7 +85,7 @@
                                 <x-base.table.td
                                     class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
-                                        <a class="mr-3 flex items-center text-warning" data-tw-toggle="modal" data-tw-target="#import-pdf-modal" data-client-id="{{ $quotation->customer_id }}" data-client-code="{{ $quotation->customer_code }}" data-client-contact="{{ $quotation->contact }}" href="#">
+                                        <a class="mr-3 flex items-center text-warning" data-tw-toggle="modal" data-tw-target="#import-pdf-modal" data-quotation-id="{{ $quotation->id }}" href="#">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
                                              PDF
                                         </a> 
@@ -118,10 +116,8 @@
                     @endforeach
                 </x-base.table.tbody>
             </x-base.table>
-        </div>
-        <!-- END: Data List -->
-    </div>
-    <!-- BEGIN: Delete Confirmation Modal -->
+        </div> 
+    </div> 
      <x-base.dialog id="delete-confirmation-modal">
         <x-base.dialog.panel>
             <div class="p-5 text-center">
@@ -152,21 +148,18 @@
                 action="{{ route('quotations.import.pdf') }}"
                 enctype="multipart/form-data">
                 @csrf
-
+                <input type="hidden" name="quotation_id" id="import-quotation-id">
                 <input type="hidden" name="customer_id" id="import-client-id">
                 <input type="hidden" name="customer_code" id="import-client-code">
                 <input type="hidden" name="contact" id="import-client-contact">
-
-
                 <div class="p-5">
                     <h3 class="text-lg font-medium mb-4">Import Quotation PDF</h3>
-
-                    <input type="file"
-                        name="pdf"
+                   <input type="file"
+                        name="pdf[]"
                         accept="application/pdf"
+                        multiple
                         required
                         class="w-full border p-2 rounded">
-
                     <div class="mt-4 text-right">
                         <x-base.button type="submit" variant="primary">
                             Import
@@ -176,30 +169,14 @@
             </form>
         </x-base.dialog.panel>
     </x-base.dialog>
-
-    <!-- END: Delete Confirmation Modal -->
+ 
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 document.body.addEventListener('click', function (e) {
-                    const btn = e.target.closest('[data-client-id]');
-                    if (!btn) return;
-                        const clientId = btn.getAttribute('data-client-id'); 
-                        const clientCode = btn.getAttribute('data-client-code');
-                        const clientContact = btn.getAttribute('data-client-contact');
-
-                        const input = document.getElementById('import-client-id'); 
-                        const codeInput = document.getElementById('import-client-code');
-                        const contactInput = document.getElementById('import-client-contact');
-                    if (contactInput) {
-                        contactInput.value = clientContact; 
-                    }
-                    if (codeInput) {
-                        codeInput.value = clientCode; 
-                    }
-                    if (input) {
-                        input.value = clientId; 
-                    }
+                    const btn = e.target.closest('[data-quotation-id]');
+                    if (!btn) return; 
+                     document.getElementById('import-quotation-id').value = btn.getAttribute('data-quotation-id'); 
                 });
             });
             document.addEventListener('DOMContentLoaded', function() {
@@ -211,7 +188,7 @@
                     button.addEventListener('click', function() {
                         const route = this.getAttribute('data-delete-route');
                         const name = this.getAttribute('data-delete-name');
-
+                        
                         if (deleteForm && route) {
                             deleteForm.setAttribute('action', route);
                         }

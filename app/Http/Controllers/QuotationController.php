@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Product;
 use App\Models\Quotation;
+use App\Models\QuotationPdf;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Smalot\PdfParser\Parser;
@@ -28,10 +30,17 @@ class QuotationController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('create-quotations')) {
             abort(403,'Permission Denied');
         }
-        $clients = \App\Models\Client::orderBy('name')->get(); 
+        $clients = \App\Models\Client::orderBy('name')->get();
+        $salesmen = Employee::whereHas('department', function ($q) {
+            $q->where('name', 'sales');
+        })
+        ->orderBy('name')
+        ->get();
+ 
         return view('pages/quotation-create', [
             'layout' => 'side-menu',
-            'clients' => $clients, 
+            'clients' => $clients,  
+            'salesmen' => $salesmen,
         ]);
     }
 
@@ -49,8 +58,8 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
-            'salesman' => ['required', 'string', 'max:255'], 
-            'barcode' => ['nullable', 'array'], 
+            'salesman_id' => ['required', 'exists:employees,id'],
+            'barcode' => ['nullable', 'array'],     
         ]);
         
         if (!empty($validated['barcode'])) {
@@ -69,15 +78,21 @@ class QuotationController extends Controller
         $quotation = Quotation::findOrFail($id);
         $clients = \App\Models\Client::orderBy('name')->get(); 
         $barcodes = [];
+        if (!empty($quotation->barcode)) {
+            $barcodes = explode(',', $quotation->barcode);
+        }
 
-            if (!empty($quotation->barcode)) {
-                $barcodes = explode(',', $quotation->barcode);
-            }
+        $salesmen = Employee::whereHas('department', function ($q) {
+            $q->where('name', 'sales');
+        })
+        ->orderBy('name')
+        ->get();
         return view('pages/quotation-edit', [
             'layout' => 'side-menu',
             'quotation' => $quotation,
             'clients' => $clients, 
-            'barcodes' => $barcodes
+            'barcodes' => $barcodes,
+            'salesmen' => $salesmen
         ]);
     }
 
@@ -97,12 +112,17 @@ class QuotationController extends Controller
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
             'men_ring_size_to' => ['nullable', 'string', 'max:255'],
             'remarks' => ['nullable', 'string'],
-            'salesman' => ['required', 'string', 'max:255'], 
+            'salesman_id' => ['required', 'exists:employees,id'],
             'barcode' => ['nullable', 'array'], 
-        ]);
-          if (!empty($validated['barcode'])) {
-            $validated['barcode'] = implode(',', $validated['barcode']);
+        ]); 
+         if ($request->has('barcode')) {
+                $validated['barcode'] = !empty($validated['barcode'])
+                    ? implode(',', $validated['barcode'])
+                    : null; 
+        }else{
+            $validated['barcode'] = null;
         } 
+
         $quotation->update($validated);
 
         return redirect()->route('quotations.index')->with('success', 'Quotation updated successfully.');
@@ -165,63 +185,34 @@ class QuotationController extends Controller
     }
 
     public function importPdf(Request $request)
-    {   
+    {
         $request->validate([
-            'customer_id' => 'required|exists:clients,id',
-            'customer_code' => 'required',
-            'pdf' => 'required|mimes:pdf|max:5120',
+            'quotation_id' => 'required|exists:quotations,id',
+            'pdf.*' => 'required|mimes:pdf|max:5120',
         ]);
 
-        $parser = new Parser();
-        $pdf = $parser->parseFile($request->file('pdf')->getPathname());
-        $text = trim($pdf->getText());
- 
-        $lines = array_values(array_filter(array_map('trim', explode("\n", $text))));
- 
-        $headers = array_map('trim', preg_split('/\s{2,}/', strtolower($lines[1])));
- 
-        for ($i = 2; $i < count($lines); $i++) {
+        if ($request->hasFile('pdf')) {
+            foreach ($request->file('pdf') as $file) {
+                $fileName = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                $file->move(
+                    public_path('uploads/quotation_pdfs'),
+                    $fileName
+                );
 
-            $row = array_map('trim', preg_split('/\s{2,}/', $lines[$i]));
-
-            if (count($row) !== count($headers)) {
-                continue;
+                QuotationPdf::create([
+                    'quotation_id' => $request->quotation_id,
+                    'file_path' => 'uploads/quotation_pdfs/' . $fileName,
+                    'original_name' => $file->getClientOriginalName(),
+                ]);
             }
-
-            $data = array_combine($headers, $row);
- 
-            if (count($data) === 1) {
-                $headerLine = array_key_first($data);
-                $valueLine  = $data[$headerLine];
-
-                $headersFix = array_map('trim', explode("\t", strtolower($headerLine)));
-                $valuesFix  = array_map('trim', explode("\t", $valueLine));
-
-                if (count($headersFix) === count($valuesFix)) {
-                    $data = array_combine($headersFix, $valuesFix);
-                }
-            }  
-
-            Quotation::create([
-                'customer_id' => $request->customer_id,
-                'customer_code' => $request->customer_code,
-                'contact' => $request->contact,
-                'metal' => $data['metal'] ?? null,
-                'purity' => $data['purity'] ?? null,
-                'diamond' => $data['diamond'] ?? null,
-                'women_ring_size_from' => $data['women_ring_size_from'] ?? null,
-                'women_ring_size_to' => $data['women_ring_size_to'] ?? null,
-                'men_ring_size_from' => $data['men_ring_size_from'] ?? null,
-                'men_ring_size_to' => $data['men_ring_size_to'] ?? null,
-                'remarks' => $data['remarks'] ?? null,
-            ]);
         }
 
-        return back()->with('success', 'Quotation imported successfully.');
-    } 
+        return back()->with('success', 'PDF uploaded successfully.');
+    }
 
     public function show(Quotation $quotation)
     {
-        return view('pages/quotation-show', compact('quotation'));
+        $quotation->load('pdfs');
+          return view('pages/quotation-show', compact('quotation'));    
     }
 }

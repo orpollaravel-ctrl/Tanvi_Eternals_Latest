@@ -28,7 +28,7 @@ class CustomerController extends Controller
     public function show(Quotation $quotation)
     {
         $customer = auth('client')->user();
- 
+        $quotation->load('pdfs');
         if (!$customer || !$customer->hasPermission('view-customer-quotations')) {
             abort(401, 'Unauthenticated');
         }  

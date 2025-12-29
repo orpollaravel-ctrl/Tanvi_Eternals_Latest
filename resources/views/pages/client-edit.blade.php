@@ -74,14 +74,7 @@
                                 </option>
                             @endforeach
                         </x-base.tom-select>
-                     </div>
-                    <div>
-                        <x-base.form-label>Salesman Name*</x-base.form-label>
-                        <x-base.form-input
-                            name="salesman_name"
-                            value="{{ old('salesman_name', $client->salesman_name) }}"
-                            placeholder="Ramesh Kumar" />
-                    </div>
+                     </div> 
                       <div>
                         <x-base.form-label>Mobile Number*</x-base.form-label>
                         <x-base.form-input

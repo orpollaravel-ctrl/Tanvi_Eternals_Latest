@@ -67,11 +67,17 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-span-12 sm:col-span-6">
-                            <x-base.form-label>Salesman *</x-base.form-label>
-                            <x-base.form-input type="text" id="salesman" name="salesman"
-                                value="{{ old('salesman', $quotation->salesman) }}" placeholder="Salesman" readonly />
-                        </div>
+                       <div class="col-span-12 sm:col-span-6">
+                            <x-base.form-label>Salesman *</x-base.form-label> 
+                            <select name="salesman_id" class="tom-select w-full" required>
+                                <option value="">Select Salesman</option>
+                                @foreach ($salesmen as $salesman)
+                                    <option value="{{ $salesman->id }}"  @selected(old('salesman_id', $quotation->salesman_id) == $salesman->id)>
+                                        {{ $salesman->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div> 
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
                             <x-base.form-input type="text" id="customer-contact" name="contact"
