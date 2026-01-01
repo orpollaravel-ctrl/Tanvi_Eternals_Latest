@@ -4,10 +4,53 @@
     <title>Expenses - Tanvi Eternals</title>
 @endsection
 
-@section('subcontent')
+@section('subcontent') 
+<style>
+/* FORCE RESPONSIVE GRID */
+.expense-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 640px) {
+    .expense-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .expense-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .expense-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* CARD WIDTH SAFETY */
+.expense-card {
+    width: 100%;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.expense-card:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+}
+</style>
     <h2 class="intro-y mt-10 text-lg font-medium">Expenses</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between sm:flex-nowrap">
+        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap" style="justify-content:space-between;">
             @if(auth()->check() && auth()->user()->hasPermission('create-expenses'))
                 <a href="{{ route('expenses.create') }}">
                     <x-base.button class="shadow-md" variant="primary">
@@ -17,15 +60,15 @@
             @endif
         </div>  
         <div class="intro-y col-span-12">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="expense-grid">
               @forelse($expenses as $salesmanId => $salesmanExpenses)
                         @php
                             $salesman = $salesmanExpenses->first()->salesman;
                             $totalAmount = $salesmanExpenses->sum('amount');
                             $latestExpense = $salesmanExpenses->first();
                         @endphp
-                        <a href="{{ route('expenses.show', $salesmanId) }}" class="block bg-white dark:bg-darkmode-600 rounded-lg shadow-md p-5 hover:shadow-xl transition aspect-square flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3">
+                        <a href="{{ route('expenses.show', $salesmanId) }}" class="expense-card" style="justify-content:space-between;">
+                            <div class="flex justify-between items-center mb-3" style="justify-content:space-between;">
                                 <span class="text-sm font-semibold text-primary">
                                     {{ ucwords($salesman->name ?? '-') }}
                                 </span>
@@ -33,7 +76,7 @@
                             <div class="text-2xl font-bold mb-2">
                                 ₹{{ number_format($totalAmount, 2) }}
                             </div> 
-                            <div class="flex justify-between items-center text-sm">
+                            <div class="flex justify-between items-center text-sm" style="justify-content:space-between;">
                                 <span class="text-slate-500">
                                     {{ $salesmanExpenses->count() }} expense(s)
                                 </span>

@@ -16,7 +16,7 @@
                     <div style="padding: 15px;">
 
                         <!-- Header -->
-                        <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center justify-between mb-6" style="justify-content:space-between;">
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
                                     {{ $expense->salesman->name }}

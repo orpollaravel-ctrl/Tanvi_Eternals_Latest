@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Dsr;
+use App\Models\Employee;
 use App\Models\Expense;
 use App\Models\Order;
 use App\Models\Quotation;
@@ -272,13 +273,15 @@ class AuthController extends Controller
     }
 
     public function createExpense(Request $request)
-    {
+    { 
         $validated = $request->validate([
             'type' => ['required', 'in:travel expense,food expense,hotel expense,other expense'],
             'date' => ['required', 'date'],
             'amount' => ['required', 'numeric', 'min:0'],
             'remark' => ['nullable', 'string'],
             'bill_upload' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            'salesman_id' => ['required', 'exists:employees,id'],
+            'status' => ['nullable', 'in:pending,approved,rejected'],
         ]);
 
         if ($request->hasFile('bill_upload')) {
@@ -384,26 +387,42 @@ class AuthController extends Controller
     public function createVisit(Request $request)
     {
         $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'target_date' => 'required|date',
-            'target_qty' => 'required|integer',
-        ]);
+            'client_id' => ['required', 'exists:clients,id'],
+            'target_date' => ['required'],
+            'time' => ['required'],
+            'phone' => ['nullable', 'string', 'max:255'], 
+            'visit_card' => ['nullable', 'image', 'max:2048'],
+            'shop_photo' => ['nullable', 'image', 'max:2048'],
+            'reason' => ['nullable', 'string', 'max:255'],
+            'user_id' => ['required'],
+        ]); 
+         $validated['user_id'] = $request->user()->id;
+        if ($request->hasFile('visit_card')) {
+            $file = $request->file('visit_card');
+            $fileName = time() . '_vc_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/dsr/visiting_cards'), $fileName);
+            $validated['visit_card'] = $fileName;
+        }
 
-        $validated['user_id'] = $request->user()->id;
+        if ($request->hasFile('shop_photo')) {
+            $file = $request->file('shop_photo');
+            $fileName = time() . '_shop_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/dsr/shop_photos'), $fileName);
+            $validated['shop_photo'] = $fileName;
+        }
 
-        $visit = Target::create($validated);
+        $dsr = Target::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Visit created successfully',
-            'data' => $visit
+            'data' => $dsr
         ], 201);
     }
 
     public function visitList(Request $request)
     {
-        $data = Target::with('client')
-            ->where('user_id', $request->user()->id)
+        $data = Target::where('user_id', $request->user()->id)
             ->latest()
             ->get();
 
@@ -420,8 +439,7 @@ class AuthController extends Controller
             'to_date'   => 'required|date|after_or_equal:from_date',
         ]);
 
-        $targets = Target::with('client')
-            ->where('user_id', $request->user()->id)
+        $targets = Target::where('user_id', $request->user()->id)
             ->whereDate('target_date', '>=', $request->from_date)
             ->whereDate('target_date', '<=', $request->to_date)
             ->orderByDesc('target_date')
@@ -435,7 +453,7 @@ class AuthController extends Controller
 
     public function visitDetail($id)
     {
-        $visit = Target::with('client')->find($id);
+        $visit = Target::find($id);
 
         if (!$visit) {
             return response()->json([
@@ -448,27 +466,7 @@ class AuthController extends Controller
             'success' => true,
             'data' => $visit
         ]);
-    }
-
-    public function ordersByDate(Request $request)
-    {
-        $request->validate([
-            'from_date' => 'required|date',
-            'to_date'   => 'required|date|after_or_equal:from_date',
-        ]);
-
-        $orders = Order::with('client')
-            ->where('user_id', $request->user()->id)
-            ->whereDate('order_date', '>=', $request->from_date)
-            ->whereDate('order_date', '<=', $request->to_date)
-            ->orderByDesc('order_date')
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $orders
-        ]);
-    }
+    } 
 
     public function collectionsByDate(Request $request)
     {
@@ -477,8 +475,7 @@ class AuthController extends Controller
             'to_date'   => 'required|date|after_or_equal:from_date',
         ]);
 
-        $collections = Collection::with('client')
-            ->where('user_id', $request->user()->id)
+        $collections = Collection::where('user_id', $request->user()->id)
             ->whereDate('collection_date', '>=', $request->from_date)
             ->whereDate('collection_date', '<=', $request->to_date)
             ->orderByDesc('collection_date')
@@ -492,7 +489,8 @@ class AuthController extends Controller
 
     public function createCollection(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate([ 
+            'time' => 'required',
             'client_id' => 'required|exists:clients,id',
             'collection_date' => 'required|date',
             'amount' => 'required|numeric',
@@ -513,8 +511,7 @@ class AuthController extends Controller
 
     public function collectionList(Request $request)
     {
-        $data = Collection::with('client')
-            ->where('user_id', $request->user()->id)
+        $data = Collection::where('user_id', $request->user()->id)
             ->latest()
             ->get();
 
@@ -527,7 +524,7 @@ class AuthController extends Controller
 
     public function collectionDetail($id)
     {
-        $collection = Collection::with('client')->find($id);
+        $collection = Collection::find($id);
 
         if (!$collection) {
             return response()->json([
@@ -547,9 +544,10 @@ class AuthController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'order_date' => 'required|date',
-            'order_qty' => 'required|integer',
+            'order_qty' => 'required',
             'remark' => 'nullable|string',
             'quotation_id' => 'nullable|exists:quotations,id',
+            'time' => 'required'
         ]);
 
         $validated['user_id'] = $request->user()->id;
@@ -565,8 +563,7 @@ class AuthController extends Controller
 
     public function orderList(Request $request)
     {
-        $data = Order::with('client')
-            ->where('user_id', $request->user()->id)
+        $data = Order::where('user_id', $request->user()->id)
             ->latest()
             ->get();
 
@@ -578,7 +575,7 @@ class AuthController extends Controller
 
     public function orderDetail($id)
     {
-        $order = Order::with('client')->find($id);
+        $order = Order::find($id);
 
         if (!$order) {
             return response()->json([
@@ -590,6 +587,37 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => $order
+        ]);
+    }
+
+    public function ordersByDate(Request $request)
+    {
+        $request->validate([
+            'from_date' => 'required|date',
+            'to_date'   => 'required|date|after_or_equal:from_date',
+        ]);
+
+        $orders = Order::where('user_id', $request->user()->id)
+            ->whereDate('order_date', '>=', $request->from_date)
+            ->whereDate('order_date', '<=', $request->to_date)
+            ->orderByDesc('order_date')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
+    }
+
+    public function salesmanList()
+    {
+        $salesman = Employee::whereHas('department', function ($q) {
+            $q->whereRaw('LOWER(name) = ?', ['sales']);
+        })->orderBy('name')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $salesman
         ]);
     }
 }

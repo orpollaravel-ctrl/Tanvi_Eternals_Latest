@@ -149,4 +149,22 @@ class ExpenseController extends Controller
 
         return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $expense = Expense::findOrFail($id);
+        $status = $request->status;
+        
+        if (!in_array($status, ['approved', 'rejected'])) {
+            return response()->json(['success' => false, 'message' => 'Invalid status']);
+        }
+        
+        $expense->update(['status' => $status]);
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Status updated successfully',
+            'status' => $status
+        ]);
+    }
 }

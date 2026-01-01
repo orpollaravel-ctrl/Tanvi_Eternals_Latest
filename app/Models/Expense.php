@@ -15,7 +15,8 @@ class Expense extends Model
         'amount',
         'remark',
         'bill_upload',
-        'salesman_id'
+        'salesman_id',
+        'status'
     ];
 
     protected $casts = [

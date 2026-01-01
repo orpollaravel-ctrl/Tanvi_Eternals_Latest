@@ -12,6 +12,7 @@ class Order extends Model
         'client_id',
         'user_id',
         'order_date',
+        'order_qty',
         'time', 
         'remark',
         'quotation_id',

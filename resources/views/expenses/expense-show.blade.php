@@ -111,6 +111,7 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">Amount</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Remark</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Bill</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Status</x-base.table.th>
                         @if (auth()->check() &&
                                 (auth()->user()->hasPermission('view-expenses') ||
                                     auth()->user()->hasPermission('edit-expenses') ||
@@ -147,12 +148,40 @@
                                     -
                                 @endif
                             </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
+                                <div id="status-{{ $expense->id }}">
+                                    @if($expense->status === 'pending')
+                                        <div class="flex gap-2">
+                                            <button onclick="updateStatus({{ $expense->id }}, 'approved')"
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
+                                                <x-base.lucide icon="Check" class="w-3 h-3 mr-1" />
+                                                Approve
+                                            </button>
+                                            <button onclick="updateStatus({{ $expense->id }}, 'rejected')"
+                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200">
+                                                <x-base.lucide icon="X" class="w-3 h-3 mr-1" />
+                                                Reject
+                                            </button>
+                                        </div>
+                                    @elseif($expense->status === 'approved')
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                            <x-base.lucide icon="Check" class="w-3 h-3 mr-1" />
+                                            Approved
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                            <x-base.lucide icon="X" class="w-3 h-3 mr-1" />
+                                            Rejected
+                                        </span>
+                                    @endif
+                                </div>
+                            </x-base.table.td>
                             @if (auth()->check() &&
                                     (auth()->user()->hasPermission('view-expenses') ||
                                         auth()->user()->hasPermission('edit-expenses') ||
                                         auth()->user()->hasPermission('delete-expenses')))
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                <x-base.table.td class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                     <div class="flex items-center justify-center">
                                         @if (auth()->check() && auth()->user()->hasPermission('view-expenses'))
                                             <a class="mr-3 flex items-center"
@@ -238,8 +267,8 @@
             </div>
         </x-base.dialog.panel>
     </x-base.dialog> 
-        @push('scripts')
-         <script>
+    @push('scripts')
+        <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const deleteButtons = document.querySelectorAll('[data-delete-route]');
                 const deleteForm = document.getElementById('delete-expense-form');
@@ -254,31 +283,70 @@
                 });
             });
         </script>
-            <script>
-                function viewBill(url, filename) {
-                    const modal = document.getElementById('bill-photo-modal');
-                    const image = document.getElementById('bill-image');
-                    const pdf = document.getElementById('bill-pdf');
+        <script>
+            function viewBill(url, filename) {
+                const modal = document.getElementById('bill-photo-modal');
+                const image = document.getElementById('bill-image');
+                const pdf = document.getElementById('bill-pdf');
 
-                    // Hide both elements first
-                    image.style.display = 'none';
-                    pdf.style.display = 'none';
+                // Hide both elements first
+                image.style.display = 'none';
+                pdf.style.display = 'none';
 
-                    // Check file extension
-                    const extension = filename.split('.').pop().toLowerCase();
+                // Check file extension
+                const extension = filename.split('.').pop().toLowerCase();
 
-                    if (['jpg', 'jpeg', 'png'].includes(extension)) {
-                        image.src = url;
-                        image.style.display = 'block';
-                    } else if (extension === 'pdf') {
-                        pdf.src = url;
-                        pdf.style.display = 'block';
-                    }
-
-                    // Show modal
-                    const modalInstance = tailwind.Modal.getOrCreateInstance(modal);
-                    modalInstance.show();
+                if (['jpg', 'jpeg', 'png'].includes(extension)) {
+                    image.src = url;
+                    image.style.display = 'block';
+                } else if (extension === 'pdf') {
+                    pdf.src = url;
+                    pdf.style.display = 'block';
                 }
-            </script>
-        @endpush
-    @endsection
+
+                // Show modal
+                const modalInstance = tailwind.Modal.getOrCreateInstance(modal);
+                modalInstance.show();
+            }
+
+            function updateStatus(expenseId, status) {
+                const statusDiv = document.getElementById(`status-${expenseId}`);
+                
+                fetch(`/expenses/${expenseId}/status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ status: status })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (status === 'approved') {
+                            statusDiv.innerHTML = `
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20,6 9,17 4,12"/></svg>
+                                    Approved
+                                </span>
+                            `;
+                        } else {
+                            statusDiv.innerHTML = `
+                                <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    Rejected
+                                </span>
+                            `;
+                        }
+                    } else {
+                        alert('Error updating status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating status');
+                });
+            }
+        </script>
+    @endpush
+@endsection

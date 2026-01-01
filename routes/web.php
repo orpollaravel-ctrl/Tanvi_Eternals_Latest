@@ -287,6 +287,7 @@ Route::middleware('auth')->group(function () {
         Route::get('expenses/{id}/edit', 'edit')->name('expenses.edit');
         Route::put('expenses/{id}', 'update')->name('expenses.update');
         Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
+        Route::post('expenses/{id}/status', 'updateStatus')->name('expenses.status');
     });
 
     Route::resource('dsr', DsrController::class);
