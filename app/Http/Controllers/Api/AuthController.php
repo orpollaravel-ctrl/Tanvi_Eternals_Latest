@@ -173,15 +173,17 @@ class AuthController extends Controller
 
     public function quotations()
     {
-        $quotations = Quotation::with('client:id,name')->latest()->get();
+        $quotations = Quotation::latest()->get();
 
         return response()->json([
             'success' => true,
             'data' => $quotations->map(function ($quotation) {
                 return [
                     'id' => $quotation->id,
-                    'customer_id' => $quotation->customer_id,
-                    'customer_name' => $quotation->client->name ?? null,
+                    'customer_name' => $quotation->customer_name,
+                    'pincode' => $quotation->pincode,
+                    'state' => $quotation->state,
+                    'city' => $quotation->city,
                     'contact' => $quotation->contact,
                     'customer_code' => $quotation->customer_code,
                     'metal' => $quotation->metal,
@@ -203,9 +205,11 @@ class AuthController extends Controller
     public function createQuotation(Request $request)
     {
         $validated = $request->validate([
-            'customer_id' => ['required', 'integer','exists:clients,id'],
-            'contact' => ['required', 'string', 'max:255'],
-            'customer_code' => ['required', 'string', 'max:255'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'pincode' => ['required', 'string', 'max:10'],
+            'state' => ['required', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'contact' => ['required', 'string', 'max:255'], 
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
             'purity' => ['required', 'in:22k,18k,14k,9k'],
             'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI'],
@@ -230,7 +234,7 @@ class AuthController extends Controller
 
    public function quotationDetails($id)
     {
-        $quotation = Quotation::with('client:id,name')->find($id);
+        $quotation = Quotation::find($id);
 
         if (!$quotation) {
             return response()->json([
@@ -243,8 +247,10 @@ class AuthController extends Controller
             'success' => true,
             'data' => [
                 'id' => $quotation->id,
-                'customer_id' => $quotation->customer_id,
-                'customer_name' => $quotation->client->name ?? null,
+                'customer_name' => $quotation->customer_name,
+                'pincode' => $quotation->pincode,
+                'state' => $quotation->state,
+                'city' => $quotation->city,
                 'contact' => $quotation->contact,
                 'customer_code' => $quotation->customer_code,
                 'metal' => $quotation->metal,
@@ -393,7 +399,7 @@ class AuthController extends Controller
             'phone' => ['nullable', 'string', 'max:255'], 
             'visit_card' => ['nullable', 'image', 'max:2048'],
             'shop_photo' => ['nullable', 'image', 'max:2048'],
-            'reason' => ['nullable', 'string', 'max:255'],
+            'reason' => ['required', 'string', 'max:255'],
             'user_id' => ['required'],
         ]); 
          $validated['user_id'] = $request->user()->id;
@@ -494,7 +500,7 @@ class AuthController extends Controller
             'client_id' => 'required|exists:clients,id',
             'collection_date' => 'required|date',
             'amount' => 'required|numeric',
-            'remark' => 'nullable|string'
+            'remark' => 'required|string'
         ]);
 
         $validated['user_id'] = $request->user()->id;
@@ -545,7 +551,7 @@ class AuthController extends Controller
             'client_id' => 'required|exists:clients,id',
             'order_date' => 'required|date',
             'order_qty' => 'required',
-            'remark' => 'nullable|string',
+            'remark' => 'required|string',
             'quotation_id' => 'nullable|exists:quotations,id',
             'time' => 'required'
         ]);
@@ -618,6 +624,69 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => $salesman
+        ]);
+    }
+
+    public function calendarData(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date'
+        ]);
+
+        $date = $request->date;
+        $userId = $request->user() ? $request->user()->id : 1;  
+
+        $collections = Collection::where('user_id', $userId)
+            ->whereDate('collection_date', $date) 
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'collection', 
+                    'amount' => $item->amount,
+                    'time' => $item->time,
+                    'date' => $item->collection_date,
+                    'remark' => $item->remark
+                ];
+            });
+
+        $orders = Order::where('user_id', $userId)
+            ->whereDate('order_date', $date) 
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'order', 
+                    'order_qty' => $item->order_qty,
+                    'time' => $item->time,
+                    'date' => $item->order_date,
+                    'remark' => $item->remark
+                ];
+            });
+
+        $visits = Target::where('user_id', $userId)
+            ->whereDate('target_date', $date) 
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'type' => 'visit', 
+                    'time' => $item->time,
+                    'date' => $item->target_date,
+                    'reason' => $item->reason
+                ];
+            });
+
+        $allData = $collections->concat($orders)->concat($visits);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'collections' => $collections,
+                'orders' => $orders,
+                'visits' => $visits,
+                'all' => $allData
+            ]
         ]);
     }
 }

@@ -54,6 +54,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/salesman', [AuthController::class, 'salesmanList']);
 });
 
+Route::get('/calendar', [AuthController::class, 'calendarData']);
+
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/employees/search', [EmployeeController::class, 'search']);
 Route::get('/departments/search', [DepartmentController::class, 'search']);
