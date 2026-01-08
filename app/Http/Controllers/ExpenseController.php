@@ -67,7 +67,7 @@ class ExpenseController extends Controller
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
     }
 
-    public function show(string $salesman_id): View
+    public function show(string $salesman_id): View 
     {
         if (!auth()->check() || !auth()->user()->hasPermission('view-expenses')) {
             abort(403, 'Permission Denied');

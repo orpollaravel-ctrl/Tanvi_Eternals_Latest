@@ -24,7 +24,6 @@
                         <x-base.lucide class="h-4 w-4" icon="MoreVertical" />
                     </span>
                 </x-base.menu.button>
-
                 <x-base.menu.items class="w-44">
                     <x-base.menu.item>
                         <a href="javascript:void(0);" onclick="printExpenses()" class="flex">

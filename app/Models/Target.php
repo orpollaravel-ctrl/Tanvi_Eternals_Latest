@@ -9,7 +9,8 @@ class Target extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'client_id',
+        'customer_name',
+        'location',
         'target_date',
         'user_id', 
         'reason',

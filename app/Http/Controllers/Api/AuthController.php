@@ -385,15 +385,16 @@ class AuthController extends Controller
     public function createVisit(Request $request)
     {
         $validated = $request->validate([
-            'client_id' => ['required', 'exists:clients,id'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'location' => ['required'],
             'target_date' => ['required'],
             'time' => ['required'],
-            'phone' => ['nullable', 'string', 'max:255'], 
+            'phone' => ['required', 'string', 'max:255'], 
             'visit_card' => ['nullable', 'image', 'max:2048'],
             'shop_photo' => ['nullable', 'image', 'max:2048'],
             'reason' => ['required', 'string', 'max:255'],
             'user_id' => ['required'],
-        ]); 
+        ]);
          $validated['user_id'] = $request->user()->id;
         if ($request->hasFile('visit_card')) {
             $file = $request->file('visit_card');
@@ -651,29 +652,14 @@ class AuthController extends Controller
                     'date' => $item->order_date,
                     'remark' => $item->remark
                 ];
-            });
-
-        $visits = Target::where('user_id', $userId)
-            ->whereDate('target_date', $date) 
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'type' => 'visit', 
-                    'time' => $item->time,
-                    'date' => $item->target_date,
-                    'reason' => $item->reason
-                ];
-            });
-
-        $allData = $collections->concat($orders)->concat($visits);
+            }); 
+        $allData = $collections->concat($orders);
 
         return response()->json([
             'success' => true,
             'data' => [
                 'collections' => $collections,
-                'orders' => $orders,
-                'visits' => $visits,
+                'orders' => $orders, 
                 'all' => $allData
             ]
         ]);
