@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('customer_code');
             $table->enum('metal', ['yellow gold', 'rose gold', 'white gold']);
             $table->enum('purity', ['22k', '18k', '14k', '9k']);
-            $table->enum('diamond', ['SI-IJ', 'SI-GH', 'VS-GH', 'VVS-EF', 'VS-SIGH', 'VS-ISHI', 'SI-HI']);
+            $table->enum('diamond', ['SI-IJ', 'SI-GH', 'VS-GH', 'VVS-EF', 'VS-SIGH', 'VS-ISHI', 'SI-HI', 'CVD']);
             $table->string('women_ring_size_from')->nullable();
             $table->string('women_ring_size_to')->nullable();
             $table->string('men_ring_size_from')->nullable();

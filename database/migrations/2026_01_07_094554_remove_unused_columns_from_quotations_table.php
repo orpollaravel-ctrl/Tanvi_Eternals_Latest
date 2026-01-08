@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('client_id');
-            $table->unsignedBigInteger('user_id');
-            $table->date('order_date');
-            $table->decimal('order_qty', 11, 2);
-            $table->timestamps();
+        Schema::table('quotations', function (Blueprint $table) {
+             $table->dropColumn([
+                'customer_id',
+                'customer_code',
+                'salesman_id',
+            ]);
         });
     }
 
@@ -26,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('quotations', function (Blueprint $table) {
+            //
+        });
     }
 };

@@ -21,13 +21,13 @@
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Customer Name</label>
                 <div class="mt-1 font-semibold">
-                    {{ $quotation->client->name ?? '-' }}
+                    {{ $quotation->customer_name ?? '-' }}
                 </div>
             </div>
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Salesman</label>
                 <div class="mt-1 font-semibold">
-                   {{ $quotation->salesman->name ?? '-' }}
+                   {{ $quotation->salesman_name ?? '-' }}
                 </div>  
             </div> 
             {{-- Contact --}}
@@ -36,14 +36,7 @@
                 <div class="mt-1 font-semibold">
                     {{ $quotation->contact ?? '-' }}
                 </div>
-            </div>
-            {{-- Customer Code --}}
-            <div class="col-span-12 sm:col-span-6">
-                <label class="text-sm font-medium text-slate-500">Customer Code</label>
-                <div class="mt-1 font-semibold">
-                    {{ $quotation->customer_code ?? '-' }}
-                </div>
-            </div>
+            </div> 
             {{-- Metal --}}
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Metal</label>

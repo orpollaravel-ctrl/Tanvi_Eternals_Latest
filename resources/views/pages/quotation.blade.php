@@ -39,10 +39,9 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">Customer Name</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Customer </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Salesman</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">Contact</x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">Customer Code</x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Contact</x-base.table.th> 
                         <x-base.table.th class="whitespace-nowrap border-b-0">Metal</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Purity</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Diamond</x-base.table.th>
@@ -56,20 +55,16 @@
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <div class="whitespace-nowrap font-medium">{{ $quotation->client->name ?? '-'}}</div>
+                                <div class="whitespace-nowrap font-medium">{{ $quotation->customer_name ?? '-'}}</div>
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->salesman->name ?? '-' }}</div>
+                                <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->salesman_name ?? '-' }}</div>
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->contact }}</div>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->customer_code }}</div>
-                            </x-base.table.td>
+                            </x-base.table.td> 
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ ucfirst($quotation->metal) }}</div>

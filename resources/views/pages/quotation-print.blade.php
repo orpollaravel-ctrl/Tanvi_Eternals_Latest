@@ -49,8 +49,8 @@
             <tr>
                 <th>#</th>
                 <th>Customer Name</th>
-                <th>Contact</th>
-                <th>Customer Code</th>
+                <th>Salesman</th>
+                <th>Contact</th> 
                 <th>Metal</th>
                 <th>Purity</th>
                 <th>Diamond</th>
@@ -62,9 +62,9 @@
             @foreach ($quotations as $index => $quotation)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $quotation->client->name }}</td>
+                    <td>{{ $quotation->customer_name }}</td>
+                    <td>{{ $quotation->salesman_name }}</td>
                     <td>{{ $quotation->contact }}</td>
-                    <td>{{ $quotation->customer_code }}</td>
                     <td>{{ ucfirst($quotation->metal) }}</td>
                     <td>{{ $quotation->purity }}</td>
                     <td>{{ $quotation->diamond }}</td>

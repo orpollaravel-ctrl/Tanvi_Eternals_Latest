@@ -288,6 +288,11 @@ Route::middleware('auth')->group(function () {
         Route::put('expenses/{id}', 'update')->name('expenses.update');
         Route::delete('expenses/{id}', 'destroy')->name('expenses.destroy');
         Route::post('expenses/{id}/status', 'updateStatus')->name('expenses.status');
+        Route::get('/expenses/print', [ExpenseController::class, 'print'])
+            ->name('expenses.print');
+
+        Route::get('/expenses/export-excel', [ExpenseController::class, 'exportExcel'])
+            ->name('expenses.export.excel');
     });
 
     Route::resource('dsr', DsrController::class);

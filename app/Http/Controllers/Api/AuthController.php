@@ -181,11 +181,11 @@ class AuthController extends Controller
                 return [
                     'id' => $quotation->id,
                     'customer_name' => $quotation->customer_name,
+                    'salesman_name' => $quotation->salesman_name,
                     'pincode' => $quotation->pincode,
                     'state' => $quotation->state,
                     'city' => $quotation->city,
-                    'contact' => $quotation->contact,
-                    'customer_code' => $quotation->customer_code,
+                    'contact' => $quotation->contact, 
                     'metal' => $quotation->metal,
                     'purity' => $quotation->purity,
                     'diamond' => $quotation->diamond,
@@ -206,13 +206,14 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
+            'salesman_name' => ['required', 'string', 'max:255'],
             'pincode' => ['required', 'string', 'max:10'],
             'state' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'contact' => ['required', 'string', 'max:255'], 
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
             'purity' => ['required', 'in:22k,18k,14k,9k'],
-            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI'],
+            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI,CVD'],
             'women_ring_size_from' => ['nullable', 'string', 'max:255'],
             'women_ring_size_to' => ['nullable', 'string', 'max:255'],
             'men_ring_size_from' => ['nullable', 'string', 'max:255'],
@@ -248,6 +249,7 @@ class AuthController extends Controller
             'data' => [
                 'id' => $quotation->id,
                 'customer_name' => $quotation->customer_name,
+                'salesman_name' => $quotation->salesman_name,
                 'pincode' => $quotation->pincode,
                 'state' => $quotation->state,
                 'city' => $quotation->city,
@@ -308,7 +310,7 @@ class AuthController extends Controller
 
     public function expenseDetails($id)
     {
-        $expense = Expense::find($id);
+        $expense = Expense::with('salesman')->find($id);
 
         if (!$expense) {
             return response()->json([
@@ -325,28 +327,18 @@ class AuthController extends Controller
 
     public function quotationFilter(Request $request)
     {
-        $query = Quotation::with('client');
+        $query = Quotation::query();
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-               $a =  $q->where('customer_code', 'like', "%{$search}%")
-                ->orWhereHas('client', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('code', 'like', "%{$search}%");
-                });  
-            });
-        }
+            $query->where('customer_name', 'LIKE', '%' . $request->search . '%');
+        } 
 
-        if ($request->filled('customer_id')) {
-            $query->where('customer_id', $request->customer_id);
-        }
+        $quotations = $query->latest()->get();
 
-        $quotations = $query->latest()->get(); 
         return response()->json([
             'status' => true,
             'data' => $quotations
-        ]);     
+        ]);
     }
 
     public function customerFilter(Request $request)
@@ -514,7 +506,6 @@ class AuthController extends Controller
         ], 201);
     }
 
-
     public function collectionList(Request $request)
     {
         $data = Collection::where('user_id', $request->user()->id)
@@ -527,7 +518,6 @@ class AuthController extends Controller
         ]);
     }
 
-
     public function collectionDetail($id)
     {
         $collection = Collection::find($id);
@@ -538,7 +528,6 @@ class AuthController extends Controller
                 'message' => 'Collection not found'
             ], 404);
         }
-
         return response()->json([
             'success' => true,
             'data' => $collection
@@ -547,12 +536,12 @@ class AuthController extends Controller
 
     public function createOrder(Request $request)
     {
+        
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'order_date' => 'required|date',
             'order_qty' => 'required',
-            'remark' => 'required|string',
-            'quotation_id' => 'nullable|exists:quotations,id',
+            'remark' => 'required|string', 
             'time' => 'required'
         ]);
 

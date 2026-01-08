@@ -9,16 +9,14 @@ class Quotation extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'customer_id',
-        'customer_code',
+    protected $fillable = [ 
         'customer_name',
         'pincode',
         'state',
         'city',
         'contact', 
         'barcode',
-        'salesman_id', 
+        'salesman_name', 
         'metal',
         'purity',
         'diamond',

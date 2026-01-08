@@ -44,30 +44,35 @@ class QuotationController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    { 
+     public function store(Request $request)
+    {
         $validated = $request->validate([
-            'customer_id' => ['required', 'integer','exists:clients,id'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'salesman_name' => ['required', 'string', 'max:255'],
             'contact' => ['required', 'string', 'max:255'],
-            'customer_code' => ['required', 'string', 'max:255'],
+
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
             'purity' => ['required', 'in:22k,18k,14k,9k'],
-            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI'],
-            'women_ring_size_from' => ['nullable', 'string', 'max:255'],
-            'women_ring_size_to' => ['nullable', 'string', 'max:255'],
-            'men_ring_size_from' => ['nullable', 'string', 'max:255'],
-            'men_ring_size_to' => ['nullable', 'string', 'max:255'],
+            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI,CVD'],
+
+            'women_ring_size_from' => ['nullable'],
+            'women_ring_size_to' => ['nullable'],
+            'men_ring_size_from' => ['nullable'],
+            'men_ring_size_to' => ['nullable'],
+
             'remarks' => ['nullable', 'string'],
-            'salesman_id' => ['required', 'exists:employees,id'],
-            'barcode' => ['nullable', 'array'],     
+            'barcode' => ['nullable', 'array'],
         ]);
-        
-        if (!empty($validated['barcode'])) {
-            $validated['barcode'] = implode(',', $validated['barcode']);
-        } 
+
+        $validated['barcode'] = !empty($validated['barcode'])
+            ? implode(',', $validated['barcode'])
+            : null;
+
         Quotation::create($validated);
 
-        return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
+        return redirect()
+            ->route('quotations.index')
+            ->with('success', 'Quotation created successfully.');
     }
 
     public function edit(string $id): View
@@ -101,31 +106,32 @@ class QuotationController extends Controller
         $quotation = Quotation::findOrFail($id);
 
         $validated = $request->validate([
-            'customer_id' => ['required', 'integer','exists:clients,id'],
+            'customer_name' => ['required', 'string', 'max:255'],
+            'salesman_name' => ['required', 'string', 'max:255'],
             'contact' => ['required', 'string', 'max:255'],
-            'customer_code' => ['required', 'string', 'max:255'],
+
             'metal' => ['required', 'in:yellow gold,rose gold,white gold'],
             'purity' => ['required', 'in:22k,18k,14k,9k'],
-            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI'],
-            'women_ring_size_from' => ['nullable', 'string', 'max:255'],
-            'women_ring_size_to' => ['nullable', 'string', 'max:255'],
-            'men_ring_size_from' => ['nullable', 'string', 'max:255'],
-            'men_ring_size_to' => ['nullable', 'string', 'max:255'],
+            'diamond' => ['required', 'in:SI-IJ,SI-GH,VS-GH,VVS-EF,VS-SIGH,VS-ISHI,SI-HI,CVD'],
+
+            'women_ring_size_from' => ['nullable'],
+            'women_ring_size_to' => ['nullable'],
+            'men_ring_size_from' => ['nullable'],
+            'men_ring_size_to' => ['nullable'],
+
             'remarks' => ['nullable', 'string'],
-            'salesman_id' => ['required', 'exists:employees,id'],
-            'barcode' => ['nullable', 'array'], 
-        ]); 
-         if ($request->has('barcode')) {
-                $validated['barcode'] = !empty($validated['barcode'])
-                    ? implode(',', $validated['barcode'])
-                    : null; 
-        }else{
-            $validated['barcode'] = null;
-        } 
+            'barcode' => ['nullable', 'array'],
+        ]);
+
+        $validated['barcode'] = !empty($validated['barcode'])
+            ? implode(',', $validated['barcode'])
+            : null;
 
         $quotation->update($validated);
 
-        return redirect()->route('quotations.index')->with('success', 'Quotation updated successfully.');
+        return redirect()
+            ->route('quotations.index')
+            ->with('success', 'Quotation updated successfully.');
     }
 
     public function destroy(string $id)

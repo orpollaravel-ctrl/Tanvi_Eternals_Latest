@@ -83,47 +83,39 @@
                 <form method="POST" action="{{ route('quotations.store') }}">
                     @csrf
                     <div class="grid grid-cols-12 gap-4">
+                           {{-- Customer Name --}}
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Customer Name *</x-base.form-label>
+                            <x-base.form-input
+                                type="text"
+                                name="customer_name"
+                                value="{{ old('customer_name') }}"
+                                placeholder="Enter Customer Name"
+                                required
+                            />
+                        </div>
 
-                            <select id="customer-select" name="customer_id" class="tom-select w-full" required>
-                                <option value="">Select Customer</option>
-                                @foreach ($clients as $client)
-                                    <option value="{{ $client->id }}" data-salesman="{{ $client->salesman_name }}"
-                                        data-code="{{ $client->code }}" data-contact="{{ $client->mobile_number }}"
-                                        @selected(old('customer_id') == $client->id)>
-                                        {{ $client->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div> 
+                        {{-- Salesman --}}
                         <div class="col-span-12 sm:col-span-6">
-                            <x-base.form-label>Salesman *</x-base.form-label> 
-                            <select name="salesman_id" class="tom-select w-full" required>
-                                <option value="">Select Salesman</option>
-                                @foreach ($salesmen as $salesman)
-                                    <option value="{{ $salesman->id }}">
-                                        {{ $salesman->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div> 
+                            <x-base.form-label>Salesman *</x-base.form-label>
+                            <x-base.form-input
+                                type="text"
+                                name="salesman_name"
+                                value="{{ old('salesman_name') }}"
+                                placeholder="Enter Salesman Name"
+                                required
+                            />
+                        </div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Contact *</x-base.form-label>
                             <x-base.form-input type="text" id="customer-contact" name="contact"
-                                value="{{ old('contact') }}" placeholder="Contact Number" required readonly />
-                        </div>
-                        <div class="col-span-12 sm:col-span-6">
-                            <x-base.form-label>Customer Code *</x-base.form-label>
-                            <x-base.form-input type="text" id="customer-code" name="customer_code"
-                                value="{{ old('customer_code') }}" placeholder="Customer Code" readonly required />
-                        </div>
+                                value="{{ old('contact') }}" placeholder="Contact Number" required  />
+                        </div> 
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Barcode</x-base.form-label>
                             <select id="product" name="barcode[]" multiple></select>
                             <p id="product-error" class="mt-1 text-sm text-red-600 hidden"></p>
                         </div>
-                        <div class="col-span-12 sm:col-span-6"></div>
                         <div class="col-span-12 sm:col-span-6">
                             <x-base.form-label>Metal *</x-base.form-label>
                             <div class="flex gap-6 mt-2">
@@ -164,7 +156,7 @@
                         <div class="col-span-12">
                             <x-base.form-label>Diamond *</x-base.form-label>
                             <div class="flex flex-wrap gap-3 mt-2">
-                                @foreach (['SI-IJ', 'SI-GH', 'VS-GH', 'VVS-EF', 'VS-SIGH', 'VS-ISHI', 'SI-HI'] as $d)
+                                @foreach (['SI-IJ', 'SI-GH', 'VS-GH', 'VVS-EF', 'VS-SIGH', 'VS-ISHI', 'SI-HI','CVD'] as $d)
                                     <label class="{{ $optionClass }} {{ old('diamond') == $d ? $activeClass : '' }}">
                                         <input type="radio" name="diamond" value="{{ $d }}" class="hidden"
                                             @checked(old('diamond') == $d)>

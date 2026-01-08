@@ -8,6 +8,40 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Expense Details</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap"
+            style="justify-content:space-between;"> 
+            <form method="GET" class="flex items-center gap-3">
+                <select name="status" onchange="this.form.submit()" class="form-select w-44">
+                    <option value="">All Status</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                </select>
+            </form>
+            <x-base.menu>
+                <x-base.menu.button class="!box px-2" as="x-base.button">
+                    <span class="flex h-5 w-5 items-center justify-center">
+                        <x-base.lucide class="h-4 w-4" icon="MoreVertical" />
+                    </span>
+                </x-base.menu.button>
+
+                <x-base.menu.items class="w-44">
+                    <x-base.menu.item>
+                        <a href="javascript:void(0);" onclick="printExpenses()" class="flex">
+                            <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" />
+                            Print
+                        </a>
+                    </x-base.menu.item>
+
+                    <x-base.menu.item>
+                        <a href="javascript:void(0);" onclick="exportExpensesToExcel()" class="flex">
+                            <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
+                            Export to Excel
+                        </a>
+                    </x-base.menu.item>
+                </x-base.menu.items>
+            </x-base.menu>
+        </div>
         {{-- <div class="intro-y col-span-12 lg:col-span-6">
                 <div class="relative bg-white dark:bg-darkmode-600 rounded-xl shadow-lg overflow-hidden">
 

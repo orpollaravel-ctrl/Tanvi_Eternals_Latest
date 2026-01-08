@@ -6,80 +6,81 @@
 
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">Expense Details</h2>
-    <div class="mt-5 grid grid-cols-12 gap-6"> 
-            <div class="intro-y col-span-12 lg:col-span-6">
-                <div class="relative bg-white dark:bg-darkmode-600 rounded-xl shadow-lg overflow-hidden">
+    <div class="mt-5 grid grid-cols-12 gap-6">
+         
+        <div class="intro-y col-span-12 lg:col-span-6">
+            <div class="relative bg-white dark:bg-darkmode-600 rounded-xl shadow-lg overflow-hidden">
 
-                    <!-- Left Accent -->
-                    <div class="absolute left-0 top-0 h-full w-1 bg-primary"></div>
+                <!-- Left Accent -->
+                <div class="absolute left-0 top-0 h-full w-1 bg-primary"></div>
 
-                    <div style="padding: 15px;">
+                <div style="padding: 15px;">
 
-                        <!-- Header -->
-                        <div class="flex items-center justify-between mb-6" style="justify-content:space-between;">
-                            <div>
-                                <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
-                                    {{ $expense->salesman->name }}
-                                </h2>
-                                <p class="text-sm text-slate-500">
-                                    Recorded expense summary
-                                </p>
-                            </div>
-
-                            <span class="px-4 py-1.5 rounded-full text-sm font-semibold bg-primary/10 text-primary">
-                                {{ ucwords($expense->type) }}
-                            </span>
-                        </div>
-
-                        <!-- Amount Highlight -->
-                        <div class="mb-6">
-                            <p class="text-sm text-slate-500">Total Amount</p>
-                            <p class="text-md font-bold text-primary">
-                                ₹{{ number_format($expense->amount, 2) }}
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-6" style="justify-content:space-between;">
+                        <div>
+                            <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
+                                {{ $expense->salesman->name }}
+                            </h2>
+                            <p class="text-sm text-slate-500">
+                                Recorded expense summary
                             </p>
                         </div>
 
-                        <!-- Info Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <span class="px-4 py-1.5 rounded-full text-sm font-semibold bg-primary/10 text-primary">
+                            {{ ucwords($expense->type) }}
+                        </span>
+                    </div>
 
-                            <div class="flex items-center gap-3">
-                                <x-base.lucide icon="Calendar" class="w-5 h-5 text-slate-400" />
-                                <div>
-                                    <p class="text-xs text-slate-500">Date</p>
-                                    <p class="font-medium">
-                                        {{ $expense->date->format('d M Y') }}
-                                    </p>
-                                </div>
-                            </div>
+                    <!-- Amount Highlight -->
+                    <div class="mb-6">
+                        <p class="text-sm text-slate-500">Total Amount</p>
+                        <p class="text-md font-bold text-primary">
+                            ₹{{ number_format($expense->amount, 2) }}
+                        </p>
+                    </div>
 
-                            <div class="flex items-center gap-3">
-                                <x-base.lucide icon="FileText" class="w-5 h-5 text-slate-400" />
-                                <div>
-                                    <p class="text-xs text-slate-500">Bill</p>
-                                    @if ($expense->bill_upload)
-                                        <button
-                                            onclick="viewBill('{{ asset('uploads/expenses/' . $expense->bill_upload) }}','{{ $expense->bill_upload }}')"
-                                            class="text-primary font-medium text-sm hover:underline">
-                                            View Bill
-                                        </button>
-                                    @else
-                                        <p class="text-slate-400 text-sm">Not Available</p>
-                                    @endif
-                                </div>
-                            </div>
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
 
-                            <div class="flex items-center gap-3">
-                                <x-base.lucide icon="MessageSquare" class="w-5 h-5 text-slate-400" />
-                                <div>
-                                    <p class="text-xs text-slate-500">Remark</p>
-                                    <p class="text-sm text-slate-700 dark:text-slate-300 truncate max-w-xs">
-                                        {{ $expense->remark ?: 'No remarks added' }}
-                                    </p>
-                                </div>
+                        <div class="flex items-center gap-3">
+                            <x-base.lucide icon="Calendar" class="w-5 h-5 text-slate-400" />
+                            <div>
+                                <p class="text-xs text-slate-500">Date</p>
+                                <p class="font-medium">
+                                    {{ $expense->date->format('d M Y') }}
+                                </p>
                             </div>
                         </div>
-                        <!-- Actions -->
-                        {{-- <div class="flex items-center gap-3 pt-4 border-t border-slate-200 dark:border-darkmode-400">
+
+                        <div class="flex items-center gap-3">
+                            <x-base.lucide icon="FileText" class="w-5 h-5 text-slate-400" />
+                            <div>
+                                <p class="text-xs text-slate-500">Bill</p>
+                                @if ($expense->bill_upload)
+                                    <button
+                                        onclick="viewBill('{{ asset('uploads/expenses/' . $expense->bill_upload) }}','{{ $expense->bill_upload }}')"
+                                        class="text-primary font-medium text-sm hover:underline">
+                                        View Bill
+                                    </button>
+                                @else
+                                    <p class="text-slate-400 text-sm">Not Available</p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <x-base.lucide icon="MessageSquare" class="w-5 h-5 text-slate-400" />
+                            <div>
+                                <p class="text-xs text-slate-500">Remark</p>
+                                <p class="text-sm text-slate-700 dark:text-slate-300 truncate max-w-xs">
+                                    {{ $expense->remark ?: 'No remarks added' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    {{-- <div class="flex items-center gap-3 pt-4 border-t border-slate-200 dark:border-darkmode-400">
                             <a href="{{ route('expenses.index') }}">
                                 <x-base.button variant="outline-secondary">
                                     ← Back
@@ -95,9 +96,9 @@
                             @endif
                         </div> --}}
 
-                    </div>
                 </div>
-            </div> 
+            </div>
+        </div>
 
         <!-- Bill Photo Modal -->
         <x-base.dialog id="bill-photo-modal" size="xl">
@@ -146,7 +147,7 @@
                     // Show modal
                     const modalInstance = tailwind.Modal.getOrCreateInstance(modal);
                     modalInstance.show();
-                }
+                } 
             </script>
         @endpush
     @endsection
