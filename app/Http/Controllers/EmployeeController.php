@@ -261,11 +261,7 @@ class EmployeeController extends Controller
             ->with('success', 'Employee updated successfully.');
     }
 
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
+ 
     public function destroy(string $id)
     {
          if (!auth()->check() || !auth()->user()->hasPermission('delete-employees')) {
