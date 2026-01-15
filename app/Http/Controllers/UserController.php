@@ -51,7 +51,6 @@ class UserController extends Controller
             'permissions' => $permissions,
         ]);
     }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
