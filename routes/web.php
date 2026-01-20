@@ -226,6 +226,7 @@ Route::middleware('auth')->group(function () {
     });*/
 
     Route::resource('client',ClientController::class);
+    Route::post('client/assign-quotation', [ClientController::class, 'assignQuotation'])->name('client.assign-quotation');
     Route::resource('vendor',VendorController::class);
 
     // Products CRUD

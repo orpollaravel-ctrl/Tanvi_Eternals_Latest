@@ -14,25 +14,38 @@ class CustomerController extends Controller
         if (!$customer || !$customer->hasPermission('view-customer-quotations')) {
             abort(403, 'Permission Denied');
         }
-        $quotations = Quotation::where('customer_id', $customer->id)
-            ->where(function ($q) {
-                $q->whereNull('barcode')
-                ->orWhere('barcode', '');
-            })
-            ->latest()
-            ->get();
+         
+        $quotations = collect();
+        if ($customer->quotation_no) {
+            $quotation = Quotation::find($customer->quotation_no);
+            if ($quotation) { 
+                $quotation->client_pdf = $customer->quotation_pdf;
+                $quotations = collect([$quotation]);
+            }
+        }
 
-        return view('customer.quotations.index', compact('quotations'));
+        return view('customer.quotations.index', [
+            'layout' => 'side-menu',
+            'quotations' => $quotations
+        ]);
     }
 
     public function show(Quotation $quotation)
     {
         $customer = auth('client')->user();
-        $quotation->load('pdfs');
+        
         if (!$customer || !$customer->hasPermission('view-customer-quotations')) {
             abort(401, 'Unauthenticated');
-        }  
+        }
+        
+        $quotation->load('pdfs');
+        
+        // Add client PDF data
+        $quotation->client_pdf = $customer->quotation_pdf;
 
-        return view('customer.quotations.show', compact('quotation'));
-    }
+        return view('customer.quotations.show', [
+            'layout' => 'side-menu',
+            'quotation' => $quotation
+        ]);
+    } 
 }

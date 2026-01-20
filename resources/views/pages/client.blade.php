@@ -14,6 +14,13 @@
         </div>
     @endif
 
+    {{-- Error Message --}}
+    @if (session('error'))
+        <div class="mt-5 rounded-md border border-danger/20 bg-danger/10 p-4 text-danger dark:border-danger/30">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="mt-5 grid grid-cols-8 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             @if(auth()->check() && auth()->user()->hasPermission('create-clients'))
@@ -23,45 +30,18 @@
                     </x-base.button>
                 </a>
                 <x-base.button
-                        class="mr-2"
-                        variant="outline-primary"
-                        data-tw-toggle="modal"
-                        data-tw-target="#import-client-modal">
-                        Import Excel
-                    </x-base.button>
-            @endif
-            {{-- <x-base.menu>
-                <x-base.menu.button class="!box px-2" as="x-base.button">
-                    <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide class="h-4 w-4" icon="Plus" />
-                    </span>
-                </x-base.menu.button>
-                <x-base.menu.items class="w-40">
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
-                    </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to Excel
-                    </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
-                    </x-base.menu.item>
-                </x-base.menu.items>  
-            </x-base.menu>  --}} 
+                    class="mr-2"
+                    variant="outline-primary"
+                    data-tw-toggle="modal"
+                    data-tw-target="#import-client-modal">
+                    Import Excel
+                </x-base.button>
+            @endif 
             <form method="GET" action="{{ route('client.index') }}">
                 <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto">
                     <div class="relative w-56 text-slate-500">
-                        <x-base.form-input
-                            name="search"
-                            value="{{ request('search') }}"
-                            class="!box w-56 pr-10"
-                            type="text"
-                            placeholder="Search by name or code..."
-                        />
-                        <x-base.lucide
-                            class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4"
-                            icon="Search"
-                        />
+                        <x-base.form-input name="search" value="{{ request('search') }}" class="!box w-56 pr-10" type="text" placeholder="Search by name or code..."/>
+                        <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
                     </div>
                 </div>
             </form>
@@ -78,8 +58,7 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0"> Mobile </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> City </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0"> State </x-base.table.th>
-
-                        @if(auth()->check() && (auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
+                        @if(auth()->check() && (auth()->user()->hasPermission('view-clients') || auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
                             <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                                 ACTIONS
                             </x-base.table.th>
@@ -91,9 +70,8 @@
                         @forelse ($clients as $client)
                             <x-base.table.tr class="intro-x">
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
-                                    <div class="text-xs text-slate-500">{{ $client->code }}</div>
+                                    <div class="text-xs text-slate-500">{{ $client->code ?? '-'}}</div>
                                 </x-base.table.td>
-
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">{{ $client->name }}</div>
                                 </x-base.table.td>
@@ -110,22 +88,35 @@
                                         {{ $client->mobile_number ?? '-' }}
                                     </div>
                                 </x-base.table.td>
-
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">
                                         {{ $client->city ?? '-' }}
                                     </div>
-                                </x-base.table.td>
-
+                                </x-base.table.td> 
                                 <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                     <div class="text-xs text-slate-500">
                                         {{ $client->state ?? '-' }}
                                     </div>
                                 </x-base.table.td>
-
-                                @if(auth()->check() && (auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
+                                @if(auth()->check() && (auth()->user()->hasPermission('view-clients') || auth()->user()->hasPermission('edit-clients') || auth()->user()->hasPermission('delete-clients')))
                                     <x-base.table.td class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] dark:bg-darkmode-600">
                                         <div class="flex items-center justify-center">
+                                            @if(auth()->user()->hasPermission('view-clients'))
+                                                <a class="mr-3 flex items-center" href="{{ route('client.show', $client->id) }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
+                                                    View
+                                                </a>
+                                                <a class="mr-3 flex items-center text-primary" 
+                                                   href="#" 
+                                                   data-tw-toggle="modal" 
+                                                   data-tw-target="#assign-quotation-modal"
+                                                   data-client-id="{{ $client->id }}"
+                                                   data-client-name="{{ $client->name }}">
+                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="FileText" />
+                                                    PDF
+                                                </a>
+                                            @endif
+                                            
                                             @if(auth()->user()->hasPermission('edit-clients'))
                                                 <a class="mr-3 flex items-center" href="{{ route('client.edit', $client->id) }}">
                                                     <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
@@ -225,6 +216,40 @@
                 </div>
             </form>
         </x-base.dialog.panel>
+    </x-base.dialog>
+
+    <!-- BEGIN: Assign Quotation Modal -->
+    <x-base.dialog id="assign-quotation-modal">
+        <x-base.dialog.panel>
+            <form action="{{ route('client.assign-quotation') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="p-5">
+                    <div class="text-lg font-medium">Assign Quotation to <span id="modal-client-name" class="text-primary"></span></div>
+
+                    <input type="hidden" name="client_id" id="modal-client-id">
+
+                    <div class="mt-4">
+                        <x-base.form-label>Quotation Number *</x-base.form-label>
+                        <x-base.form-input type="number" name="quotation_no" placeholder="Enter quotation number" required />
+                    </div>
+
+                    <div class="mt-4">
+                        <x-base.form-label>Upload PDF (Optional)</x-base.form-label>
+                        <x-base.form-input type="file" name="pdf_file" accept=".pdf" />
+                        <div class="mt-1 text-xs text-slate-500">Upload quotation PDF file (Max: 5MB)</div>
+                    </div>
+                </div>
+                
+                <div class="px-5 pb-5 text-right">
+                    <x-base.button type="button" variant="outline-secondary" data-tw-dismiss="modal">
+                        Cancel
+                    </x-base.button>
+                    <x-base.button type="submit" variant="primary">
+                        Assign Quotation
+                    </x-base.button>
+                </div>
+            </form>
+        </x-base.dialog.panel>
     </x-base.dialog> 
 
     <!-- END: Delete Confirmation Modal -->
@@ -237,6 +262,18 @@
                 const tbody = document.getElementById('clients-tbody');
                 let allClients = @json($clients);
                 let displayedCount = 20;
+
+                // Handle assign quotation modal
+                const assignQuotationButtons = document.querySelectorAll('[data-tw-target="#assign-quotation-modal"]');
+                assignQuotationButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const clientId = this.getAttribute('data-client-id');
+                        const clientName = this.getAttribute('data-client-name');
+                        
+                        document.getElementById('modal-client-id').value = clientId;
+                        document.getElementById('modal-client-name').textContent = clientName;
+                    });
+                });
 
                 function loadMoreClients() {
                     if (displayedCount >= allClients.length) return;

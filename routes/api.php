@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CustomerAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
@@ -20,6 +21,10 @@ use App\Http\Controllers\OpeningStockController;
 */
 
 Route::post('/login', [AuthController::class, 'login']); 
+
+// Customer API Routes
+Route::post('/customer/register', [CustomerAuthController::class, 'register']);
+Route::post('/customer/login', [CustomerAuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -52,6 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/filter', [AuthController::class, 'ordersByDate']); 
     Route::get('/orders/{id}', [AuthController::class, 'orderDetail']);
     Route::get('/salesman', [AuthController::class, 'salesmanList']);
+    
+    // Customer authenticated routes
+    Route::post('/customer/logout', [CustomerAuthController::class, 'logout']);
+    Route::get('/customer/quotations', [CustomerAuthController::class, 'quotations']);
+    Route::get('/customer/quotations/{id}', [CustomerAuthController::class, 'quotationDetails']);
 });
 
 Route::get('/calendar', [AuthController::class, 'calendarData']);

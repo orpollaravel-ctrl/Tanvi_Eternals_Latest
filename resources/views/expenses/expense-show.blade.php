@@ -191,23 +191,27 @@
                                     @if($expense->status === 'pending')
                                         <div class="flex gap-2">
                                             <button onclick="updateStatus({{ $expense->id }}, 'approved')"
-                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
+                                                style="display: inline-flex; align-items: center; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background-color: #dcfce7; color: #166534; border: none; cursor: pointer;"
+                                                onmouseover="this.style.backgroundColor='#bbf7d0'"
+                                                onmouseout="this.style.backgroundColor='#dcfce7'">
                                                 <x-base.lucide icon="Check" class="w-3 h-3 mr-1" />
                                                 Approve
                                             </button>
                                             <button onclick="updateStatus({{ $expense->id }}, 'rejected')"
-                                                class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200">
+                                                style="display: inline-flex; align-items: center; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background-color: #fee2e2; color: #991b1b; border: none; cursor: pointer;"
+                                                onmouseover="this.style.backgroundColor='#fecaca'"
+                                                onmouseout="this.style.backgroundColor='#fee2e2'">
                                                 <x-base.lucide icon="X" class="w-3 h-3 mr-1" />
                                                 Reject
                                             </button>
                                         </div>
                                     @elseif($expense->status === 'approved')
-                                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                        <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: #dcfce7; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: #166534;">
                                             <x-base.lucide icon="Check" class="w-3 h-3 mr-1" />
                                             Approved
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                        <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: #fee2e2; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: #991b1b;">
                                             <x-base.lucide icon="X" class="w-3 h-3 mr-1" />
                                             Rejected
                                         </span>
@@ -362,14 +366,14 @@
                     if (data.success) {
                         if (status === 'approved') {
                             statusDiv.innerHTML = `
-                                <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                                <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: #dcfce7; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: #166534;">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20,6 9,17 4,12"/></svg>
                                     Approved
                                 </span>
                             `;
                         } else {
                             statusDiv.innerHTML = `
-                                <span class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-800">
+                                <span style="display: inline-flex; align-items: center; border-radius: 9999px; background-color: #fee2e2; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; color: #991b1b;">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                     Rejected
                                 </span>

@@ -18,7 +18,16 @@ class QuotationController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('view-quotations')) {
             abort(403,'Permission Denied');
         }
-        $quotations = Quotation::latest()->get();
+        $quotations = Quotation::with(['client' => function($query) {
+            $query->where('quotation_no', '!=', null);
+        }])->latest()->get();
+        
+        // Add client PDF data to quotations
+        foreach ($quotations as $quotation) {
+            $client = \App\Models\Client::where('quotation_no', $quotation->id)->first();
+            $quotation->client_pdf = $client ? $client->quotation_pdf : null;
+        }
+        
         return view('pages/quotation', [
             'layout' => 'side-menu',
             'quotations' => $quotations,
@@ -219,6 +228,14 @@ class QuotationController extends Controller
     public function show(Quotation $quotation)
     {
         $quotation->load('pdfs');
-          return view('pages/quotation-show', compact('quotation'));    
+        
+        // Get client PDF for this quotation
+        $client = \App\Models\Client::where('quotation_no', $quotation->id)->first();
+        $quotation->client_pdf = $client ? $client->quotation_pdf : null;
+        
+        return view('pages/quotation-show', [
+            'layout' => 'side-menu',
+            'quotation' => $quotation
+        ]);    
     }
 }

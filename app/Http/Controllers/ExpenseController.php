@@ -152,11 +152,12 @@ class ExpenseController extends Controller
     }
 
     public function destroy(string $id)
-    {
+    { 
         if (!auth()->check() || !auth()->user()->hasPermission('delete-expenses')) {
             abort(403, 'Permission Denied');
         }
         $expense = Expense::findOrFail($id);
+        $salesmanId = $expense->salesman_id;
 
         if ($expense->bill_upload && file_exists(public_path('uploads/expenses/' . $expense->bill_upload))) {
             unlink(public_path('uploads/expenses/' . $expense->bill_upload));
@@ -164,7 +165,7 @@ class ExpenseController extends Controller
 
         $expense->delete();
 
-        return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
+        return redirect()->route('expenses.show', $salesmanId)->with('success', 'Expense deleted successfully.');
     }
 
     public function updateStatus(Request $request, $id)

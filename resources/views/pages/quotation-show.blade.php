@@ -36,7 +36,7 @@
                 <div class="mt-1 font-semibold">
                     {{ $quotation->contact ?? '-' }}
                 </div>
-            </div> 
+            </div>
             {{-- Metal --}}
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Metal</label>
@@ -79,25 +79,36 @@
                 </div>
             @endif
             <div class="col-span-12">
-                <label class="text-slate-500 text-sm">Attached PDFs</label>
-
-                @if ($quotation->pdfs->count())
-                    <ul class="mt-2 space-y-2">
+                <label class="text-slate-500 text-sm mb-3 block">PDFs</label>
+                <div class="space-y-2">
+                    @if ($quotation->client_pdf)
+                        <div class="flex items-center p-3 bg-slate-50 rounded">
+                            <span class="mr-3 text-sm">Quotation PDF</span>
+                            <a href="{{ asset($quotation->client_pdf) }}"
+                                target="_blank"
+                                class="flex items-center text-primary">
+                                 <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
+                                View
+                            </a>
+                        </div>
+                    @endif
+                    @if ($quotation->pdfs->count())
                         @foreach ($quotation->pdfs as $pdf)
-                            <li class="flex items-center p-2">
-                                <span class="mr-3">{{ $pdf->original_name }}</span>
+                            <div class="flex items-center p-3 bg-slate-50 rounded">
+                                <span class="mr-3 text-sm">{{ $pdf->original_name }}</span>
                                 <a href="{{ asset($pdf->file_path) }}"
                                     target="_blank"
-                                    class="mr-3 flex items-center text-primary">
+                                    class="flex items-center text-primary">
                                      <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
                                     View
-                                    </a>
-                            </li>
+                                </a>
+                            </div>
                         @endforeach
-                    </ul>
-                @else
-                    <div class="text-slate-400 mt-2">No PDFs uploaded</div>
-                @endif
+                    @endif
+                    @if (!$quotation->client_pdf && !$quotation->pdfs->count())
+                        <div class="text-slate-400">No PDFs available</div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

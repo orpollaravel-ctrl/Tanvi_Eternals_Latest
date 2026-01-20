@@ -72,9 +72,18 @@ class ClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Client $client)
+public function show(string $id): View
     {
-        //
+        if (!auth()->check() || !auth()->user()->hasPermission('view-clients')) {
+            abort(403, 'Permission Denied');
+        }
+        
+        $client = Client::with('salesman')->findOrFail($id);
+        
+        return view('pages.client-show', [
+            'layout' => 'side-menu',
+            'client' => $client,
+        ]);
     }
 
     /**
@@ -158,5 +167,32 @@ class ClientController extends Controller
         return redirect()
             ->route('client.index')
             ->with('success', 'Clients imported successfully.');
+    }
+
+    public function assignQuotation(Request $request)
+    {
+        $validated = $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'quotation_no' => 'required|string',
+            'pdf_file' => 'nullable|file|mimes:pdf|max:5120'
+        ]);
+
+        $client = Client::findOrFail($validated['client_id']);
+        
+        $pdfPath = null;
+        if ($request->hasFile('pdf_file')) {
+            $file = $request->file('pdf_file');
+            $fileName = time() . '_' . $validated['quotation_no'] . '.pdf';
+            $file->move(public_path('uploads/quotations'), $fileName);
+            $pdfPath = 'uploads/quotations/' . $fileName;
+        } 
+        $client->update([
+            'quotation_no' => $validated['quotation_no'],
+            'quotation_pdf' => $pdfPath
+        ]);
+
+        return redirect()
+            ->route('client.index')
+            ->with('success', 'Quotation assigned successfully.');
     }
 }

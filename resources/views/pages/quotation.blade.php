@@ -39,12 +39,14 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">Quotation No.</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Customer </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Salesman</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Contact</x-base.table.th> 
                         <x-base.table.th class="whitespace-nowrap border-b-0">Metal</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Purity</x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">Diamond</x-base.table.th>
+                        {{-- <x-base.table.th class="whitespace-nowrap border-b-0">Client PDF</x-base.table.th> --}}
                         @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
                             <x-base.table.th class="whitespace-nowrap border-b-0 text-center">Actions</x-base.table.th>
                         @endif
@@ -53,6 +55,10 @@
                 <x-base.table.tbody>
                     @foreach ($quotations as $quotation)
                         <x-base.table.tr class="intro-x">
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="whitespace-nowrap font-medium text-primary">{{ $quotation->id }}</div>
+                            </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap font-medium">{{ $quotation->customer_name ?? '-'}}</div>
@@ -76,6 +82,16 @@
                             <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <div class="whitespace-nowrap text-xs text-slate-500">{{ $quotation->diamond }}</div>
                             </x-base.table.td>
+                            {{-- <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                @if($quotation->client_pdf)
+                                    <a href="{{ asset($quotation->client_pdf) }}" target="_blank" class="flex items-center text-success">
+                                        <x-base.lucide class="mr-1 h-4 w-4" icon="FileText" />
+                                        View PDF
+                                    </a>
+                                @else
+                                    <span class="text-slate-400">No PDF</span>
+                                @endif
+                            </x-base.table.td> --}}
                             @if (auth()->check() && (auth()->user()->hasPermission('edit-quotations') || auth()->user()->hasPermission('delete-quotations')))
                                 <x-base.table.td
                                     class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
