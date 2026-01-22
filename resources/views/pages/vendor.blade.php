@@ -96,7 +96,7 @@
                                                     Edit
                                                 </a>
                                             @endif
-                                            @if(auth()->check() && auth()->user()->hasPermission('edit-vendors'))
+                                            @if(auth()->check() && auth()->user()->hasPermission('delete-vendors'))
                                                 <a class="flex items-center text-danger" data-tw-toggle="modal"
                                                     data-tw-target="#delete-confirmation-modal" href="#"
                                                     data-delete-route="{{ route('vendor.destroy', $vendor->id) }}"

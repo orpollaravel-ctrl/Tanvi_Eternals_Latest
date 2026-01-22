@@ -8,53 +8,48 @@
     <h2 class="intro-y mt-10 text-lg font-medium">Employee Wise Tool Assign Report</h2>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <!-- BEGIN: Filters -->
-        <div class="intro-y col-span-6 justify-betwen flex items-center">
-            <div class="me-3">
-                <x-base.menu>
-                    <x-base.menu.button class="!box px-2" as="x-base.button">
-                        <span class="flex h-5 w-5 items-center justify-center">
-                            <x-base.lucide class="h-4 w-4" icon="Plus" />
-                        </span>
-                    </x-base.menu.button>
+        <div class="intro-y col-span-6 flex items-center gap-3">    
+            <!-- Export -->
+            <x-base.menu>
+                <x-base.menu.button class="!box px-2" as="x-base.button">
+                    <span class="flex h-5 w-5 items-center justify-center">
+                        <x-base.lucide class="h-4 w-4" icon="Plus" />
+                    </span>
+                </x-base.menu.button>
 
-                    <x-base.menu.items class="w-40">
-                        <x-base.menu.item
-                            as="a"
-                            href="{{ route('tool-assigns.employee-wise-report.export', request()->query()) }}"
-                        >
-                            <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
-                            Export to Excel
-                        </x-base.menu.item>
-                    </x-base.menu.items>
-                </x-base.menu>
-            </div>
-            <form method="GET" action="{{ route('tool-assigns.employee-wise-report') }}" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <!-- Employee Filter -->
-                <div class="w-full sm:w-48">
-                    <select id="employee-filter" name="employee_id" class="employee-select tom-select w-full" data-placeholder="Search & select employee...">
+                <x-base.menu.items class="w-40">
+                    <x-base.menu.item as="a"
+                        href="{{ route('tool-assigns.employee-wise-report.export', request()->query()) }}">
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
+                        Export to Excel
+                    </x-base.menu.item>
+                </x-base.menu.items>
+            </x-base.menu>
+
+            <form method="GET" action="{{ route('tool-assigns.employee-wise-report') }}"
+                class="flex flex-wrap items-center gap-3 w-full">
+                <div class="employee-select-wrapper w-48">
+                    <select id="employee-filter" name="employee_id" class="employee-select tom-select w-full"
+                        data-placeholder="Search & select employee...">
                         <option value="">All Employees</option>
                     </select>
                 </div>
-
-                <!-- Date Range -->
-                <div class="flex gap-2 w-full sm:w-auto">
-                    <input type="date" id="start-date" name="start_date" value="{{ request('start_date') }}" class="filter-input box w-full sm:w-32">
-                    <input type="date" id="end-date" name="end_date" value="{{ request('end_date') }}" class="filter-input box w-full sm:w-32">
+                <div class="flex gap-2">
+                    <input type="date" name="start_date" value="{{ request('start_date') }}"
+                        class="filter-input box w-36">
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="filter-input box w-36">
                 </div>
-
-                <!-- Filter and Cancel Buttons -->
-				<div class="flex gap-2">
+                <div class="flex gap-2">
                     <x-base.button type="submit" variant="primary">Search</x-base.button>
-                    <x-base.button type="button" variant="outline-secondary" id="clear-filters">Clear</x-base.button>
+                    <x-base.button type="button" variant="outline-secondary" id="clear-filters">
+                        Clear
+                    </x-base.button>
                 </div>
-            </form> 
+            </form>
         </div>
-       
-        <!-- END: Filters -->
 
-        <!-- Report Table -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-        <x-base.table class="border-separate border-spacing-y-[10px]">
+            <x-base.table class="border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">#</x-base.table.th>
@@ -66,11 +61,11 @@
                 </x-base.table.thead>
                 <x-base.table.tbody>
                     @php
-                        $grouped = $toolAssigns->groupBy(function($assign) {
+                        $grouped = $toolAssigns->groupBy(function ($assign) {
                             return $assign->items->first()->emp_id ?? 'unknown';
                         });
                         $index = 1;
-						$hasFilterEmployee = request()->filled('employee_id');
+                        $hasFilterEmployee = request()->filled('employee_id');
 
                     @endphp
                     @forelse ($employees as $employee)
@@ -91,32 +86,36 @@
                                 }
                             }
                             $hasAssignments = $assignments->isNotEmpty();
-							if (!$hasFilterEmployee && $totalAmount == 0) {
-								continue;
-							}
+                            if (!$hasFilterEmployee && $totalAmount == 0) {
+                                continue;
+                            }
                         @endphp
                         <x-base.table.tr class="intro-x employee-row" data-emp-id="{{ $empId }}">
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md">
                                 {{ $index++ }}
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                                 {{ $employee->name ?? '-' }}
                             </x-base.table.td>
                             {{-- <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                                 {{ $departmentName }}
                             </x-base.table.td> --}}
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
                                 {{ number_format($totalAmount, 2) }}
                             </x-base.table.td>
-                            <x-base.table.td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] last:rounded-r-md">
-                                @if($hasAssignments)
+                            <x-base.table.td
+                                class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] last:rounded-r-md">
+                                @if ($hasAssignments)
                                     <button class="btn btn-sm btn-primary toggle-details" data-emp-id="{{ $empId }}">
                                         <x-base.lucide icon="ChevronDown" class="w-4 h-4" />
                                     </button>
                                 @endif
                             </x-base.table.td>
                         </x-base.table.tr>
-                        @if($hasAssignments)
+                        @if ($hasAssignments)
                             <!-- Collapsible Details -->
                             <x-base.table.tr class="details-row hidden" data-emp-id="{{ $empId }}">
                                 <x-base.table.td colspan="4" class="border-b-0 bg-slate-50 dark:bg-darkmode-700 p-4">
@@ -134,13 +133,15 @@
                                             <tbody>
                                                 @foreach ($assignments as $assign)
                                                     @foreach ($assign->items as $item)
-                                                        @if($item->emp_id == $empId)
+                                                        @if ($item->emp_id == $empId)
                                                             <tr>
                                                                 <td>{{ $assign->department->name ?? '-' }}</td>
                                                                 <td>{{ $item->product->product_name ?? '-' }}</td>
                                                                 <td>{{ number_format($item->quantity, 2) }}</td>
-                                                                <td>{{ $assign->date ? \Carbon\Carbon::parse($assign->date)->format('d M Y') : '-' }}</td>
-                                                                <td>{{ number_format($item->quantity * ($item->product->purchaseItems->avg('rate') ?? 0), 2) }}</td>
+                                                                <td>{{ $assign->date ? \Carbon\Carbon::parse($assign->date)->format('d M Y') : '-' }}
+                                                                </td>
+                                                                <td>{{ number_format($item->quantity * ($item->product->purchaseItems->avg('rate') ?? 0), 2) }}
+                                                                </td>
                                                             </tr>
                                                         @endif
                                                     @endforeach
@@ -174,7 +175,7 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 // Initialize Tom Select for employee filter
                 const employeeFilter = document.getElementById('employee-filter');
                 if (employeeFilter) {
@@ -313,9 +314,10 @@
                         if (startDateInput) startDateInput.value = '';
                         if (endDateInput) endDateInput.value = '';
                         // Reset TomSelect
-                        if (typeof employeeTomSelect !== 'undefined' && employeeTomSelect) employeeTomSelect.clear();
+                        if (typeof employeeTomSelect !== 'undefined' && employeeTomSelect) employeeTomSelect
+                            .clear();
                         // Redirect to clear URL
-                        window.location.href = '{{ route("tool-assigns.employee-wise-report") }}';
+                        window.location.href = '{{ route('tool-assigns.employee-wise-report') }}';
                     });
                 }
 

@@ -22,6 +22,7 @@ class Product extends Model
         'reorder_quantity',
         'unit_id',
         'product_photo',
+        'product_type',
     ];
 
     protected $casts = [

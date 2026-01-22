@@ -107,15 +107,11 @@
                                         @endif
                                         <!-- Delete -->
                                          @if (auth()->check() && auth()->user()->hasPermission('delete-departments'))
-                                            <form action="{{ route('departments.destroy', $department->id) }}" method="POST"
-                                                class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="flex items-center text-danger"
-                                                    onclick="return confirm('Are you sure you want to delete this department?')">
-                                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                                </button>
-                                            </form>
+                                            <a class="flex items-center text-danger delete-department-btn" href="#"
+                                                data-delete-route="{{ route('departments.destroy', $department->id) }}"
+                                                data-delete-name="{{ $department->name }}">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                            </a>
                                         @endif
 
                                     </div>
@@ -144,17 +140,21 @@
                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
                 <div class="mt-5 text-3xl">Are you sure?</div>
                 <div class="mt-2 text-slate-500">
-                    Do you really want to delete this department?<br />
+                    Do you really want to delete <span class="font-medium" id="delete-department-name"></span>?<br />
                     This action cannot be undone.
                 </div>
             </div>
             <div class="px-5 pb-8 text-center">
-                <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
-                    Cancel
-                </x-base.button>
-                <x-base.button class="w-24" type="button" variant="danger">
-                    Delete
-                </x-base.button>
+                <form id="delete-department-form" method="POST" action="" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
+                        Cancel
+                    </x-base.button>
+                    <x-base.button class="w-24" type="submit" variant="danger">
+                        Delete
+                    </x-base.button>
+                </form>
             </div>
         </x-base.dialog.panel>
     </x-base.dialog>
@@ -162,9 +162,28 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                const deleteForm = document.getElementById('delete-department-form');
+                const deleteDepartmentName = document.getElementById('delete-department-name');
                 const tbody = document.getElementById('departments-tbody');
                 let allDepartments = @json($departments);
                 let displayedCount = 20;
+
+                // Handle delete modal - use event delegation
+                document.addEventListener('click', function(e) {
+                    const deleteLink = e.target.closest('.delete-department-btn');
+                    if (deleteLink) {
+                        e.preventDefault();
+                        const route = deleteLink.getAttribute('data-delete-route');
+                        const name = deleteLink.getAttribute('data-delete-name');
+                        
+                        deleteForm.setAttribute('action', route);
+                        deleteDepartmentName.textContent = name;
+                        
+                        // Show the modal
+                        const modal = tailwind.Modal.getOrCreateInstance(document.querySelector('#delete-confirmation-modal'));
+                        modal.show();
+                    }
+                });
 
                 function loadMoreDepartments() {
                     if (displayedCount >= allDepartments.length) return;

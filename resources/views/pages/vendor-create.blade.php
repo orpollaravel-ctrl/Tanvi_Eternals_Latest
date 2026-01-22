@@ -76,6 +76,9 @@
                             <x-base.form-label>SalesMan</x-base.form-label>
                             <x-base.form-select name="salesman">
                                 <option value="" {{ old('salesman') == '' ? 'selected' : '' }}>Select</option>
+                                @foreach($employees as $employee)
+                                    <option value="{{ $employee->id }}" {{ old('salesman') == $employee->id ? 'selected' : '' }}>{{ $employee->name }}</option>
+                                @endforeach
                             </x-base.form-select>
                         </div>  
                         <div class="mt-3">

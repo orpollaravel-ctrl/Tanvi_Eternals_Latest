@@ -23,9 +23,9 @@ class VendorRequest extends FormRequest
             'ifsc_code' => ['nullable', 'string', 'max:50'],
             'address' => ['nullable', 'string', 'max:500'],
             'party_name' => ['nullable', 'string', 'max:255'],
-            'contact_no' => ['required', 'string', 'max:20'],
+            'contact_no' => ['required', 'string', 'digits:10'],
             'email' => ['required', 'email', 'max:255'],
-            'salesman' => ['nullable', 'string', 'max:255'],
+            'salesman' => ['nullable', 'integer', 'exists:employees,id'],
         ];
     }
 }

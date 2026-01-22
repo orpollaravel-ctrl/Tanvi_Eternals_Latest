@@ -64,13 +64,11 @@
 							<x-base.form-label>Product Type</x-base.form-label>
 						<x-base.form-select name="product_type">
                             <option value="">Select Product Type</option>
-                        
                             @php
-                                $selectedType = old('product_type', strtolower($product->product_type ?? ''));
+                                $currentType = old('product_type', $product->product_type);
                             @endphp
-                        
-                            <option value="consumable" {{ $selectedType == 'consumable' ? 'selected' : '' }}>Consumable</option>
-                            <option value="repairable" {{ $selectedType == 'repairable' ? 'selected' : '' }}>Repairable</option>
+                            <option value="consumable" {{ $currentType === 'consumable' ? 'selected' : '' }}>Consumable</option>
+                            <option value="repairable" {{ $currentType === 'repairable' ? 'selected' : '' }}>Repairable</option>
                         </x-base.form-select>
 						</div>
 

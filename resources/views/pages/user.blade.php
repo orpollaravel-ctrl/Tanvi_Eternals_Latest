@@ -142,74 +142,25 @@
         </x-base.dialog.panel>
     </x-base.dialog>
     <!-- END: Delete Confirmation Modal -->
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const deleteButtons = document.querySelectorAll('[data-delete-route]');
-                const deleteForm = document.getElementById('delete-user-form');
-                const deleteUserName = document.getElementById('delete-user-name');
-                const tbody = document.getElementById('users-tbody');
-                let allUsers = @json($users);
-                let displayedCount = 20;
+@endsection
 
-                // Lazy loading
-                function loadMoreUsers() {
-                    if (displayedCount >= allUsers.length) return;
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteLinks = document.querySelectorAll('[data-delete-route]');
+            const deleteForm = document.getElementById('delete-user-form');
+            const deleteUserName = document.getElementById('delete-user-name');
+            
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const route = this.getAttribute('data-delete-route');
+                    const name = this.getAttribute('data-delete-name');
                     
-                    const nextBatch = allUsers.slice(displayedCount, displayedCount + 20);
-                    nextBatch.forEach(user => {
-                        const row = createUserRow(user);
-                        tbody.insertAdjacentHTML('beforeend', row);
-                    });
-                    displayedCount += 20;
-                }
-
-                function createUserRow(user) {
-                    return `<tr class="intro-x">
-                        <td class="w-20 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                            <div class="flex justify-center">
-                                <img src="${user.photo ? '{{ url('uploads/user/') }}/' + user.photo : '{{ url('uploads/logo.png') }}'" alt="User Photo" class="h-10 w-10 rounded-full object-cover">
-                            </div>
-                        </td>
-                        <td class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                            <div class="flex"><div class="whitespace-nowrap font-medium">${user.name}</div></div>
-                        </td>
-                        <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                            <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${user.email}</div>
-                        </td>
-                        <td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                            <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">${user.contact_number}</div>
-                        </td>
-                        <td class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                            <div class="flex items-center justify-center ${user.active ? 'text-success' : 'text-danger'}">
-                                <i class="mr-2 h-4 w-4"></i> ${user.active ? 'Active' : 'Inactive'}
-                            </div>
-                        </td>
-                    </tr>`;
-                }
-
-                // Scroll event for lazy loading
-                window.addEventListener('scroll', function() {
-                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                        loadMoreUsers();
-                    }
-                });
-
-                deleteButtons.forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        const route = this.getAttribute('data-delete-route');
-                        const name = this.getAttribute('data-delete-name');
-
-                        if (deleteForm && route) {
-                            deleteForm.setAttribute('action', route);
-                        }
-
-                        if (deleteUserName) {
-                            deleteUserName.textContent = name || 'this user';
-                        }
-                    });
+                    deleteForm.setAttribute('action', route);
+                    deleteUserName.textContent = name;
                 });
             });
-        </script>
-    @endpush
-@endsection
+        });
+    </script>
+@endpush

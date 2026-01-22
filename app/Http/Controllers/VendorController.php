@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\VendorRequest;
 use App\Models\Vendor;
+use App\Models\Employee;
 use Illuminate\View\View;
 
 class VendorController extends Controller
@@ -26,16 +27,16 @@ class VendorController extends Controller
          if (!auth()->check() || !auth()->user()->hasPermission('create-vendors')) {
            abort(403,'Permission Denied');
         }
+        $employees = Employee::where('active', 1)->get();
         return view('pages.vendor-create', [
             'layout' => 'side-menu',
+            'employees' => $employees,
         ]);
     }
 
     public function store(VendorRequest $request)
     {
-        
         Vendor::create($request->validated());
-
         return redirect()->route('vendor.index')->with('success', 'Vendor created successfully.');
     }
 
@@ -45,10 +46,12 @@ class VendorController extends Controller
            abort(403,'Permission Denied');
         }
         $vendor = Vendor::findOrFail($id);
+        $employees = Employee::where('active', 1)->get();
 
         return view('pages.vendor-edit', [
             'layout' => 'side-menu',
             'vendor' => $vendor,
+            'employees' => $employees,
         ]);
     }
 

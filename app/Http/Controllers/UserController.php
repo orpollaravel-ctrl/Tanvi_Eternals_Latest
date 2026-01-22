@@ -51,6 +51,7 @@ class UserController extends Controller
             'permissions' => $permissions,
         ]);
     }
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -58,7 +59,7 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'gender' => ['required', 'in:male,female,other'],
-            'contact_number' => ['required', 'string', 'max:50'],
+            'contact_number' => ['required', 'string', 'digits:10'],
             'active' => ['nullable', 'in:0,1'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'permissions' => ['required', 'array'],
@@ -77,7 +78,7 @@ class UserController extends Controller
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             $fileName = $file->getClientOriginalName();
-            $filePath = 'uploade/user';
+            $filePath = 'uploads/user';
             $file->move(public_path($filePath), $fileName);
             $user->update(['photo' => $fileName]);
         }
@@ -123,7 +124,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'gender' => ['nullable', 'in:male,female,other'],
-            'contact_number' => ['required', 'string', 'max:50'],
+            'contact_number' => ['required', 'string', 'digits:10'],
             'password' => ['nullable', 'confirmed', 'min:8'],
             'active' => ['nullable', 'in:0,1'],
             'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],

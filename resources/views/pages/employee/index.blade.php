@@ -68,17 +68,21 @@
                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
                 <div class="mt-5 text-3xl">Are you sure?</div>
                 <div class="mt-2 text-slate-500">
-                    Do you really want to delete this employee?<br />
+                    Do you really want to delete <span class="font-medium" id="delete-employee-name"></span>?<br />
                     This action cannot be undone.
                 </div>
             </div>
             <div class="px-5 pb-8 text-center">
-                <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
-                    Cancel
-                </x-base.button>
-                <x-base.button class="w-24" type="button" variant="danger">
-                    Delete
-                </x-base.button>
+                <form id="delete-employee-form" method="POST" action="" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button" variant="outline-secondary">
+                        Cancel
+                    </x-base.button>
+                    <x-base.button class="w-24" type="submit" variant="danger">
+                        Delete
+                    </x-base.button>
+                </form>
             </div>
         </x-base.dialog.panel>
     </x-base.dialog>
@@ -208,7 +212,7 @@
 
         function generateEmployeeRow(employee, rowNumber) {
             const imageSrc = employee.images ? `{{ asset('storage/') }}/${employee.images}` :
-                'https://tanvierp.orpol.in/build/assets/logo-9a88cec5.svg';
+                '{{ url('uploads/logo.png') }}';
             const activeChecked = employee.active ? 'checked' : '';
             const switchBg = employee.active ? 'background-color: #2196F3;' : '';
             const circleTransform = employee.active ? 'transform: translateX(26px);' : '';
@@ -217,25 +221,25 @@
 
             return `
             <tr class="intro-x">
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md px-4 py-3">
                     ${rowNumber}
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] px-4 py-3">
                     <img src="${imageSrc}" width="50" height="20" style="border-radius:6px;object-fit:cover;">
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] font-medium px-4 py-3">
                     ${employee.name}
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow px-4 py-3">
                     ${employee.department  ?? '-'}
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] px-4 py-3">
                     ${employee.code || '-'}
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] px-4 py-3">
                     ${employee.barcode || '-'}
                 </td>
-                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b]">
+                <td class="border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] px-4 py-3">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <label style="position: relative; display: inline-block; width: 50px; height: 24px; margin: 0;">
                             <input class="employee-status-toggle" type="checkbox" id="status-${employee.id}" data-employee-id="${employee.id}" style="opacity: 0; width: 0; height: 0;" ${activeChecked}>
@@ -245,7 +249,7 @@
                         <span style="font-size: 14px; color: ${textColor};">${textContent}</span>
                     </div>
                 </td>
-                <td class="relative border-b-0 bg-white py-0 dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] text-center first:rounded-l-md last:rounded-r-md before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
+                <td class="relative border-b-0 bg-white dark:bg-darkmode-600 shadow-[20px_3px_20px_#0000000b] text-center first:rounded-l-md last:rounded-r-md px-4 py-3 before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 before:dark:bg-darkmode-400">
                     <div class="flex items-center justify-center">
                         <button type="button" class="flex mr-3 btn btn-sm btn-outline-primary print-barcode-btn" data-tw-toggle="modal" data-tw-target="#barcodeModal" data-barcode="${employee.barcode}" data-product_name="${employee.name}">
                             <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,17 +274,13 @@
                                 Edit
                             </a>` : ''}
                         ${@json(auth()->check() && auth()->user()->hasPermission('delete-employees')) ? `
-                            <form action="/employees/${employee.id}" method="POST" class="inline mt-3">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="flex items-center text-danger"
-                                    onclick="return confirm('Are you sure you want to delete this employee?')">
-                                    <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg> Delete
-                                </button>
-                            </form>` : ''}
+                            <button type="button" class="flex items-center text-danger delete-employee-btn"
+                                data-delete-route="/employees/${employee.id}" data-delete-name="${employee.name}">
+                                <svg class="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg> Delete
+                            </button>` : ''}
 
                     </div>
                 </td>
@@ -365,8 +365,26 @@
         }
 
         bindStatusToggles();
-
         bindBarcodeButtons();
+        bindDeleteButtons();
+
+        function bindDeleteButtons() {
+            document.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.delete-employee-btn');
+                if (deleteBtn) {
+                    e.preventDefault();
+                    const route = deleteBtn.getAttribute('data-delete-route');
+                    const name = deleteBtn.getAttribute('data-delete-name');
+                    
+                    document.getElementById('delete-employee-form').setAttribute('action', route);
+                    document.getElementById('delete-employee-name').textContent = name;
+                    
+                    // Show the modal
+                    const modal = tailwind.Modal.getOrCreateInstance(document.querySelector('#delete-confirmation-modal'));
+                    modal.show();
+                }
+            });
+        }
 
         function bindBarcodeButtons() {
             document.querySelectorAll('.print-barcode-btn').forEach(button => {

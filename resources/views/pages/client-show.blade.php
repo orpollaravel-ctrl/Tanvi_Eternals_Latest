@@ -34,7 +34,7 @@
                 <div class="mt-1 font-semibold">
                     {{ $client->client_type ?? '-' }}
                 </div>
-            </div> 
+            </div>
             <div class="col-span-12 sm:col-span-6">
                 <label class="text-sm font-medium text-slate-500">Salesman</label>
                 <div class="mt-1 font-semibold">

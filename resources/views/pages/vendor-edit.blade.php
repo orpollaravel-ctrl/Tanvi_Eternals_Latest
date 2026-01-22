@@ -76,7 +76,10 @@
                         <div class="mt-3">
                             <x-base.form-label>SalesMan</x-base.form-label>
                             <x-base.form-select name="salesman">
-                                <option value="" {{ old('salesman') == '' ? 'selected' : '' }}>Select</option>
+                                <option value="" {{ (old('salesman', $vendor->salesman) == '' ? 'selected' : '') }}>Select</option>
+                                @foreach($employees as $employee)
+                                    <option value="{{ $employee->id }}" {{ (old('salesman', $vendor->salesman) == $employee->id ? 'selected' : '') }}>{{ $employee->name }}</option>
+                                @endforeach
                             </x-base.form-select>
                         </div>  
                         <div class="mt-3">

@@ -11,7 +11,7 @@
         <div class="intro-y col-span-12">
             <form method="GET" action="{{ route('tool-assigns.product-report') }}" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <!-- Search -->
-                <div class="relative w-full sm:w-64">
+                <div class="relative w-full w-64">
                     <x-base.lucide class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4 text-slate-500" icon="Search" />
                     <input type="text" id="search-input" name="search" value="{{ request('search') }}" class="filter-input box pl-10 w-full" placeholder="Search products, categories...">
                 </div>
