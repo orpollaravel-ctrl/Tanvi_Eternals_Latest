@@ -19,4 +19,9 @@ class Target extends Model
         'shop_photo',
         'visit_card'
     ];
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

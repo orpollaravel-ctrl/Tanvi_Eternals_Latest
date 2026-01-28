@@ -134,6 +134,7 @@ class EmployeeController extends Controller
                 'password' => Hash::make('password123'),  
                 'gender' => 'male',  
                 'active' => $validated['active'] ?? 0,
+                'sales_id' => $employee->id,
             ]);
 
            $permissionIds = Permission::whereIn('group', ['quotation', 'expense'])
@@ -236,8 +237,7 @@ class EmployeeController extends Controller
         
         if ($department && strtolower($department->name) === 'sales' && $employeeName && $employeeCode) {
             $email = $employeeCode . '@gmail.com';
-            $userExists = User::where('email', $email)->exists();
-            
+            $userExists = User::where('email', $email)->first(); 
             if (!$userExists) {
                 $user = User::create([
                     'name' => $employeeName,
@@ -245,6 +245,7 @@ class EmployeeController extends Controller
                     'password' => Hash::make('password123'),
                     'gender' => 'male', 
                     'active' => $validated['active'] ?? $employee->active ?? 0,
+                    'sales_id' => $employee->id,
                 ]);
 
                 $permissionIds = Permission::whereIn('group', ['quotation', 'expense'])
@@ -254,6 +255,8 @@ class EmployeeController extends Controller
                 if (!empty($permissionIds)) {
                     $user->permissions()->sync($permissionIds);
                 }
+            } else {
+                $userExists->update(['sales_id' => $employee->id]); 
             }
         }
 

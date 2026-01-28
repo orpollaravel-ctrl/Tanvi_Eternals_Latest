@@ -113,4 +113,10 @@ class VisitController extends Controller
         
         return response()->stream($callback, 200, $headers);
     }
+
+    public function userVisits($userId)
+    {
+        $visits = Target::where('user_id', $userId)->get();
+        return view('visits.user-visits', compact('visits', 'userId'));
+    }
 }

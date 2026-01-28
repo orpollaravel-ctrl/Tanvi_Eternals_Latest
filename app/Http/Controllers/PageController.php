@@ -8,6 +8,8 @@ use App\Models\ToolAssign;
 use App\Models\Bullion;
 use App\Models\BullionRateFix;
 use App\Models\DealerRateFix;
+use App\Models\Target;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,8 +20,42 @@ class PageController extends Controller
      *
      */
     public function CustomerDashboard(): View
-    { 
+    {
+        if (!auth('client')->check() || !auth('client')->user()->hasPermission('view-dashboard')) {
+            abort(403, 'Permission Denied');
+        }
         return view('dashboard/customer-dashboard');
+    }
+
+    public function visitDashboard(Request $request): View
+    {
+        if (!auth()->check() || !auth()->user()->hasPermission('view-visit-dashboard')) {
+            abort(403, 'Permission Denied');
+        }
+
+        $query = Target::with('user');
+
+        // ✅ Date range filtering
+        if ($request->filled('from_date') && $request->filled('to_date')) {
+            $query->whereBetween('target_date', [
+                Carbon::parse($request->from_date)->startOfDay(),
+                Carbon::parse($request->to_date)->endOfDay(),
+            ]);
+        }
+
+        $visits = $query
+            ->orderBy('target_date', 'desc')
+            ->get();
+
+        $visitCounts = $visits
+            ->groupBy('customer_name')
+            ->map(fn ($group) => $group->count());
+
+        return view('dashboard.visit-dashboard', [
+            'layout' => 'side-menu',
+            'visits' => $visits,
+            'visitCounts' => $visitCounts,
+        ]);
     }
 
     public function dashboardOverview1(): View

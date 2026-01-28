@@ -20,7 +20,7 @@
                     <div class="flex items-center justify-between mb-6" style="justify-content:space-between;">
                         <div>
                             <h2 class="text-xl font-semibold text-slate-800 dark:text-white">
-                                {{ $expense->salesman->name }}
+                                {{ $expense->salesman_name }}
                             </h2>
                             <p class="text-sm text-slate-500">
                                 Recorded expense summary

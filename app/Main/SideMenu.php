@@ -22,7 +22,16 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu',
                         ],
-                        'title' => 'Dashboard 1',
+                        'title' => 'Dashboard',
+                    ],
+                    'visit-dashboard' => [
+                        'icon' => 'map-pin',
+                        'route_name' => 'visit.dashboard',
+                        'permission' => 'view-visit-dashboard',
+                        'params' => [
+                            'layout' => 'side-menu',
+                        ],
+                        'title' => 'Visit Dashboard',
                     ],
                     'dashboard-customer' => [
                         'icon' => 'bar-chart-2',
@@ -305,8 +314,6 @@ class SideMenu
             // ----------------------
             // QUOTATION
             // ----------------------
-           
-
             'customer-quotation' => [
                 'icon' => 'file-text',
                 'route_name' => 'customer.quotations.index',

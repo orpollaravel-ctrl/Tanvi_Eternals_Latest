@@ -42,6 +42,13 @@ class AuthController extends Controller
             ], 403);
         }
 
+        if($user->sales_id == null){
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized as Salesman. Please contact administrator.'
+            ], 403);
+        }
+
         $token = $user->createToken('salesman-token')->plainTextToken;
 
         return response()->json([
@@ -149,7 +156,17 @@ class AuthController extends Controller
 
     public function customers(Request $request)
     {
-        $clients = Client::latest()->get();
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $clients = Client::where('salesman_id', $employee->id)->latest()->get();
         return response()->json([
             'success' => true,
             'data' => $clients
@@ -274,7 +291,17 @@ class AuthController extends Controller
 
     public function expenses()
     {
-        $expenses = Expense::latest()->get();
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $expenses = Expense::where('salesman_id', $employee->id)->latest()->get();
 
         return response()->json([
             'success' => true,
@@ -290,9 +317,21 @@ class AuthController extends Controller
             'amount' => ['required', 'numeric', 'min:0'],
             'remark' => ['nullable', 'string'],
             'bill_upload' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
-            'salesman_id' => ['required', 'exists:employees,id'],
             'status' => ['nullable', 'in:pending,approved,rejected'],
         ]);
+
+        $user = $request->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $validated['salesman_id'] = $employee->id;
+        $validated['salesman_name'] = $employee->name;
 
         if ($request->hasFile('bill_upload')) {
             $file = $request->file('bill_upload');
@@ -345,7 +384,17 @@ class AuthController extends Controller
 
     public function customerFilter(Request $request)
     {
-         $query = Client::query();
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $query = Client::where('salesman_id', $employee->id);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -366,7 +415,17 @@ class AuthController extends Controller
 
     public function expenseFilter(Request $request)
     {
-         $query = Expense::query();
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $query = Expense::where('salesman_id', $employee->id);
  
         if ($request->filled('from_date')) {
             $query->whereDate('date', '>=', $request->from_date);
@@ -395,9 +454,20 @@ class AuthController extends Controller
             'visit_card' => ['nullable', 'image', 'max:2048'],
             'shop_photo' => ['nullable', 'image', 'max:2048'],
             'reason' => ['required', 'string', 'max:255'],
-            'user_id' => ['required'],
         ]);
-         $validated['user_id'] = $request->user()->id;
+        
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $validated['user_id'] = $employee->id;
+        
         if ($request->hasFile('visit_card')) {
             $file = $request->file('visit_card');
             $fileName = time() . '_vc_' . $file->getClientOriginalName();
@@ -423,7 +493,17 @@ class AuthController extends Controller
 
     public function visitList(Request $request)
     {
-        $data = Target::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $data = Target::where('user_id', $employee->id)
             ->latest()
             ->get();
 
@@ -440,7 +520,17 @@ class AuthController extends Controller
             'to_date'   => 'required|date|after_or_equal:from_date',
         ]);
 
-        $targets = Target::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $targets = Target::where('user_id', $employee->id)
             ->whereDate('target_date', '>=', $request->from_date)
             ->whereDate('target_date', '<=', $request->to_date)
             ->orderByDesc('target_date')
@@ -476,7 +566,17 @@ class AuthController extends Controller
             'to_date'   => 'required|date|after_or_equal:from_date',
         ]);
 
-        $collections = Collection::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $collections = Collection::where('user_id', $employee->id)
             ->whereDate('collection_date', '>=', $request->from_date)
             ->whereDate('collection_date', '<=', $request->to_date)
             ->orderByDesc('collection_date')
@@ -498,7 +598,17 @@ class AuthController extends Controller
             'remark' => 'required|string'
         ]);
 
-        $validated['user_id'] = $request->user()->id;
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $validated['user_id'] = $employee->id;
 
         $collection = Collection::create($validated);
 
@@ -511,7 +621,17 @@ class AuthController extends Controller
 
     public function collectionList(Request $request)
     {
-        $data = Collection::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $data = Collection::where('user_id', $employee->id)
             ->latest()
             ->get();
 
@@ -548,7 +668,17 @@ class AuthController extends Controller
             'time' => 'required'
         ]);
 
-        $validated['user_id'] = $request->user()->id;
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $validated['user_id'] = $employee->id;
 
         $order = Order::create($validated);
 
@@ -561,7 +691,17 @@ class AuthController extends Controller
 
     public function orderList(Request $request)
     {
-        $data = Order::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $data = Order::where('user_id', $employee->id)
             ->latest()
             ->get();
 
@@ -595,7 +735,17 @@ class AuthController extends Controller
             'to_date'   => 'required|date|after_or_equal:from_date',
         ]);
 
-        $orders = Order::where('user_id', $request->user()->id)
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+
+        $orders = Order::where('user_id', $employee->id)
             ->whereDate('order_date', '>=', $request->from_date)
             ->whereDate('order_date', '<=', $request->to_date)
             ->orderByDesc('order_date')
@@ -626,7 +776,17 @@ class AuthController extends Controller
         ]);
 
         $date = $request->date;
-        $userId = $request->user() ? $request->user()->id : 1;  
+        $user = auth()->user();
+        $employee = \App\Models\Employee::find($user->sales_id);
+        
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Employee not found'
+            ], 404);
+        }
+        
+        $userId = $employee->id;
 
         $collections = Collection::where('user_id', $userId)
             ->whereDate('collection_date', $date) 

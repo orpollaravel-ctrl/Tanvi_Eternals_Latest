@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 	Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
 	Route::get('/bullion-dashboard', [PageController::class, 'Bulliondashboard'])->name('bullion.dashboard');
+	Route::get('/visit-dashboard', [PageController::class, 'visitDashboard'])->name('visit.dashboard');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard-overview-1');
         Route::get('dashboard-overview-2-page', 'dashboardOverview2')->name('dashboard-overview-2');
@@ -299,6 +300,7 @@ Route::middleware('auth')->group(function () {
     Route::get('visit/print', [VisitController::class, 'print'])->name('visits.print');
     Route::get('visits/export-excel', [VisitController::class, 'exportExcel'])->name('visits.export.excel');
     Route::get('visits/{id}', [VisitController::class, 'show'])->name('visits.show');
+    Route::get('visits/user/{userId}', [VisitController::class, 'userVisits'])->name('visits.user');
 
 	// Departments CRUD
     Route::resource('departments', DepartmentController::class);

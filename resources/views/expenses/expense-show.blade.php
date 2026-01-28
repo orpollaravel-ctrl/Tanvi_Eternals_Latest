@@ -1,11 +1,11 @@
 @extends('../layouts/' . $layout)
 
 @section('subhead')
-    <title>View Expense - Tanvi Eternals</title>
+    <title>{{ $salesman->name }} Expenses - Tanvi Eternals</title>
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">Expense Details</h2>
+    <h2 class="intro-y mt-10 text-lg font-medium">{{ $salesman->name }} - Expenses</h2>
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
@@ -391,13 +391,13 @@
 
             function printExpenses() {
                 const params = new URLSearchParams(window.location.search);
-                params.set('salesman_id', '{{ $salesman->id }}');
+                params.set('salesman_id', {{ $salesman->id }});
                 window.open(`{{ route('expenses.print') }}?${params.toString()}`, '_blank');
             }
 
             function exportExpensesToExcel() {
                 const params = new URLSearchParams(window.location.search);
-                params.set('salesman_id', '{{ $salesman->id }}');
+                params.set('salesman_id', {{ $salesman->id }});
                 window.location.href = `{{ route('expenses.export.excel') }}?${params.toString()}`;
             }
         </script>

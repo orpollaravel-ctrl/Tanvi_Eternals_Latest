@@ -12,6 +12,7 @@ class PermissionSeeder extends Seeder
         $permissions = [
             ['label' => 'View Admin Dashboard', 'name' => 'view-admin-dashboard', 'group' => 'dashboard'],
             ['label' => 'View Bullion Dashboard', 'name' => 'view-bullion-dashboard', 'group' => 'dashboard'],
+            ['label' => 'View Visit Dashboard', 'name' => 'view-visit-dashboard', 'group' => 'dashboard'],
             ['label' => 'Create Users', 'name' => 'create-users', 'group' => 'master'],
             ['label' => 'Edit Users', 'name' => 'edit-users', 'group' => 'master'],
             ['label' => 'Delete Users', 'name' => 'delete-users', 'group' => 'master'],

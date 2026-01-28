@@ -16,6 +16,7 @@ class Expense extends Model
         'remark',
         'bill_upload',
         'salesman_id',
+        'salesman_name',
         'status'
     ];
 
